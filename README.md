@@ -12,6 +12,7 @@ Browser tool that turns a photo of a hand tool into a 3D-printable holder for th
    - **Slot**: pliers, nippers, scissors. Tip goes through, the tool rests on its shoulders.
    - **Round hole**: screwdrivers.
    - **Tray**: anything without a neck (pens, cutters, tape rolls). No photo needed.
+   - **Gridfinity**: a drawer bin (42 mm grid, 7 mm units, optional stacking lip) with a pocket shaped like the tool. Add finger notches by clicking in the Layout view; the pocket floor and rim can be filleted. Prints base-down as exported.
 5. Print top-face-down, no supports (round trays need supports inside the curve).
 
 You can zoom the photo and fix the outline by hand (move/add/delete points, or draw a new outline).

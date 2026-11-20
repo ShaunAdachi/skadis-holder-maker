@@ -172,7 +172,7 @@ details summary .chev{transition:transform .15s;color:var(--faint)} details[open
     </div>
     <div class="seg" id="viewSeg">
       <button data-v="photo" class="on"><svg class="i"><use href="#i-img"/></svg>Photo</button>
-      <button data-v="prof"><svg class="i"><use href="#i-chart"/></svg>Profile</button>
+      <button data-v="prof"><svg class="i"><use href="#i-chart"/></svg><span id="profTab">Profile</span></button>
       <button data-v="3d"><svg class="i"><use href="#i-cube"/></svg>3D</button>
     </div>
     <div class="actions">
@@ -255,7 +255,7 @@ details summary .chev{transition:transform .15s;color:var(--faint)} details[open
     <!-- RIGHT -->
     <div class="panel">
       <div class="head"><div class="seg full" id="typeSeg" style="width:100%">
-        <button data-v="slot" class="on">Slot</button><button data-v="round">Round hole</button><button data-v="tray">Tray</button>
+        <button data-v="slot" class="on">Slot</button><button data-v="round">Round hole</button><button data-v="tray">Tray</button><button data-v="grid">Gridfinity</button>
       </div></div>
       <div class="sec">
         <p class="hint" id="typeNote" style="margin:0">For pliers, nippers and scissors. The tool drops in tip-first and rests on its shoulders.</p>
@@ -311,7 +311,39 @@ details summary .chev{transition:transform .15s;color:var(--faint)} details[open
         </div>
         <p class="hint" id="trayNote"></p>
       </div>
-      <div class="sec">
+      <div class="sec gridOnly hide">
+        <h3>Bin</h3>
+        <div class="grid3">
+          <div><div class="eqlab1">Grid X</div><div class="f"><span class="t x">X</span><input id="gX" type="number" step="1" min="1" max="6" value="2"></div></div>
+          <div><div class="eqlab1">Grid Y</div><div class="f"><span class="t y">Y</span><input id="gY" type="number" step="1" min="1" max="6" value="4"></div></div>
+          <div><div class="eqlab1">Height (×7 mm)</div><div class="f"><span class="t z">U</span><input id="gU" type="number" step="1" min="2" max="12" value="3"></div></div>
+        </div>
+        <div class="row" style="margin-top:8px;justify-content:space-between"><button class="btn sm" id="gAuto"><svg class="i"><use href="#i-reset"/></svg>Auto fit</button><span class="hint" id="gFitHint" style="margin:0"></span></div>
+        <div class="grid2" style="margin-top:4px">
+          <div><div class="lab2">Tool direction</div><div class="seg full" id="gRot"><button data-v="0" class="on">Along Y</button><button data-v="90">Along X</button></div></div>
+          <div><div class="lab2">Stacking lip</div><div class="seg full" id="gLip"><button data-v="on" class="on">On</button><button data-v="off">Off</button></div></div>
+        </div>
+        <p class="hint">Standard Gridfinity: 42 mm grid, 7 mm height units. The A1 mini bed fits up to 4 × 4.</p>
+      </div>
+      <div class="sec gridOnly hide">
+        <h3>Pocket</h3>
+        <div class="grid2">
+          <div><div class="lab2" style="margin-top:0">Depth</div><div class="f"><input id="gDepth" type="number" step="0.5" value="10"><span class="u">mm</span></div></div>
+          <div><div class="lab2" style="margin-top:0">Extra room</div><div class="f"><input id="gClr" type="number" step="0.1" value="0.8"><span class="u">mm</span></div></div>
+          <div><div class="lab2">Floor fillet</div><div class="f"><span class="t">R</span><input id="gRb" type="number" step="0.5" value="1"><span class="u">mm</span></div></div>
+          <div><div class="lab2">Rim fillet</div><div class="f"><span class="t">R</span><input id="gRt" type="number" step="0.5" value="1.5"><span class="u">mm</span></div></div>
+        </div>
+        <p class="hint">The outline is grown by the extra room all round. Fillets round the bottom edge of the pocket and its top rim.</p>
+      </div>
+      <div class="sec gridOnly hide">
+        <h3>Finger notches</h3>
+        <div class="grid2">
+          <div><div class="lab2" style="margin-top:0">Notch radius</div><div class="f"><span class="t">R</span><input id="gNr" type="number" step="1" value="10"><span class="u">mm</span></div></div>
+          <div style="display:flex;align-items:flex-end;gap:6px"><button class="btn sm" id="gNClear" style="width:100%;justify-content:center"><svg class="i"><use href="#i-trash"/></svg>Clear all</button></div>
+        </div>
+        <p class="hint" id="gNHint">Open the Layout view and click where a finger should go. Drag to move, Alt-click to remove.</p>
+      </div>
+      <div class="sec" id="edgesSec">
         <h3>Edges</h3>
         <div class="grid2">
           <div><div class="lab2" style="margin-top:0">Front fillet</div><div class="seg full" id="filSeg"><button data-v="on" class="on">On</button><button data-v="off">Off</button></div></div>
@@ -321,8 +353,8 @@ details summary .chev{transition:transform .15s;color:var(--faint)} details[open
       </div>
       <div class="sec">
         <h3>Result</h3>
-        <div class="kv"><span>Holder width</span><span class="v" id="rW">—</span></div>
-        <div class="kv"><span>Hooks</span><span class="v" id="rHooks">—</span></div>
+        <div class="kv"><span id="lW">Holder width</span><span class="v" id="rW">—</span></div>
+        <div class="kv"><span id="lHooks">Hooks</span><span class="v" id="rHooks">—</span></div>
         <div class="kv"><span id="lSeat">Stops at</span><span class="v" id="rSeat">—</span></div>
         <div class="kv"><span id="lBear">Shoulder overlap</span><span class="v" id="rBear">—</span></div>
         <div class="kv"><span>Volume</span><span class="v" id="rVol">—</span></div>
@@ -379,7 +411,7 @@ const st = { img:null, rect:null, mask:null, th:30, rot:0, flip:false, cen:[0,0]
 let cv, M;
 const $ = id => document.getElementById(id);
 /* ---------- language + theme ---------- */
-const JA={"SKÅDIS Holder /": "SKÅDIS ホルダー /", "Untitled": "無題", "Loading libraries…": "ライブラリを読み込み中…", "Photo": "写真", "Profile": "幅プロファイル", "Sheet PDF": "測定シートPDF", "Try sample": "サンプルを試す", "Open photo": "写真を開く", "Export STL": "STLを書き出す", "Drop a photo here": "ここに写真をドロップ", "Tool on the measuring sheet, shot from above": "測定シートに置いた工具を真上から撮った写真", "Lens profile": "レンズ補正", "Pixel 9a · 2× zoom": "Pixel 9a・2倍ズーム", "None": "なし", "Sheet": "シート", "Variant": "種類", "Markers found": "検出マーカー", "Fit error": "補正誤差", "Image": "画像", "Outline": "輪郭", "Edge threshold": "エッジしきい値", "Axis fine-tune": "軸の角度調整", "Swap tip / handle end": "先端と柄を入れ替え", "Length": "長さ", "Max width": "最大幅", "Rotation": "回転", "Source": "輪郭の種類", "No photo yet": "まだ写真がありません", "How to shoot": "撮影のしかた", "2. Lay the tool flat in the middle of the sheet, along its long side, tip pointing up.": "2. 工具をシートの中央に平らに置きます。長辺に沿わせ、先端を上に向けます。", "3. Shoot straight down from about 60 cm with 2× zoom, lit from above with no hard shadows.": "3. 約60cmの高さから2倍ズームで真上から撮ります。照明は真上から当て、強い影を避けます。", "4. Use the original photo file. Then pick Slot, Round hole or Tray and export the STL.": "4. 元の写真ファイルを使い、スロット・丸穴・トレイから選んでSTLを書き出します。", "Slot": "スロット", "Round hole": "丸穴", "Tray": "トレイ", "For pliers, nippers and scissors. The tool drops in tip-first and rests on its shoulders.": "ペンチ・ニッパー・ハサミ向け。先端から差し込み、肩の部分で止まります。", "For screwdrivers. The shaft goes through a round hole and the handle rests on the rim.": "ドライバー向け。軸を丸穴に通し、柄で止まります。", "A plain tray for things without a neck: pens, markers, tape rolls. No photo needed.": "くびれのない物（ペン、マーカー、テープなど）用のトレイ。写真は不要です。", "Pass-through": "通過範囲", "Must pass from the tip up to": "先端からここまでを通す", "Auto": "自動", "Everything from the tip to this point goes through the opening. Auto picks the narrowest neck.": "先端からこの位置までが開口を通り抜けます。「自動」は一番細いくびれを選びます。", "Opening size": "開口サイズ", "Width": "幅", "(along the board, mm)": "（板に沿った方向, mm）", "Widest part": "通過部の最大", "Extra room": "余裕", "Opening": "開口", "Depth": "奥行き", "(away from the board, mm)": "（板から離れる方向, mm）", "Tool thickness": "工具の厚み", "Measure the thickness with calipers at its thickest point. The photo only sees width.": "厚みはノギスで一番厚い所を測ってください。写真からは幅しか分かりません。", "Extra room is the gap you want around the tool. ~2 mm drops in easily; under 1 mm feels snug. The printed P-14 holder used 2.8 / 1.1.": "余裕は工具のまわりのすき間です。約2mmならすっと入り、1mm未満はきつめです。印刷済みのP-14用ホルダーは 2.8 / 1.1 でした。", "Inner size": "内寸", "Height": "高さ", "Inside dimensions in mm. Length runs along the board, depth away from it, height is from the floor to the rim.": "内寸（mm）。長さは板に沿った方向、奥行きは板から離れる方向、高さは底から縁までです。", "Ø is the diameter of what lies in it (e.g. a tape roll). The cradle radius is (Ø + extra room) / 2. Height = radius gives a half-round cradle; lower is shallower.": "Ø は載せる物（テープなど）の直径です。受けの半径は (Ø + 余裕) ÷ 2。高さを半径と同じにすると半円、低くすると浅い受けになります。", "Item Ø": "直径 Ø", "Size from photo": "写真から寸法を入れる", "needs a photo": "写真が必要です", "Shape": "形", "Cross-section": "断面", "Square": "角型", "Round": "丸型", "Left end": "左端", "Right end": "右端", "Closed": "閉じる", "Open": "開ける", "Wall": "壁", "Floor": "底", "Edges": "エッジ", "Front fillet": "前面のフィレット", "On": "オン", "Off": "オフ", "Radius": "半径", "Rounds the edges you see from the front. The top edge touches the print bed, so it only gets a small chamfer.": "正面から見える角を丸めます。上面の前の角は印刷時にベッドに付くので、小さな面取りだけにしています。", "Result": "結果", "Holder width": "ホルダー幅", "Hooks": "フック", "Stops at": "止まる位置", "Shoulder overlap": "引っかかり", "Volume": "体積", "Advanced": "詳細設定", "Shelf thickness": "棚の厚み", "Funnel (45°)": "漏斗（45°）", "Front / back wall": "前後の壁", "Min side wall": "左右の壁（最小）", "Back plate height": "背板の高さ", "Hook gap": "フックのすき間", "Hook gap 5.1 mm fits a 5.0 mm SKÅDIS board (tested in PETG).": "フックのすき間 5.1mm で、厚さ 5.0mm のSKÅDIS板に合います（PETGで確認済み）。", "Export": "書き出し", "Exported top-face-down, ready to print without supports.": "上面を下にした向きで書き出します。サポートなしで印刷できます。", "Measuring sheet, A4, print at 100%": "測定シート（A4・100%で印刷）", "Load a sample photo": "サンプル写真を読み込む", "Pan (V)": "移動 (V)", "Edit points (E)": "点を編集 (E)", "Draw a new outline (D)": "輪郭を描き直す (D)", "Delete selected points (Del)": "選択した点を削除 (Del)", "Undo (Ctrl+Z)": "元に戻す (Ctrl+Z)", "Back to the automatic outline": "自動の輪郭に戻す", "Zoom out": "縮小", "Zoom in": "拡大", "Fit (F)": "全体表示 (F)", "Dark mode": "ダークモード", "Light mode": "ライトモード", "Ready": "準備完了", "Waiting for a photo": "写真を待っています", "Still loading libraries…": "ライブラリを読み込み中です…", "Finding sheet markers…": "シートのマーカーを検出中…", "Loading sample…": "サンプルを読み込み中…", "Sample needs the hosted page (not a local file)": "サンプルは公開ページでのみ使えます（ローカルファイルでは不可）", "Recalculating…": "再計算中…", "Updating outline…": "輪郭を更新中…", "Re-detecting (manual edits replaced)…": "再検出中（手で直した輪郭は置き換わります）…", "Can't delete every point — keep at least 3": "すべての点は消せません。3点以上残してください", "Removed {n} points": "{n}点を削除しました", "Removed 1 point": "1点を削除しました", "Could not load OpenCV.js": "OpenCV.js を読み込めませんでした", "Fewer than 4 sheet markers found": "シートのマーカーが4個未満しか見つかりません", "No tool found — lower the edge threshold": "工具が見つかりません。エッジしきい値を下げてください", "Outline is empty": "輪郭が空です", "Edited": "手修正", "tool {l} × {w} mm": "工具 {l} × {w} mm", "Distance from tip (mm)": "先端からの距離 (mm)", "Outer width (mm)": "外幅 (mm)", "PASSES THROUGH": "通過範囲", "opening {v}": "開口 {v}", "widest {v}": "最大幅 {v}", "stops {v}": "止まる位置 {v}", "{n} × 40 mm pitch": "{n}個（40mm間隔）", "1 (may swivel)": "1個（回転するかも）", "falls through": "抜け落ちます", "{v} mm from tip": "先端から {v} mm", "Opening {v}": "開口 {v}", "Holder {v}": "ホルダー {v}", "Falls through": "抜け落ちます", "Stops {v}": "止まる位置 {v}", "Outer depth": "外寸の奥行き", "Outer height": "外寸の高さ", "Cradle {v}": "受け {v}", "Inside {v}": "内寸 {v}", "Outer {v}": "外寸 {v}", "Printed top-face-down, the floor bridges {s} mm. Over ~40 mm may sag.": "上面を下にして印刷すると、底が {s}mm 空中をまたぎます。40mmを超えると垂れることがあります。", "Printed top-face-down; the floor bridges {s} mm (fine).": "上面を下にして印刷すると、底が {s}mm 空中をまたぎます（問題ない範囲）。", "Cradle radius {r} mm. Printed top-face-down, the curve needs supports inside (tree supports, build plate only).": "受けの半径 {r}mm。上面を下にして印刷すると、円弧の内側にサポートが必要です（ツリー・ビルドプレートのみ）。", "Longer than the A1 mini bed (180 mm).": "A1 mini のベッド（180mm）より長いです。", "tray · prints top-face-down · drag to orbit": "トレイ・上面を下にして印刷・ドラッグで回転", "widest {a} + {b} = {c} mm opening": "最大幅 {a} + 余裕 {b} = 開口 {c} mm", "{t} {w} × {u} mm · drag to orbit": "{t} {w} × {u} mm・ドラッグで回転", "slot": "スロット", "Drag to pan · scroll to zoom · E edit points · D draw a new outline": "ドラッグで移動・ホイールで拡大縮小・E 点を編集・D 輪郭を描き直す", "{n} selected · Delete removes them · drag one to move them all · Esc clears": "{n}点を選択中・Deleteで削除・ドラッグでまとめて移動・Escで解除", "Drag a box to select points · Delete removes them · drag a point to move · double-click a line to add a point · Space-drag pans": "ドラッグで範囲選択・Deleteで削除・点をドラッグで移動・線をダブルクリックで点を追加・Space+ドラッグで画面移動", "{n} points · click the first point or press Enter to finish · Backspace undoes a point · Esc cancels": "{n}点・最初の点をクリックかEnterで完了・Backspaceで1点戻す・Escで中止", "Click around the tool to place points · Space-drag or middle-drag pans": "工具のまわりをクリックして点を置きます・Space+ドラッグかホイールボタンで画面移動"}, JA_HTML={"emptyLead": "左に写真をドロップするか、<b>写真を開く</b>から選んでください。<a href=\"#\" id=\"sampleLink\" style=\"color:var(--accent)\">サンプル</a>も試せます。", "step1": "1. <a href=\"sheet/skadis_measure_sheet_A4.pdf\" download style=\"color:var(--accent)\">測定シート</a>をA4・100%（「用紙に合わせる」はオフ）で印刷し、150mmの目盛が150mmになっているか確かめます。"}, EN_OF={}; for(const [k,v] of Object.entries(JA)) if(!(v in EN_OF)) EN_OF[v]=k;
+const JA={"SKÅDIS Holder /": "SKÅDIS ホルダー /", "Untitled": "無題", "Loading libraries…": "ライブラリを読み込み中…", "Photo": "写真", "Profile": "幅プロファイル", "Sheet PDF": "測定シートPDF", "Try sample": "サンプルを試す", "Open photo": "写真を開く", "Export STL": "STLを書き出す", "Drop a photo here": "ここに写真をドロップ", "Tool on the measuring sheet, shot from above": "測定シートに置いた工具を真上から撮った写真", "Lens profile": "レンズ補正", "Pixel 9a · 2× zoom": "Pixel 9a・2倍ズーム", "None": "なし", "Sheet": "シート", "Variant": "種類", "Markers found": "検出マーカー", "Fit error": "補正誤差", "Image": "画像", "Outline": "輪郭", "Edge threshold": "エッジしきい値", "Axis fine-tune": "軸の角度調整", "Swap tip / handle end": "先端と柄を入れ替え", "Length": "長さ", "Max width": "最大幅", "Rotation": "回転", "Source": "輪郭の種類", "No photo yet": "まだ写真がありません", "How to shoot": "撮影のしかた", "2. Lay the tool flat in the middle of the sheet, along its long side, tip pointing up.": "2. 工具をシートの中央に平らに置きます。長辺に沿わせ、先端を上に向けます。", "3. Shoot straight down from about 60 cm with 2× zoom, lit from above with no hard shadows.": "3. 約60cmの高さから2倍ズームで真上から撮ります。照明は真上から当て、強い影を避けます。", "4. Use the original photo file. Then pick Slot, Round hole or Tray and export the STL.": "4. 元の写真ファイルを使い、スロット・丸穴・トレイから選んでSTLを書き出します。", "Slot": "スロット", "Round hole": "丸穴", "Tray": "トレイ", "For pliers, nippers and scissors. The tool drops in tip-first and rests on its shoulders.": "ペンチ・ニッパー・ハサミ向け。先端から差し込み、肩の部分で止まります。", "For screwdrivers. The shaft goes through a round hole and the handle rests on the rim.": "ドライバー向け。軸を丸穴に通し、柄で止まります。", "A plain tray for things without a neck: pens, markers, tape rolls. No photo needed.": "くびれのない物（ペン、マーカー、テープなど）用のトレイ。写真は不要です。", "Pass-through": "通過範囲", "Must pass from the tip up to": "先端からここまでを通す", "Auto": "自動", "Everything from the tip to this point goes through the opening. Auto picks the narrowest neck.": "先端からこの位置までが開口を通り抜けます。「自動」は一番細いくびれを選びます。", "Opening size": "開口サイズ", "Width": "幅", "(along the board, mm)": "（板に沿った方向, mm）", "Widest part": "通過部の最大", "Extra room": "余裕", "Opening": "開口", "Depth": "奥行き", "(away from the board, mm)": "（板から離れる方向, mm）", "Tool thickness": "工具の厚み", "Measure the thickness with calipers at its thickest point. The photo only sees width.": "厚みはノギスで一番厚い所を測ってください。写真からは幅しか分かりません。", "Extra room is the gap you want around the tool. ~2 mm drops in easily; under 1 mm feels snug. The printed P-14 holder used 2.8 / 1.1.": "余裕は工具のまわりのすき間です。約2mmならすっと入り、1mm未満はきつめです。印刷済みのP-14用ホルダーは 2.8 / 1.1 でした。", "Inner size": "内寸", "Height": "高さ", "Inside dimensions in mm. Length runs along the board, depth away from it, height is from the floor to the rim.": "内寸（mm）。長さは板に沿った方向、奥行きは板から離れる方向、高さは底から縁までです。", "Ø is the diameter of what lies in it (e.g. a tape roll). The cradle radius is (Ø + extra room) / 2. Height = radius gives a half-round cradle; lower is shallower.": "Ø は載せる物（テープなど）の直径です。受けの半径は (Ø + 余裕) ÷ 2。高さを半径と同じにすると半円、低くすると浅い受けになります。", "Item Ø": "直径 Ø", "Size from photo": "写真から寸法を入れる", "needs a photo": "写真が必要です", "Shape": "形", "Cross-section": "断面", "Square": "角型", "Round": "丸型", "Left end": "左端", "Right end": "右端", "Closed": "閉じる", "Open": "開ける", "Wall": "壁", "Floor": "底", "Edges": "エッジ", "Front fillet": "前面のフィレット", "On": "オン", "Off": "オフ", "Radius": "半径", "Rounds the edges you see from the front. The top edge touches the print bed, so it only gets a small chamfer.": "正面から見える角を丸めます。上面の前の角は印刷時にベッドに付くので、小さな面取りだけにしています。", "Result": "結果", "Holder width": "ホルダー幅", "Hooks": "フック", "Stops at": "止まる位置", "Shoulder overlap": "引っかかり", "Volume": "体積", "Advanced": "詳細設定", "Shelf thickness": "棚の厚み", "Funnel (45°)": "漏斗（45°）", "Front / back wall": "前後の壁", "Min side wall": "左右の壁（最小）", "Back plate height": "背板の高さ", "Hook gap": "フックのすき間", "Hook gap 5.1 mm fits a 5.0 mm SKÅDIS board (tested in PETG).": "フックのすき間 5.1mm で、厚さ 5.0mm のSKÅDIS板に合います（PETGで確認済み）。", "Export": "書き出し", "Exported top-face-down, ready to print without supports.": "上面を下にした向きで書き出します。サポートなしで印刷できます。", "Measuring sheet, A4, print at 100%": "測定シート（A4・100%で印刷）", "Load a sample photo": "サンプル写真を読み込む", "Pan (V)": "移動 (V)", "Edit points (E)": "点を編集 (E)", "Draw a new outline (D)": "輪郭を描き直す (D)", "Delete selected points (Del)": "選択した点を削除 (Del)", "Undo (Ctrl+Z)": "元に戻す (Ctrl+Z)", "Back to the automatic outline": "自動の輪郭に戻す", "Zoom out": "縮小", "Zoom in": "拡大", "Fit (F)": "全体表示 (F)", "Dark mode": "ダークモード", "Light mode": "ライトモード", "Ready": "準備完了", "Waiting for a photo": "写真を待っています", "Still loading libraries…": "ライブラリを読み込み中です…", "Finding sheet markers…": "シートのマーカーを検出中…", "Loading sample…": "サンプルを読み込み中…", "Sample needs the hosted page (not a local file)": "サンプルは公開ページでのみ使えます（ローカルファイルでは不可）", "Recalculating…": "再計算中…", "Updating outline…": "輪郭を更新中…", "Re-detecting (manual edits replaced)…": "再検出中（手で直した輪郭は置き換わります）…", "Can't delete every point — keep at least 3": "すべての点は消せません。3点以上残してください", "Removed {n} points": "{n}点を削除しました", "Removed 1 point": "1点を削除しました", "Could not load OpenCV.js": "OpenCV.js を読み込めませんでした", "Fewer than 4 sheet markers found": "シートのマーカーが4個未満しか見つかりません", "No tool found — lower the edge threshold": "工具が見つかりません。エッジしきい値を下げてください", "Outline is empty": "輪郭が空です", "Edited": "手修正", "tool {l} × {w} mm": "工具 {l} × {w} mm", "Distance from tip (mm)": "先端からの距離 (mm)", "Outer width (mm)": "外幅 (mm)", "PASSES THROUGH": "通過範囲", "opening {v}": "開口 {v}", "widest {v}": "最大幅 {v}", "stops {v}": "止まる位置 {v}", "{n} × 40 mm pitch": "{n}個（40mm間隔）", "1 (may swivel)": "1個（回転するかも）", "falls through": "抜け落ちます", "{v} mm from tip": "先端から {v} mm", "Opening {v}": "開口 {v}", "Holder {v}": "ホルダー {v}", "Falls through": "抜け落ちます", "Stops {v}": "止まる位置 {v}", "Outer depth": "外寸の奥行き", "Outer height": "外寸の高さ", "Cradle {v}": "受け {v}", "Inside {v}": "内寸 {v}", "Outer {v}": "外寸 {v}", "Printed top-face-down, the floor bridges {s} mm. Over ~40 mm may sag.": "上面を下にして印刷すると、底が {s}mm 空中をまたぎます。40mmを超えると垂れることがあります。", "Printed top-face-down; the floor bridges {s} mm (fine).": "上面を下にして印刷すると、底が {s}mm 空中をまたぎます（問題ない範囲）。", "Cradle radius {r} mm. Printed top-face-down, the curve needs supports inside (tree supports, build plate only).": "受けの半径 {r}mm。上面を下にして印刷すると、円弧の内側にサポートが必要です（ツリー・ビルドプレートのみ）。", "Longer than the A1 mini bed (180 mm).": "A1 mini のベッド（180mm）より長いです。", "tray · prints top-face-down · drag to orbit": "トレイ・上面を下にして印刷・ドラッグで回転", "widest {a} + {b} = {c} mm opening": "最大幅 {a} + 余裕 {b} = 開口 {c} mm", "{t} {w} × {u} mm · drag to orbit": "{t} {w} × {u} mm・ドラッグで回転", "slot": "スロット", "Drag to pan · scroll to zoom · E edit points · D draw a new outline": "ドラッグで移動・ホイールで拡大縮小・E 点を編集・D 輪郭を描き直す", "{n} selected · Delete removes them · drag one to move them all · Esc clears": "{n}点を選択中・Deleteで削除・ドラッグでまとめて移動・Escで解除", "Drag a box to select points · Delete removes them · drag a point to move · double-click a line to add a point · Space-drag pans": "ドラッグで範囲選択・Deleteで削除・点をドラッグで移動・線をダブルクリックで点を追加・Space+ドラッグで画面移動", "{n} points · click the first point or press Enter to finish · Backspace undoes a point · Esc cancels": "{n}点・最初の点をクリックかEnterで完了・Backspaceで1点戻す・Escで中止", "Click around the tool to place points · Space-drag or middle-drag pans": "工具のまわりをクリックして点を置きます・Space+ドラッグかホイールボタンで画面移動", "Gridfinity": "Gridfinity", "Bin": "ビン", "Grid X": "グリッド X", "Grid Y": "グリッド Y", "Height (×7 mm)": "高さ（×7mm）", "Auto fit": "自動で合わせる", "Tool direction": "工具の向き", "Along Y": "縦向き", "Along X": "横向き", "Stacking lip": "スタッキングリップ", "Standard Gridfinity: 42 mm grid, 7 mm height units. The A1 mini bed fits up to 4 × 4.": "標準のGridfinity規格（42mmグリッド、高さ7mm単位）。A1 miniのベッドには4×4まで載ります。", "Pocket": "くぼみ", "Floor fillet": "底のフィレット", "Rim fillet": "縁のフィレット", "The outline is grown by the extra room all round. Fillets round the bottom edge of the pocket and its top rim.": "輪郭を「余裕」の分だけ全周に広げます。フィレットはくぼみの底の角と、天面の縁を丸めます。", "Finger notches": "指を入れる凹み", "Notch radius": "凹みの半径", "Clear all": "すべて消す", "Open the Layout view and click where a finger should go. Drag to move, Alt-click to remove.": "「配置」ビューで、指を入れたい所をクリックします。ドラッグで移動、Alt+クリックで削除。", "{n} placed.": "{n}個配置済み。", "Layout": "配置", "A Gridfinity drawer bin with a pocket shaped like the tool. Add finger notches in the Layout view.": "工具の形のくぼみを持つ、引き出し用のGridfinityビン。指を入れる凹みは「配置」ビューで追加します。", "Gridfinity needs a photo of the tool": "Gridfinityには工具の写真が必要です", "Bin size": "ビンの大きさ", "Grid": "グリッド", "Total height": "全体の高さ", "Thinnest wall": "一番薄い壁", "Bin {v}": "ビン {v}", "Pocket {v}": "くぼみ {v}", "Notches {v}": "凹み {v}", "auto": "自動", "manual": "手動", "The pocket nearly touches the wall — add a grid unit": "くぼみが壁に近すぎます。グリッドを1つ増やしてください", "click to add a finger notch · drag to move · Alt-click removes": "クリックで凹みを追加・ドラッグで移動・Alt+クリックで削除", "Gridfinity bin · prints as shown · drag to orbit": "Gridfinityビン・この向きで印刷・ドラッグで回転"}, JA_HTML={"emptyLead": "左に写真をドロップするか、<b>写真を開く</b>から選んでください。<a href=\"#\" id=\"sampleLink\" style=\"color:var(--accent)\">サンプル</a>も試せます。", "step1": "1. <a href=\"sheet/skadis_measure_sheet_A4.pdf\" download style=\"color:var(--accent)\">測定シート</a>をA4・100%（「用紙に合わせる」はオフ）で印刷し、150mmの目盛が150mmになっているか確かめます。"}, EN_OF={}; for(const [k,v] of Object.entries(JA)) if(!(v in EN_OF)) EN_OF[v]=k;
 let LANG="en";
 function T(s,v){ let out = LANG==="ja" && JA[s]!=null ? JA[s] : s; if(v) out=out.replace(/\{(\w+)\}/g,(m,k)=> v[k]!=null ? v[k] : m); return out; }
 const EN_HTML={}; document.querySelectorAll("[data-i18n-html]").forEach(e=>EN_HTML[e.dataset.i18nHtml]=e.innerHTML);
@@ -393,11 +425,13 @@ function applyLang(){
   $("langLbl").textContent = LANG==="ja" ? "English" : "日本語";
   // regenerate dynamic text
   try{ toolHint(); if(st.type==="tray") $("typeNote").textContent=T("A plain tray for things without a neck: pens, markers, tape rolls. No photo needed.");
+       else if(st.type==="grid") $("typeNote").textContent=T("A Gridfinity drawer bin with a pocket shaped like the tool. Add finger notches in the Layout view.");
        else $("typeNote").textContent=T(st.type==="slot"?"For pliers, nippers and scissors. The tool drops in tip-first and rests on its shoulders.":"For screwdrivers. The shaft goes through a round hole and the handle rests on the rim.");
        if(typeof syncTrayInputs==="function") syncTrayInputs();
        if(st.mask) $("kvSrc").textContent=T(st.manual?"Edited":"Auto");
        if(st.prof){ const L=st.prof.at(-1).d, W=Math.max(...st.prof.map(p=>p.w)); $("fromPhotoHint").textContent=T("tool {l} × {w} mm",{l:L.toFixed(0),w:W.toFixed(0)}); }
        if(!st.type==="tray"){} $("lSeat").textContent=T(st.type==="tray"?"Outer depth":"Stops at"); $("lBear").textContent=T(st.type==="tray"?"Outer height":"Shoulder overlap");
+       $("profTab").textContent=T(st.type==="grid"?"Layout":"Profile");
        if(st.built||st.holder) refreshHolder(); drawProfile(); drawPhoto(); updateCaption();
        if(st.prof) $("statusText").textContent=T("Ready"); else if(window.__ready) $("statusText").textContent=T("Waiting for a photo");
   }catch(e){ console.warn(e); }
@@ -529,6 +563,8 @@ function profile(){
   st.rotDeg=ang; const Rm=Array.from(R.data64F), tipRow = tipTop ? rows[0][0] : rows[len-1][0];
   st.toolPoly = st.outlineMM.map(([X,Y])=>{ const u=(X+RX)*S, v=(RY-Y)*S; const x=Rm[0]*u+Rm[1]*v+Rm[2], y=Rm[3]*u+Rm[4]*v+Rm[5];
       return [(x-D/2)/S, -((y-tipRow)/S*(tipTop?1:-1))]; });
+  st.toolPolysAll = (st.polys||[st.outlineMM]).filter(q=>q.length>=3).map(q=>q.map(([X,Y])=>{ const u=(X+RX)*S, v=(RY-Y)*S; const x=Rm[0]*u+Rm[1]*v+Rm[2], y=Rm[3]*u+Rm[4]*v+Rm[5];
+      return [(x-D/2)/S, -((y-tipRow)/S*(tipTop?1:-1))]; }));
   rm.delete(); R.delete();
   const L=st.prof.at(-1).d, Wmax=Math.max(...st.prof.map(p=>p.w));
   $("fromPhoto").disabled=false; $("fromPhotoHint").textContent=T("tool {l} × {w} mm",{l:L.toFixed(0),w:Wmax.toFixed(0)});
@@ -661,6 +697,7 @@ $("zoomIn").onclick=()=>{ const c=$("cPhoto"); zoomAt(1.25,c.width/2,c.height/2)
 $("zoomOut").onclick=()=>{ const c=$("cPhoto"); zoomAt(0.8,c.width/2,c.height/2); };
 $("zoomFit").onclick=()=>{ fitView(); drawPhoto(); };
 function drawProfile(){
+  if(st.type==="grid"){ drawLayout(); return; }
   const c=$("cProf"); const [ctx,W,H,dpr]=fitCanvas(c); ctx.clearRect(0,0,W,H);
   if(!st.prof) return; const P=st.prof, L=P.at(-1).d, Wmax=Math.max(...P.map(p=>p.w));
   const pl=64*dpr, pr=40*dpr, pt=70*dpr, pb=90*dpr, sx=(W-pl-pr)/L, sy=(H-pt-pb)/Math.max(Wmax*1.12,10);
@@ -772,6 +809,54 @@ function buildTray(){
   const {hooks,n}=hooksFor(Lo); body=body.add(hooks);
   return {body, PW:Lo, nHook:n, depth:zFr, height:yT-plateBot, prof, D, L, H, Rc};
 }
+/* ---------- Gridfinity bin ---------- */
+const GF={pitch:42, gap:0.5, rOut:3.75, baseH:4.75, unitH:7, lipH:4.4};
+function gfRR(W,H,r){ const {CrossSection}=M; r=Math.max(0.05,Math.min(r,W/2-0.01,H/2-0.01)); return CrossSection.square([W-2*r,H-2*r],true).offset(r,"Round",2,32); }
+function gfSlab(cs,z){ return M.Manifold.extrude(cs,0.01).translate([0,0,z]); }
+function gfToolFrame(polys,rot90){ // tool-frame polygons -> bin plane, centred on their bounding box
+  const P=polys.map(q=>q.map(([x,y])=> rot90?[-y,x]:[x,y]));
+  const xs=P.flat().map(p=>p[0]), ys=P.flat().map(p=>p[1]);
+  const cx=(Math.min(...xs)+Math.max(...xs))/2, cy=(Math.min(...ys)+Math.max(...ys))/2;
+  const map=([x,y])=>{ const [u,v]=rot90?[-y,x]:[x,y]; return [u-cx,v-cy]; };
+  const inv=([u,v])=>{ const a=u+cx, b=v+cy; return rot90? [b,-a] : [a,b]; };
+  return {P:P.map(q=>q.map(([u,v])=>[u-cx,v-cy])), map, inv, w:Math.max(...xs)-Math.min(...xs), h:Math.max(...ys)-Math.min(...ys)}; }
+function gfPocketCS(o){ // tool outline grown by the clearance, plus finger notches
+  const {CrossSection}=M; let cs=null;
+  o.P.filter(q=>q.length>=3).forEach(q=>{ let c=new CrossSection([q],"Positive"); if(c.area()<1e-6) c=new CrossSection([q.slice().reverse()],"Positive"); cs= cs? cs.add(c) : c; });
+  cs=cs.offset(o.clearance,"Round",2,32);
+  o.notches.forEach(([x,y])=>{ cs=cs.add(CrossSection.circle(o.notchR,64).translate([x,y])); });
+  return cs.simplify(0.02); }
+function buildGrid(o){
+  const {Manifold}=M; const W=GF.pitch*o.nx-GF.gap, H=GF.pitch*o.ny-GF.gap, top=GF.unitH*o.u;
+  // feet: one per grid cell (0.8 chamfer, 1.8 straight, 2.15 chamfer)
+  let feet=null;
+  for(let i=0;i<o.nx;i++) for(let j=0;j<o.ny;j++){ const cx=(i-(o.nx-1)/2)*GF.pitch, cy=(j-(o.ny-1)/2)*GF.pitch;
+    const a=Manifold.hull([gfSlab(gfRR(35.6,35.6,0.8),0),gfSlab(gfRR(37.2,37.2,1.6),0.79)]);
+    const b=Manifold.extrude(gfRR(37.2,37.2,1.6),1.8).translate([0,0,0.8]);
+    const c=Manifold.hull([gfSlab(gfRR(37.2,37.2,1.6),2.6),gfSlab(gfRR(41.5,41.5,GF.rOut),GF.baseH-0.01)]);
+    const f=a.add(b).add(c).translate([cx,cy,0]); feet= feet? feet.add(f) : f; }
+  let body=Manifold.extrude(gfRR(W,H,GF.rOut),top-GF.baseH).translate([0,0,GF.baseH]).add(feet);
+  if(o.lip){ // standard stacking lip on top
+    const outer=Manifold.extrude(gfRR(W,H,GF.rOut),GF.lipH).translate([0,0,top]);
+    const ins=(d)=>gfRR(W-2*d,H-2*d,Math.max(0.6,GF.rOut-d));
+    const cav=Manifold.hull([gfSlab(ins(2.6),top),gfSlab(ins(1.9),top+0.69)])
+      .add(Manifold.extrude(ins(1.9),1.8).translate([0,0,top+0.7]))
+      .add(Manifold.hull([gfSlab(ins(1.9),top+2.5),gfSlab(gfRR(W+0.02,H+0.02,GF.rOut),top+GF.lipH)]));
+    body=body.add(outer.subtract(cav)); }
+  // pocket with rounded floor edge (rb) and rounded rim (rt), approximated by thin slices
+  const cs=gfPocketCS(o), zf=top-o.depth, N=8; let pk=null;
+  const add=(c,z0,z1)=>{ if(!c || c.isEmpty() || z1-z0<=1e-4) return; const m=Manifold.extrude(c,z1-z0).translate([0,0,z0]); pk= pk? pk.add(m) : m; };
+  const rb=Math.min(o.rb,o.depth*0.45), rt=Math.min(o.rt,o.depth*0.45);
+  for(let i=0;i<N && rb>0;i++){ const h0=rb*i/N, h1=rb*(i+1)/N, hm=(h0+h1)/2, ins=rb-Math.sqrt(Math.max(0,rb*rb-(rb-hm)**2));
+    add(cs.offset(-ins,"Round",2,32),zf+h0,zf+h1); }
+  add(cs, zf+rb, top-rt);
+  for(let i=0;i<N && rt>0;i++){ const d0=rt*(N-i)/N, d1=rt*(N-i-1)/N, dm=(d0+d1)/2, out=rt-Math.sqrt(Math.max(0,rt*rt-(rt-dm)**2));
+    add(cs.offset(out,"Round",2,32), top-d0, i===N-1? top+GF.lipH+1 : top-d1); }
+  if(!rt) add(cs, top-rt, top+GF.lipH+1);
+  body=body.subtract(pk);
+  const pb=cs.bounds(); // pocket bounding box for fit checks
+  return {body, W, H, top, pb, csArea:cs.area()}; }
+
 /* ---------- three.js ---------- */
 let renderer, scene, camera, controls, holderObj, toolObj, boardObj;
 function init3D(){
@@ -788,19 +873,31 @@ function init3D(){
   for(let x=-80;x<=80;x+=40) for(let y=-100;y<=40;y+=40){ shape.holes.push(slot(x,y)); if(x+20<95) shape.holes.push(slot(x+20,y+20)); }
   const bg=new THREE.ExtrudeGeometry(shape,{depth:5,bevelEnabled:false}); bg.translate(0,0,-5.05);
   boardObj=new THREE.Mesh(bg,new THREE.MeshStandardMaterial({color:0xf4f4f1,roughness:.85})); scene.add(boardObj);
-  const edges=new THREE.LineSegments(new THREE.EdgesGeometry(bg,30),new THREE.LineBasicMaterial({color:0xd9dce1})); scene.add(edges);
+  const edges=new THREE.LineSegments(new THREE.EdgesGeometry(bg,30),new THREE.LineBasicMaterial({color:0xd9dce1})); scene.add(edges); window.__boardEdges=edges;
   const loop=()=>{ const r=el.getBoundingClientRect(); if(r.width&&r.height){ renderer.setSize(r.width,r.height,false); camera.aspect=r.width/r.height; camera.updateProjectionMatrix(); }
     controls.update(); renderer.render(scene,camera); requestAnimationFrame(loop); }; loop();
 }
 function meshToGeom(mesh){ const g=new THREE.BufferGeometry(), n=mesh.numProp, vp=mesh.vertProperties, pos=new Float32Array(mesh.numVert*3);
   for(let i=0;i<mesh.numVert;i++){ pos[3*i]=vp[n*i]; pos[3*i+1]=vp[n*i+1]; pos[3*i+2]=vp[n*i+2]; }
   g.setAttribute("position",new THREE.BufferAttribute(pos,3)); g.setIndex(new THREE.BufferAttribute(new Uint32Array(mesh.triVerts),1)); g.computeVertexNormals(); return g; }
+function update3DGrid(b,o){
+  if(holderObj){ scene.remove(holderObj); holderObj.geometry.dispose(); }
+  const g=meshToGeom(b.body.getMesh()); g.rotateX(-Math.PI/2); g.translate(0,-30,0);
+  holderObj=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0x4a8fe0,roughness:.45,metalness:0,flatShading:true})); scene.add(holderObj);
+  if(toolObj){ scene.remove(toolObj); toolObj.geometry.dispose(); toolObj=null; }
+  const shapes=o.P.filter(q=>q.length>=3).map(q=>new THREE.Shape(q.map(([x,y])=>new THREE.Vector2(x,y))));
+  if(shapes.length){ const tg=new THREE.ExtrudeGeometry(shapes,{depth:Math.max(2,o.depth*0.9),bevelEnabled:false,curveSegments:1}); tg.translate(0,0,b.top-o.depth+0.05); tg.rotateX(-Math.PI/2); tg.translate(0,-30,0);
+    toolObj=new THREE.Mesh(tg,new THREE.MeshStandardMaterial({color:0x8a9099,transparent:true,opacity:.45,side:THREE.DoubleSide,depthWrite:false})); scene.add(toolObj); }
+  boardObj.visible=false; if(window.__boardEdges) window.__boardEdges.visible=false;
+}
 function update3DTray(b){
+  boardObj.visible=true; window.__boardEdges.visible=true;
   if(holderObj){ scene.remove(holderObj); holderObj.geometry.dispose(); }
   holderObj=new THREE.Mesh(meshToGeom(b.body.getMesh()), new THREE.MeshStandardMaterial({color:0x4a8fe0,roughness:.45,metalness:0,flatShading:true})); scene.add(holderObj);
   if(toolObj){ scene.remove(toolObj); toolObj.geometry.dispose(); toolObj=null; }
 }
 function update3D(built,hd){
+  boardObj.visible=true; window.__boardEdges.visible=true;
   if(holderObj){ scene.remove(holderObj); holderObj.geometry.dispose(); }
   holderObj=new THREE.Mesh(meshToGeom(built.body.getMesh()), new THREE.MeshStandardMaterial({color:0x4a8fe0,roughness:.45,metalness:0,flatShading:true}));
   scene.add(holderObj);
@@ -817,10 +914,75 @@ function update3D(built,hd){
     toolObj=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0x8a9099,transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false})); scene.add(toolObj); }
 }
 
+
+/* ---------- Gridfinity: state, layout view, refresh ---------- */
+const G={notches:[], auto:true, drag:null};
+function gridOpts(){ const rot90=segVal("gRot")==="90"; const fr=gfToolFrame(st.toolPolysAll,rot90);
+  return {...fr, rot90, clearance:Math.max(0,+$("gClr").value||0), notches:G.notches.map(fr.map), notchR:Math.max(2,+$("gNr").value||10),
+    nx:Math.max(1,Math.round(+$("gX").value||1)), ny:Math.max(1,Math.round(+$("gY").value||1)), u:Math.max(2,Math.round(+$("gU").value||3)),
+    lip:segVal("gLip")==="on", depth:Math.max(1,+$("gDepth").value||10), rb:Math.max(0,+$("gRb").value||0), rt:Math.max(0,+$("gRt").value||0)}; }
+function gridAutoFit(o){ const cs=gfPocketCS(o), b=cs.bounds(), wall=3;
+  const nx=Math.max(1,Math.ceil((b.max[0]-b.min[0]+2*wall+GF.gap)/GF.pitch)), ny=Math.max(1,Math.ceil((b.max[1]-b.min[1]+2*wall+GF.gap)/GF.pitch));
+  const u=Math.max(2,Math.ceil((GF.baseH+1.2+o.depth)/GF.unitH)); $("gX").value=nx; $("gY").value=ny; $("gU").value=u; return {...o,nx,ny,u}; }
+function refreshGrid(){
+  if(!st.toolPolysAll){ status(T("Gridfinity needs a photo of the tool"),"err"); return; }
+  let o=gridOpts(); if(G.auto) o=gridAutoFit(o);
+  const b=buildGrid(o); st.built=b; st.grid=o; st.holder=null;
+  update3DGrid(b,o);
+  const pw=b.pb.max[0]-b.pb.min[0], ph=b.pb.max[1]-b.pb.min[1], room=Math.min((b.W-pw)/2,(b.H-ph)/2);
+  setKV("rW",`${b.W.toFixed(1)} × ${b.H.toFixed(1)} mm`, (b.W>180||b.H>180)?"bad":"");
+  setKV("rHooks",`${o.nx} × ${o.ny} × ${o.u}U`);
+  setKV("rSeat",`${(b.top+(o.lip?GF.lipH:0)).toFixed(1)} mm`);
+  setKV("rBear",`${room.toFixed(1)} mm`, room<1.2?"bad":room<2.5?"warn":"ok");
+  setKV("rVol",`${(b.body.volume()/1000).toFixed(1)} cm³`);
+  $("lW").textContent=T("Bin size"); $("lHooks").textContent=T("Grid"); $("lSeat").textContent=T("Total height"); $("lBear").textContent=T("Thinnest wall");
+  $("chipA").innerHTML=T("Bin {v}",{v:`<b class="mono">${o.nx}×${o.ny}×${o.u}U</b>`});
+  $("chipB").innerHTML=T("Pocket {v}",{v:`<b class="mono">${pw.toFixed(0)} × ${ph.toFixed(0)} × ${o.depth}</b>`});
+  $("chipC").innerHTML=T("Notches {v}",{v:`<b class="mono">${G.notches.length}</b>`});
+  $("topChips").classList.remove("hide");
+  $("gFitHint").textContent = G.auto ? T("auto") : T("manual");
+  $("gNHint").textContent = T("Open the Layout view and click where a finger should go. Drag to move, Alt-click to remove.") + (G.notches.length? " "+T("{n} placed.",{n:G.notches.length}):"");
+  if(room<1.2) status(T("The pocket nearly touches the wall — add a grid unit"),"err"); else status(T("Ready"),"ok");
+  $("dl").disabled=false; drawProfile(); updateCaption();
+}
+function layoutXf(){ const c=$("cProf"), dpr=devicePixelRatio||1, W=c.width, H=c.height, o=st.grid, b=st.built;
+  const pad=60*dpr, sc=Math.min((W-2*pad)/b.W,(H-2*pad)/b.H); return {sc, cx:W/2, cy:H/2, dpr,
+    toS:([x,y])=>[W/2+x*sc, H/2-y*sc], toMM:(sx,sy)=>[(sx-W/2)/sc, (H/2-sy)/sc]}; }
+function drawLayout(){
+  const c=$("cProf"); const [ctx,W,H,dpr]=fitCanvas(c); ctx.clearRect(0,0,W,H); if(!st.grid||!st.built) return;
+  const o=st.grid, b=st.built, X=layoutXf(), sc=X.sc;
+  const rr=(x0,y0,w,h,r)=>{ ctx.beginPath(); ctx.roundRect(x0,y0,w,h,r); };
+  const [bx,by]=X.toS([-b.W/2,b.H/2]);
+  rr(bx,by,b.W*sc,b.H*sc,GF.rOut*sc); ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue("--panel"); ctx.fill(); ctx.strokeStyle=C.text; ctx.lineWidth=1.4*dpr; ctx.stroke();
+  ctx.strokeStyle=C.line2; ctx.setLineDash([4*dpr,4*dpr]); ctx.lineWidth=1*dpr;
+  for(let i=1;i<o.nx;i++){ const x=(i-o.nx/2)*GF.pitch; const [sx]=X.toS([x,0]); ctx.beginPath(); ctx.moveTo(sx,by); ctx.lineTo(sx,by+b.H*sc); ctx.stroke(); }
+  for(let j=1;j<o.ny;j++){ const y=(j-o.ny/2)*GF.pitch; const [,sy]=X.toS([0,y]); ctx.beginPath(); ctx.moveTo(bx,sy); ctx.lineTo(bx+b.W*sc,sy); ctx.stroke(); }
+  ctx.setLineDash([]);
+  if(o.lip){ const d=2.6; rr(bx+d*sc,by+d*sc,(b.W-2*d)*sc,(b.H-2*d)*sc,(GF.rOut-d+0.6)*sc); ctx.strokeStyle=C.line2; ctx.stroke(); }
+  const cs=gfPocketCS(o); ctx.beginPath(); cs.toPolygons().forEach(q=>q.forEach((p,i)=>{ const [x,y]=X.toS(p); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }));
+  ctx.closePath(); ctx.fillStyle="rgba(31,122,224,.14)"; ctx.fill("evenodd"); ctx.strokeStyle=C.accent; ctx.lineWidth=1.6*dpr; ctx.stroke();
+  o.P.forEach(q=>{ ctx.beginPath(); q.forEach((p,i)=>{ const [x,y]=X.toS(p); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.closePath(); ctx.strokeStyle=C.muted; ctx.lineWidth=1*dpr; ctx.setLineDash([3*dpr,3*dpr]); ctx.stroke(); ctx.setLineDash([]); });
+  o.notches.forEach((p,i)=>{ const [x,y]=X.toS(p); ctx.beginPath(); ctx.arc(x,y,o.notchR*sc,0,7); ctx.strokeStyle=C.red; ctx.lineWidth=1.4*dpr; ctx.setLineDash([5*dpr,3*dpr]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=G.drag?.i===i?C.red:"#fff"; ctx.beginPath(); ctx.arc(x,y,5*dpr,0,7); ctx.fill(); ctx.strokeStyle=C.red; ctx.stroke(); });
+  ctx.fillStyle=C.muted; ctx.font=`${12*dpr}px Inter, "Noto Sans JP", sans-serif`;
+  ctx.fillText(`${o.nx} × ${o.ny} · ${b.W.toFixed(1)} × ${b.H.toFixed(1)} mm`, bx, by+b.H*sc+20*dpr);
+}
+(function wireLayout(){ const c=$("cProf");
+  const pos=e=>{ const r=c.getBoundingClientRect(), d=devicePixelRatio||1; return [(e.clientX-r.left)*d,(e.clientY-r.top)*d]; };
+  const hit=(sx,sy)=>{ const X=layoutXf(); let best=-1, bd=(12*X.dpr)**2; st.grid.notches.forEach((p,i)=>{ const [x,y]=X.toS(p), d=(x-sx)**2+(y-sy)**2; if(d<bd){bd=d;best=i;} }); return best; };
+  c.addEventListener("pointerdown",e=>{ if(st.type!=="grid"||curView!=="prof"||!st.grid) return; const [x,y]=pos(e), X=layoutXf(), i=hit(x,y);
+    if(i>=0){ if(e.altKey||e.button===2){ G.notches.splice(i,1); refreshGrid(); return; } G.drag={i}; c.setPointerCapture(e.pointerId); drawLayout(); return; }
+    if(e.button!==0) return; const mm=X.toMM(x,y); if(Math.abs(mm[0])>st.built.W/2||Math.abs(mm[1])>st.built.H/2) return;
+    G.notches.push(st.grid.inv(mm)); refreshGrid(); });
+  c.addEventListener("pointermove",e=>{ if(!G.drag||st.type!=="grid") return; const [x,y]=pos(e), X=layoutXf(); G.notches[G.drag.i]=st.grid.inv(X.toMM(x,y)); st.grid.notches=G.notches.map(st.grid.map); drawLayout(); });
+  c.addEventListener("pointerup",()=>{ if(G.drag){ G.drag=null; refreshGrid(); } });
+  c.addEventListener("contextmenu",e=>{ if(st.type==="grid") e.preventDefault(); });
+})();
+
 /* ---------- STL ---------- */
-function stlBlob(mesh){
+function stlBlob(mesh,raw){
   const n=mesh.numProp, vp=mesh.vertProperties, tv=mesh.triVerts, nt=tv.length/3, buf=new ArrayBuffer(84+50*nt), dv=new DataView(buf); dv.setUint32(80,nt,true);
-  const P=i=>[vp[n*i], vp[n*i+2], SK.yTop-vp[n*i+1]];
+  const P= raw ? (i=>[vp[n*i], vp[n*i+1], vp[n*i+2]]) : (i=>[vp[n*i], vp[n*i+2], SK.yTop-vp[n*i+1]]);
   for(let t=0;t<nt;t++){ const a=P(tv[3*t]), b=P(tv[3*t+1]), c=P(tv[3*t+2]), o=84+50*t;
     const u=[b[0]-a[0],b[1]-a[1],b[2]-a[2]], v=[c[0]-a[0],c[1]-a[1],c[2]-a[2]], N=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]], l=Math.hypot(...N)||1;
     [N[0]/l,N[1]/l,N[2]/l,...a,...b,...c].forEach((x,k)=>dv.setFloat32(o+4*k,x,true)); }
@@ -830,6 +992,7 @@ function stlBlob(mesh){
 let rebuildTimer;
 function refreshHolder(){ clearTimeout(rebuildTimer); rebuildTimer=setTimeout(()=>{ try{
   if(st.type==="tray"){ refreshTray(); return; }
+  if(st.type==="grid"){ refreshGrid(); return; }
   const hd=computeHolder(); if(!hd) return; st.holder=hd;
   const built=buildHolder(hd); st.built=built; update3D(built,hd);
   $("wTool").value=hd.wmax.toFixed(1); $("wOut").value=hd.W.toFixed(1); $("uOut").value=hd.U.toFixed(1);
@@ -858,6 +1021,7 @@ function refreshTray(){
   $("dl").disabled=false; $("empty").classList.add("hide"); updateCaption(); status(T("Ready"),"ok");
 }
 function updateCaption(){
+  if(st.type==="grid"&&st.grid&&curView!=="photo"){ $("captionText").textContent= curView==="prof" ? T("click to add a finger notch · drag to move · Alt-click removes") : T("Gridfinity bin · prints as shown · drag to orbit"); $("caption").classList.remove("hide"); return; }
   if(st.type==="tray"&&st.built){ $("captionText").textContent=T("tray · prints top-face-down · drag to orbit"); $("caption").classList.remove("hide"); return; }
   if(curView==="photo"){ $("caption").classList.add("hide"); return; }
   const hd=st.holder; if(!hd){ $("caption").classList.add("hide"); return; }
@@ -873,7 +1037,7 @@ async function onFile(file){
   const base=file.name.replace(/\.[^.]+$/,""); $("fname").value="skadis_holder_"+base; $("crumbName").textContent=base;
   $("thumbImg").src=url; $("thumbName").textContent=file.name; $("thumb").classList.remove("hide");
   await new Promise(r=>setTimeout(r,30));
-  V.init=false; V.draft=[]; $("undoBtn").disabled=true; $("autoOutline").disabled=true;
+  V.init=false; V.draft=[]; G.notches=[]; G.auto=true; $("undoBtn").disabled=true; $("autoOutline").disabled=true;
   try{ processImage(); $("empty").classList.add("hide"); $("dpass").value=0; showView(curView); resegment(); }
   catch(e){ console.error(e); status(e.message,"err"); }
 }
@@ -894,9 +1058,12 @@ $("viewSeg").onclick=e=>{ const b=e.target.closest("button"); if(b) showView(b.d
 $("typeSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; st.type=b.dataset.v; document.querySelectorAll("#typeSeg button").forEach(x=>x.classList.toggle("on",x===b));
   $("typeNote").textContent= T(st.type==="slot" ? "For pliers, nippers and scissors. The tool drops in tip-first and rests on its shoulders." : "For screwdrivers. The shaft goes through a round hole and the handle rests on the rim.");
   $("depthBlock").classList.toggle("hide",st.type==="round");
-  document.querySelectorAll(".photoOnly").forEach(e=>e.classList.toggle("hide",st.type==="tray")); document.querySelectorAll(".trayOnly").forEach(e=>e.classList.toggle("hide",st.type!=="tray"));
+  document.querySelectorAll(".photoOnly").forEach(e=>e.classList.toggle("hide",st.type==="tray"||st.type==="grid")); document.querySelectorAll(".trayOnly").forEach(e=>e.classList.toggle("hide",st.type!=="tray"));
+  document.querySelectorAll(".gridOnly").forEach(e=>e.classList.toggle("hide",st.type!=="grid")); $("edgesSec").classList.toggle("hide",st.type==="grid");
+  $("profTab").textContent=T(st.type==="grid"?"Layout":"Profile"); $("lW").textContent=T("Holder width"); $("lHooks").textContent=T("Hooks");
   $("lSeat").textContent=T("Stops at"); $("lBear").textContent=T("Shoulder overlap");
   if(st.type==="tray"){ $("typeNote").textContent=T("A plain tray for things without a neck: pens, markers, tape rolls. No photo needed."); showView("3d"); }
+  else if(st.type==="grid"){ $("typeNote").textContent=T("A Gridfinity drawer bin with a pocket shaped like the tool. Add finger notches in the Layout view."); if(st.rect) showView("prof"); }
   else if(!st.rect){ $("dl").disabled=true; $("topChips").classList.add("hide"); $("caption").classList.add("hide"); }
   refreshHolder(); };
 const drop=$("drop");
@@ -920,9 +1087,15 @@ function syncTrayInputs(){ const round=segVal("profSeg")==="round";
                                    : "Inside dimensions in mm. Length runs along the board, depth away from it, height is from the floor to the rim."); }
 $("fromPhoto").onclick=()=>{ if(!st.prof) return; const L=st.prof.at(-1).d, W=Math.max(...st.prof.map(p=>p.w)), r=+$("clr").value||2;
   $("tL").value=Math.ceil(L+2*r); $("tD").value= segVal("profSeg")==="round" ? Math.ceil(W) : Math.ceil(W+r); refreshHolder(); };
+["gDepth","gClr","gRb","gRt","gNr"].forEach(id=>$(id).addEventListener("input",refreshHolder));
+["gX","gY","gU"].forEach(id=>$(id).addEventListener("input",()=>{ G.auto=false; refreshHolder(); }));
+$("gAuto").onclick=()=>{ G.auto=true; refreshHolder(); };
+$("gNClear").onclick=()=>{ G.notches=[]; refreshHolder(); };
+["gRot","gLip"].forEach(id=>$(id).onclick=e=>{ const b=e.target.closest("button"); if(!b) return; $(id).querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b)); refreshHolder(); });
 $("autoPass").onclick=()=>{ $("dpass").value=0; refreshHolder(); };
 ["dpass","clr","thick","tclr","shelfT","fun","wall","side","plateH","gap"].forEach(id=>$(id).addEventListener("input",refreshHolder));
-$("dl").onclick=()=>{ if(!st.built) return; const a=document.createElement("a"); a.href=URL.createObjectURL(stlBlob(st.built.body.getMesh())); a.download=($("fname").value||"skadis_holder")+".stl"; a.click(); };
+$("dl").onclick=()=>{ if(!st.built) return; const a=document.createElement("a"); const isG=st.type==="grid"; let body=st.built.body; if(isG&&body.simplify) body=body.simplify(0.02);
+  a.href=URL.createObjectURL(stlBlob(body.getMesh(),isG)); a.download=($("fname").value||"skadis_holder")+".stl"; a.click(); };
 $("lens").onchange=async()=>{ if(!st.img) return; status(T("Recalculating…"),"busy"); await new Promise(r=>setTimeout(r,30)); try{ st.rectCanvas=null; processImage(); resegment(); }catch(e){ status(e.message,"err"); } };
 addEventListener("resize",()=>{ V.init=false; showView(curView); });
 
