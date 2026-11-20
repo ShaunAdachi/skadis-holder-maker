@@ -121,7 +121,7 @@ details summary .chev{transition:transform .15s;color:var(--faint)} details[open
 .toolbar .pct{font-family:var(--mono);font-size:12px;color:var(--text);min-width:46px;text-align:center}
 .float.bc2{bottom:62px;left:50%;transform:translateX(-50%)}
 .tiphint{font-size:12px;color:var(--muted);background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:8px;padding:4px 10px;white-space:nowrap}
-#cPhoto.pan{cursor:grab}#cPhoto.panning{cursor:grabbing}#cPhoto.edit{cursor:default}#cPhoto.draw{cursor:crosshair}#cPhoto.hoverpt{cursor:move}#cPhoto.hoveredge{cursor:copy}
+#cPhoto.pan{cursor:grab}#cPhoto.panning{cursor:grabbing}#cPhoto.edit{cursor:default}#cPhoto.draw{cursor:crosshair}#cPhoto.hoverpt{cursor:move}#cPhoto.hoveredge{cursor:crosshair}
 .hide{display:none!important}
 .mono{font-family:var(--mono)}
 </style>
@@ -139,6 +139,7 @@ details summary .chev{transition:transform .15s;color:var(--faint)} details[open
   <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12"/><path d="M11 11.5v-7a1.5 1.5 0 0 1 3 0V12"/><path d="M14 6.5a1.5 1.5 0 0 1 3 0V12"/><path d="M17 8.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1.6a6 6 0 0 1-4.6-2.2L4.6 15.2a1.6 1.6 0 0 1 2.4-2.1L8 14"/></symbol>
   <symbol id="i-node" viewBox="0 0 24 24"><path d="M5 17 10 6l9 5-6 8z"/><rect x="3.2" y="15.2" width="3.6" height="3.6" rx=".8"/><rect x="8.2" y="4.2" width="3.6" height="3.6" rx=".8"/><rect x="17.2" y="9.2" width="3.6" height="3.6" rx=".8"/><rect x="11.2" y="17.2" width="3.6" height="3.6" rx=".8"/></symbol>
   <symbol id="i-pen" viewBox="0 0 24 24"><path d="M3 21l3.5-1 11-11-2.5-2.5-11 11z"/><path d="M14 5.5 16.5 3 21 7.5 18.5 10"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></symbol>
   <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
   <symbol id="i-wand" viewBox="0 0 24 24"><path d="m4 20 11-11"/><path d="m13 7 2 2"/><path d="M17 3v3M15.5 4.5h3M20 9v2M19 10h2M10 3v2M9 4h2"/></symbol>
   <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
@@ -223,6 +224,7 @@ details summary .chev{transition:transform .15s;color:var(--faint)} details[open
         <button data-tool="edit" title="Edit points (E)"><svg class="i"><use href="#i-node"/></svg></button>
         <button data-tool="draw" title="Draw a new outline (D)"><svg class="i"><use href="#i-pen"/></svg></button>
         <span class="tsep"></span>
+        <button id="delBtn" title="Delete selected points (Del)" disabled><svg class="i"><use href="#i-trash"/></svg></button>
         <button id="undoBtn" title="Undo (Ctrl+Z)" disabled><svg class="i"><use href="#i-undo"/></svg></button>
         <button id="autoOutline" title="Back to the automatic outline" disabled><svg class="i"><use href="#i-wand"/></svg></button>
         <span class="tsep"></span>
@@ -485,7 +487,8 @@ function profile(){
 /* ---------- drawing ---------- */
 function fitCanvas(c){ const r=c.parentElement.getBoundingClientRect(), dpr=devicePixelRatio||1; c.width=r.width*dpr; c.height=r.height*dpr; return [c.getContext("2d"),c.width,c.height,dpr]; }
 /* ---------- photo view: zoom / pan / outline editing ---------- */
-const V={z:1,tx:0,ty:0,sc0:1,init:false,tool:"pan",hoverPt:null,hoverEdge:null,drag:null,draft:[],cursor:null};
+const V={z:1,tx:0,ty:0,sc0:1,init:false,tool:"pan",hoverPt:null,hoverEdge:null,drag:null,draft:[],cursor:null,sel:new Set()};
+const skey=(pi,i)=>pi+":"+i;
 function viewBase(W,H,dpr){ const sc0=Math.min(W/RW,(H-110*dpr)/RH); return {sc0, ox:(W-RW*sc0)/2, oy:(H-RH*sc0)/2-14*dpr}; }
 function fitView(){ const c=$("cPhoto"), dpr=devicePixelRatio||1, r=c.parentElement.getBoundingClientRect(); const b=viewBase(r.width*dpr,r.height*dpr,dpr); V.sc0=b.sc0; V.z=1; V.tx=b.ox; V.ty=b.oy; V.init=true; }
 const toS=([X,Y])=>[V.tx+(X+RX)*S*V.sc0*V.z, V.ty+(RY-Y)*S*V.sc0*V.z];
@@ -507,19 +510,21 @@ function drawPhoto(){
     ctx.fillStyle="#fff"; ctx.strokeStyle=C.red; ctx.beginPath(); ctx.arc(x0+cx*sc, y0+cy*sc, 3.5*dpr,0,7); ctx.fill(); ctx.stroke(); }
   if(editing){ const hs=3.5*dpr;
     polys.forEach((q,pi)=>q.forEach((p,i)=>{ const [x,y]=toS(p); const hot=V.hoverPt&&V.hoverPt[0]===pi&&V.hoverPt[1]===i;
-      ctx.fillStyle=hot?C.accent:"#fff"; ctx.strokeStyle=C.accent; ctx.lineWidth=1.2*dpr; ctx.fillRect(x-hs,y-hs,2*hs,2*hs); ctx.strokeRect(x-hs,y-hs,2*hs,2*hs); }));
+      const sel=V.sel.has(skey(pi,i)); ctx.fillStyle=(hot||sel)?C.accent:"#fff"; ctx.strokeStyle=sel?"#0b4f9c":C.accent; ctx.lineWidth=1.2*dpr; ctx.fillRect(x-hs,y-hs,2*hs,2*hs); ctx.strokeRect(x-hs,y-hs,2*hs,2*hs); }));
     if(V.hoverEdge && !V.hoverPt){ const [x,y]=toS(V.hoverEdge.p); ctx.strokeStyle=C.accent; ctx.lineWidth=1.5*dpr; ctx.beginPath(); ctx.arc(x,y,5*dpr,0,7); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-3*dpr,y); ctx.lineTo(x+3*dpr,y); ctx.moveTo(x,y-3*dpr); ctx.lineTo(x,y+3*dpr); ctx.stroke(); } }
+  if(V.drag?.kind==="box"){ const d=V.drag; ctx.fillStyle="rgba(31,122,224,.08)"; ctx.strokeStyle=C.accent; ctx.lineWidth=1*dpr; ctx.setLineDash([4*dpr,3*dpr]);
+    ctx.fillRect(Math.min(d.x0,d.x1),Math.min(d.y0,d.y1),Math.abs(d.x1-d.x0),Math.abs(d.y1-d.y0)); ctx.strokeRect(Math.min(d.x0,d.x1),Math.min(d.y0,d.y1),Math.abs(d.x1-d.x0),Math.abs(d.y1-d.y0)); ctx.setLineDash([]); }
   if(V.tool==="draw" && V.draft.length){ const pts=V.draft.map(toS); ctx.strokeStyle=C.red; ctx.lineWidth=1.6*dpr; ctx.beginPath(); pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y)); if(V.cursor) ctx.lineTo(V.cursor[0],V.cursor[1]); ctx.stroke();
     pts.forEach(([x,y],i)=>{ ctx.fillStyle=i===0?C.red:"#fff"; ctx.strokeStyle=C.red; ctx.beginPath(); ctx.arc(x,y,(i===0?5:3.5)*dpr,0,7); ctx.fill(); ctx.stroke(); }); }
   $("zoomPct").textContent=Math.round(V.z*100)+"%";
 }
-function setTool(t){ V.tool=t; V.hoverPt=V.hoverEdge=null; if(t!=="draw") V.draft=[];
+function setTool(t){ V.tool=t; V.hoverPt=V.hoverEdge=null; V.sel=new Set(); $("delBtn").disabled=true; if(t!=="draw") V.draft=[];
   if(t==="edit" && st.polys && !st.manual){ // thin out the auto outline so its points are easy to grab (~0.4 mm tolerance)
     st.polys=st.polys.map(q=>rdp(q,0.4)); }
   document.querySelectorAll("#photoTools [data-tool]").forEach(b=>b.classList.toggle("on",b.dataset.tool===t));
   $("cPhoto").className=t; toolHint(); drawPhoto(); }
 function toolHint(){ const h={pan:"Drag to pan · scroll to zoom · E edit points · D draw a new outline",
-  edit:"Drag a point · click an edge to add one · Alt-click or Delete removes · scroll to zoom",
+  edit: V.sel.size ? `${V.sel.size} selected · Delete removes them · drag one to move them all · Esc clears` : "Drag a box to select points · Delete removes them · drag a point to move · double-click a line to add a point · Space-drag pans",
   draw:V.draft.length?`${V.draft.length} points · click the first point or press Enter to finish · Backspace undoes a point · Esc cancels`:"Click around the tool to place points · Space-drag or middle-drag pans"}[V.tool];
   $("toolHint").textContent=h; }
 function rdp(pts,eps){ if(pts.length<4) return pts.slice();
@@ -551,24 +556,34 @@ function closeDraft(){ if(V.draft.length<3){ V.draft=[]; toolHint(); drawPhoto()
   const pos=e=>{ const r=c.getBoundingClientRect(), dpr=devicePixelRatio||1; return [(e.clientX-r.left)*dpr,(e.clientY-r.top)*dpr]; };
   c.addEventListener("wheel",e=>{ if(!st.rect) return; e.preventDefault(); const [x,y]=pos(e); zoomAt(Math.exp(-e.deltaY*0.0015),x,y); },{passive:false});
   c.addEventListener("contextmenu",e=>e.preventDefault());
+  c.addEventListener("dblclick",e=>{ if(V.tool!=="edit"||!st.rect) return; const [x,y]=pos(e); const h=hitTest(x,y); if(!h.edge||h.pt) return;
+    pushUndo(); st.polys[h.edge.pi].splice(h.edge.i+1,0,h.edge.p); V.sel=new Set([skey(h.edge.pi,h.edge.i+1)]); V.hoverEdge=null; updateSelUI(); applyPolys(); });
   c.addEventListener("pointerdown",e=>{ if(!st.rect) return; const [x,y]=pos(e); c.setPointerCapture(e.pointerId);
     const panIt = V.tool==="pan" || e.button===1 || spaceDown;
     if(panIt){ V.drag={kind:"pan",x,y,tx:V.tx,ty:V.ty}; c.classList.add("panning"); return; }
     if(V.tool==="edit" && e.button===0){ const h=hitTest(x,y);
-      if(h.pt){ if(e.altKey){ const q=st.polys[h.pt[0]]; if(q.length>3){ pushUndo(); q.splice(h.pt[1],1); V.hoverPt=null; applyPolys(); } return; }
-        pushUndo(); V.drag={kind:"pt",pi:h.pt[0],i:h.pt[1],moved:false}; return; }
-      if(h.edge){ pushUndo(); st.polys[h.edge.pi].splice(h.edge.i+1,0,h.edge.p); V.drag={kind:"pt",pi:h.edge.pi,i:h.edge.i+1,moved:true}; V.hoverPt=[h.edge.pi,h.edge.i+1]; V.hoverEdge=null; drawPhoto(); return; }
-      V.drag={kind:"pan",x,y,tx:V.tx,ty:V.ty}; c.classList.add("panning"); return; }
+      if(h.pt){ const k=skey(...h.pt);
+        if(e.altKey){ V.sel=new Set([k]); deleteSelected(); return; }
+        if(e.shiftKey){ V.sel.has(k)?V.sel.delete(k):V.sel.add(k); updateSelUI(); drawPhoto(); return; }
+        if(!V.sel.has(k)){ V.sel=new Set([k]); updateSelUI(); }
+        pushUndo(); V.drag={kind:"pt",pi:h.pt[0],i:h.pt[1],moved:false,start:toMM(x,y),orig:JSON.parse(JSON.stringify(st.polys))}; return; }
+      V.drag={kind:"box",x0:x,y0:y,x1:x,y1:y,add:e.shiftKey}; return; }
     if(V.tool==="draw" && e.button===0){ const p=toMM(x,y);
       if(V.draft.length>=3){ const [fx,fy]=toS(V.draft[0]); if(Math.hypot(fx-x,fy-y)<9*(devicePixelRatio||1)){ closeDraft(); return; } }
       V.draft.push(p); toolHint(); drawPhoto(); } });
   c.addEventListener("pointermove",e=>{ if(!st.rect) return; const [x,y]=pos(e);
     if(V.drag?.kind==="pan"){ V.tx=V.drag.tx+(x-V.drag.x); V.ty=V.drag.ty+(y-V.drag.y); drawPhoto(); return; }
-    if(V.drag?.kind==="pt"){ st.polys[V.drag.pi][V.drag.i]=toMM(x,y); V.drag.moved=true; drawPhoto(); return; }
+    if(V.drag?.kind==="pt"){ const [mx,my]=toMM(x,y), dx=mx-V.drag.start[0], dy=my-V.drag.start[1];
+      V.sel.forEach(k=>{ const [pi,i]=k.split(":").map(Number); const o=V.drag.orig[pi]?.[i]; if(o) st.polys[pi][i]=[o[0]+dx,o[1]+dy]; }); V.drag.moved=true; drawPhoto(); return; }
+    if(V.drag?.kind==="box"){ V.drag.x1=x; V.drag.y1=y; drawPhoto(); return; }
     if(V.tool==="edit"){ const h=hitTest(x,y); V.hoverPt=h.pt||null; V.hoverEdge=h.edge||null; c.className="edit"+(h.pt?" hoverpt":h.edge?" hoveredge":""); drawPhoto(); }
     if(V.tool==="draw"){ V.cursor=[x,y]; drawPhoto(); } });
   c.addEventListener("pointerup",e=>{ const d=V.drag; V.drag=null; c.classList.remove("panning");
-    if(d?.kind==="pt"){ if(d.moved) applyPolys(); else st.undo.pop(); } });
+    if(d?.kind==="pt"){ if(d.moved) applyPolys(); else { st.undo.pop(); $("undoBtn").disabled=!st.undo.length; } }
+    if(d?.kind==="box"){ const xa=Math.min(d.x0,d.x1), xb=Math.max(d.x0,d.x1), ya=Math.min(d.y0,d.y1), yb=Math.max(d.y0,d.y1);
+      if(!d.add) V.sel=new Set();
+      if(xb-xa>2 || yb-ya>2) (st.polys||[]).forEach((q,pi)=>q.forEach((p,i)=>{ const [sx,sy]=toS(p); if(sx>=xa&&sx<=xb&&sy>=ya&&sy<=yb) V.sel.add(skey(pi,i)); }));
+      updateSelUI(); drawPhoto(); } });
   addEventListener("keydown",e=>{ if(curView!=="photo"||!st.rect) return; if(/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName)) return;
     if(e.code==="Space"){ spaceDown=true; return; }
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){ e.preventDefault(); undoOutline(); return; }
@@ -577,12 +592,19 @@ function closeDraft(){ if(V.draft.length<3){ V.draft=[]; toolHint(); drawPhoto()
     else if(k==="enter" && V.tool==="draw") closeDraft();
     else if(k==="escape" && V.tool==="draw"){ V.draft=[]; toolHint(); drawPhoto(); }
     else if(k==="backspace" && V.tool==="draw"){ V.draft.pop(); toolHint(); drawPhoto(); }
-    else if((k==="delete"||k==="backspace") && V.tool==="edit" && V.hoverPt){ const q=st.polys[V.hoverPt[0]]; if(q.length>3){ pushUndo(); q.splice(V.hoverPt[1],1); V.hoverPt=null; applyPolys(); } } });
+    else if((k==="delete"||k==="backspace") && V.tool==="edit"){ e.preventDefault(); if(!V.sel.size && V.hoverPt) V.sel=new Set([skey(...V.hoverPt)]); deleteSelected(); }
+    else if(k==="escape" && V.tool==="edit"){ V.sel=new Set(); updateSelUI(); drawPhoto(); }
+    else if(k==="a" && (e.ctrlKey||e.metaKey) && V.tool==="edit"){ e.preventDefault(); V.sel=new Set(); (st.polys||[]).forEach((q,pi)=>q.forEach((_,i)=>V.sel.add(skey(pi,i)))); updateSelUI(); drawPhoto(); } });
   addEventListener("keyup",e=>{ if(e.code==="Space") spaceDown=false; });
 })();
-function undoOutline(){ if(!st.undo?.length) return; st.polys=JSON.parse(st.undo.pop()); $("undoBtn").disabled=!st.undo.length; applyPolys(); }
+function updateSelUI(){ $("delBtn").disabled=!V.sel.size; toolHint(); }
+function deleteSelected(){ if(!V.sel.size) return;
+  const next=st.polys.map((q,pi)=>q.filter((_,i)=>!V.sel.has(skey(pi,i)))).filter(q=>q.length>=3);
+  if(!next.length){ status("Can't delete every point — keep at least 3","err"); return; }
+  pushUndo(); const removed=V.sel.size; st.polys=next; V.sel=new Set(); V.hoverPt=null; updateSelUI(); applyPolys(); status(`Removed ${removed} point${removed>1?"s":""}`,"ok"); }
+function undoOutline(){ if(!st.undo?.length) return; V.sel=new Set(); $("delBtn").disabled=true; st.polys=JSON.parse(st.undo.pop()); $("undoBtn").disabled=!st.undo.length; applyPolys(); }
 document.querySelectorAll("#photoTools [data-tool]").forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
-$("undoBtn").onclick=undoOutline;
+$("undoBtn").onclick=undoOutline; $("delBtn").onclick=deleteSelected;
 $("autoOutline").onclick=()=>{ $("autoOutline").disabled=true; $("undoBtn").disabled=true; V.draft=[]; resegment(); if(V.tool==="edit") setTool("edit"); };
 $("zoomIn").onclick=()=>{ const c=$("cPhoto"); zoomAt(1.25,c.width/2,c.height/2); };
 $("zoomOut").onclick=()=>{ const c=$("cPhoto"); zoomAt(0.8,c.width/2,c.height/2); };
