@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SKÅDIS Holder Maker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#e9ecf0; --app:#f6f7f9; --panel:#ffffff; --field:#f3f4f6; --field-h:#eceef1; --line:#e6e8ec; --line2:#d9dce1;
+  --text:#15171a; --muted:#6b7079; --faint:#9aa0a8;
+  --accent:#1f7ae0; --accent-soft:#e7f1fd; --accent-text:#1565c0;
+  --x:#e5484d; --y:#30a46c; --z:#3e7be6; --ok:#30a46c; --ok-soft:#e6f6ec; --warn:#c27c0e; --warn-soft:#fdf3e1; --bad:#d93036; --bad-soft:#fdeceb;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,monospace;
+  --r-app:22px; --r-panel:14px; --r-ctl:9px;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 8px 24px -12px rgba(16,24,40,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:13px;color:var(--text);background:var(--page);-webkit-font-smoothing:antialiased}
+svg.i{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.app{position:absolute;inset:14px;background:var(--app);border-radius:var(--r-app);box-shadow:var(--shadow);border:1px solid var(--line);display:grid;grid-template-rows:56px 1fr;overflow:hidden}
+/* top bar */
+.top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.crumb{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{width:28px;height:28px;border-radius:8px;background:var(--accent);display:grid;place-items:center;color:#fff}
+.sep{width:1px;height:18px;background:var(--line2)}
+.crumb .path{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb .path b{color:var(--text);font-weight:500}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:var(--field);color:var(--muted);font-size:12px;white-space:nowrap}
+.pill .dot{width:6px;height:6px;border-radius:50%;background:var(--faint)}
+.pill.ok .dot{background:var(--ok)} .pill.busy .dot{background:var(--warn);animation:pulse 1s infinite} .pill.err{background:var(--bad-soft);color:var(--bad)} .pill.err .dot{background:var(--bad)}
+@keyframes pulse{50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.pill.busy .dot{animation:none}}
+.seg{display:inline-flex;background:var(--field);border-radius:10px;padding:3px;gap:2px}
+.seg button{border:none;background:transparent;font:inherit;color:var(--muted);padding:5px 12px;border-radius:7px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.seg button:hover{color:var(--text)}
+.seg button.on{background:var(--panel);color:var(--text);font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.08),0 0 0 1px var(--line)}
+.seg.full{display:flex}.seg.full button{flex:1;justify-content:center}
+.actions{display:flex;justify-content:flex-end;gap:8px}
+.btn{border:1px solid var(--line2);background:var(--panel);color:var(--text);font:inherit;font-weight:500;padding:6px 12px;border-radius:var(--r-ctl);cursor:pointer;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.btn:hover{background:var(--field)}
+a.btn{text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.primary:hover{filter:brightness(1.05)}
+.btn:disabled{opacity:.45;cursor:default;filter:none}
+.btn.sm{padding:4px 9px;font-size:12px}
+/* body */
+.body{display:grid;grid-template-columns:286px 1fr 316px;gap:10px;padding:10px;min-height:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel);overflow:auto;min-height:0}
+.sec{padding:12px 14px;border-bottom:1px solid var(--line)}
+.sec:last-child{border-bottom:none}
+.sec h3{margin:0 0 10px;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
+.kv{display:flex;justify-content:space-between;align-items:center;padding:4px 0;color:var(--text)}
+.kv span:first-child{color:var(--muted)}
+.kv .v{font-family:var(--mono);font-size:12px}
+.kv .v.ok{color:var(--ok)}.kv .v.warn{color:var(--warn)}.kv .v.bad{color:var(--bad)}
+.drop{border:1px dashed var(--line2);border-radius:11px;padding:14px;text-align:center;color:var(--muted);cursor:pointer;background:var(--app);transition:.15s}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text)}
+.drop b{display:block;color:var(--text);font-weight:500;margin-bottom:2px}
+.drop.over b,.drop:hover b{color:var(--accent-text)}
+.thumb{display:flex;align-items:center;gap:10px;padding:6px;border-radius:10px;background:var(--app);margin-top:8px}
+.thumb img{width:44px;height:33px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+.thumb .n{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ctl{margin:10px 0}
+.ctl .lab{display:flex;justify-content:space-between;color:var(--muted);margin-bottom:6px}
+.ctl .lab b{font-weight:500;color:var(--text);font-family:var(--mono);font-size:12px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;background:linear-gradient(var(--accent),var(--accent)) 0/var(--p,50%) 100% no-repeat,var(--line);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;border:1px solid var(--line2);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:pointer}
+select{width:100%;font:inherit;padding:6px 8px;border-radius:var(--r-ctl);border:1px solid var(--line);background:var(--field);color:var(--text)}
+.row{display:flex;align-items:center;gap:8px}
+.f{display:flex;align-items:center;gap:6px;background:var(--field);border-radius:var(--r-ctl);padding:0 8px;height:30px;border:1px solid transparent;min-width:0}
+.f:focus-within{border-color:var(--accent);background:#fff}
+.f .t{font-size:11px;font-weight:600;color:var(--muted)}
+.f .t.x{color:var(--x)}.f .t.y{color:var(--y)}.f .t.z{color:var(--z)}
+.f input{border:none;background:transparent;font-family:var(--mono);font-size:12px;width:100%;min-width:0;outline:none;color:var(--text);text-align:right}
+.f .u{color:var(--faint);font-size:11px}
+.f.ro{background:transparent;border:1px solid var(--line)}
+.f.res{background:var(--accent-soft)} .f.res input{color:var(--accent-text);font-weight:500}
+.eq{display:grid;grid-template-columns:1fr 12px 1fr 12px 1fr;align-items:center;gap:4px;margin:6px 0 2px}
+.eq .op{color:var(--faint);text-align:center;font-family:var(--mono)}
+.eqlab{display:grid;grid-template-columns:1fr 12px 1fr 12px 1fr;gap:4px;font-size:11px;color:var(--faint)}
+.hint{font-size:12px;color:var(--muted);line-height:1.45;margin:6px 0 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.eqlab1{font-size:11px;color:var(--faint);margin-bottom:4px}
+.lab2{font-size:12px;color:var(--muted);margin:10px 0 6px;display:flex;justify-content:space-between;align-items:center}
+.badge{font-size:10px;font-weight:600;letter-spacing:.04em;padding:2px 6px;border-radius:5px;background:var(--field);color:var(--muted)}
+.status-row{display:flex;flex-wrap:wrap;gap:6px}
+.tag{padding:3px 8px;border-radius:7px;font-size:12px;background:var(--field);color:var(--muted)}
+.tag b{font-family:var(--mono);font-weight:500;color:var(--text);font-size:11.5px}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}.tag.ok b{color:var(--ok)}
+.tag.warn{background:var(--warn-soft);color:var(--warn)}.tag.warn b{color:var(--warn)}
+.tag.bad{background:var(--bad-soft);color:var(--bad)}.tag.bad b{color:var(--bad)}
+details summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+details summary::-webkit-details-marker{display:none}
+details summary h3{margin:0}
+details[open] summary{margin-bottom:10px}
+details summary .chev{transition:transform .15s;color:var(--faint)} details[open] summary .chev{transform:rotate(90deg)}
+/* viewport */
+.vp{position:relative;border-radius:var(--r-panel);overflow:hidden;background:#fbfbfc;border:1px solid var(--line);min-height:0}
+.vp .layer{position:absolute;inset:0}
+.vp canvas{width:100%;height:100%;display:block}
+.float{position:absolute;z-index:3;display:flex;gap:6px;align-items:center}
+.float.tl{top:12px;left:50%;transform:translateX(-50%)}
+.float.bc{bottom:14px;left:50%;transform:translateX(-50%)}
+.chipbar{display:flex;align-items:center;gap:0;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:10px;padding:4px 6px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.chipbar span{padding:2px 8px;color:var(--muted);white-space:nowrap}.chipbar span+span{border-left:1px solid var(--line)}
+.chipbar b{color:var(--text);font-weight:500}
+.caption{font-family:var(--mono);font-size:13px;color:var(--muted);letter-spacing:.02em;background:rgba(255,255,255,.85);padding:4px 10px;border-radius:8px}
+.empty{display:grid;place-items:center;text-align:center;color:var(--muted)}
+.empty .big{width:54px;height:54px;border-radius:14px;background:var(--field);display:grid;place-items:center;margin:0 auto 12px;color:var(--faint)}
+.empty .big svg{width:26px;height:26px}
+.toolbar{display:flex;align-items:center;gap:2px;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:12px;padding:4px;box-shadow:0 4px 14px -6px rgba(16,24,40,.18)}
+.toolbar button{border:none;background:transparent;width:34px;height:32px;border-radius:8px;color:var(--muted);cursor:pointer;display:grid;place-items:center;font:inherit}
+.toolbar button:hover{background:var(--field);color:var(--text)}
+.toolbar button.on{background:var(--accent-soft);color:var(--accent-text)}
+.toolbar button:disabled{opacity:.35;cursor:default;background:transparent}
+.toolbar .tsep{width:1px;height:20px;background:var(--line);margin:0 4px}
+.toolbar .pct{font-family:var(--mono);font-size:12px;color:var(--text);min-width:46px;text-align:center}
+.float.bc2{bottom:62px;left:50%;transform:translateX(-50%)}
+.tiphint{font-size:12px;color:var(--muted);background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:8px;padding:4px 10px;white-space:nowrap}
+#cPhoto.pan{cursor:grab}#cPhoto.panning{cursor:grabbing}#cPhoto.edit{cursor:default}#cPhoto.draw{cursor:crosshair}#cPhoto.hoverpt{cursor:move}#cPhoto.hoveredge{cursor:copy}
+.hide{display:none!important}
+.mono{font-family:var(--mono)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-hex" viewBox="0 0 24 24"><path d="M12 2.8 20 7.4v9.2l-8 4.6-8-4.6V7.4z"/><path d="M12 8.2l3.3 1.9v3.8L12 15.8l-3.3-1.9v-3.8z"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="m21 16-5-5-9 9"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 20h18"/><path d="M4 16c3-1 4-7 7-7s4 5 9 2"/></symbol>
+  <symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></symbol>
+  <symbol id="i-flip" viewBox="0 0 24 24"><path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12"/><path d="M11 11.5v-7a1.5 1.5 0 0 1 3 0V12"/><path d="M14 6.5a1.5 1.5 0 0 1 3 0V12"/><path d="M17 8.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1.6a6 6 0 0 1-4.6-2.2L4.6 15.2a1.6 1.6 0 0 1 2.4-2.1L8 14"/></symbol>
+  <symbol id="i-node" viewBox="0 0 24 24"><path d="M5 17 10 6l9 5-6 8z"/><rect x="3.2" y="15.2" width="3.6" height="3.6" rx=".8"/><rect x="8.2" y="4.2" width="3.6" height="3.6" rx=".8"/><rect x="17.2" y="9.2" width="3.6" height="3.6" rx=".8"/><rect x="11.2" y="17.2" width="3.6" height="3.6" rx=".8"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M3 21l3.5-1 11-11-2.5-2.5-11 11z"/><path d="M14 5.5 16.5 3 21 7.5 18.5 10"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
+  <symbol id="i-wand" viewBox="0 0 24 24"><path d="m4 20 11-11"/><path d="m13 7 2 2"/><path d="M17 3v3M15.5 4.5h3M20 9v2M19 10h2M10 3v2M9 4h2"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></symbol>
+  <symbol id="i-fit" viewBox="0 0 24 24"><path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5"/><path d="M4 4v4.5h4.5"/></symbol>
+</svg>
+
+<div class="app">
+  <div class="top">
+    <div class="crumb">
+      <div class="logo"><svg class="i" style="width:17px;height:17px"><use href="#i-hex"/></svg></div>
+      <div class="sep"></div>
+      <div class="path">SKÅDIS Holder &nbsp;/&nbsp; <b id="crumbName">Untitled</b></div>
+      <div id="status" class="pill busy"><span class="dot"></span><span id="statusText">Loading libraries…</span></div>
+    </div>
+    <div class="seg" id="viewSeg">
+      <button data-v="photo" class="on"><svg class="i"><use href="#i-img"/></svg>Photo</button>
+      <button data-v="prof"><svg class="i"><use href="#i-chart"/></svg>Profile</button>
+      <button data-v="3d"><svg class="i"><use href="#i-cube"/></svg>3D</button>
+    </div>
+    <div class="actions">
+      <a class="btn" href="sheet/skadis_measure_sheet_A4.pdf" download title="Measuring sheet, A4, print at 100%"><svg class="i"><use href="#i-down"/></svg>Sheet PDF</a>
+      <button class="btn" id="sampleBtn" title="Load a sample photo"><svg class="i"><use href="#i-img"/></svg>Try sample</button>
+      <button class="btn" id="openBtn"><svg class="i"><use href="#i-up"/></svg>Open photo</button>
+      <button class="btn primary" id="dl" disabled><svg class="i"><use href="#i-down"/></svg>Export STL</button>
+    </div>
+  </div>
+
+  <div class="body">
+    <!-- LEFT -->
+    <div class="panel">
+      <div class="sec">
+        <h3>Photo</h3>
+        <div id="drop" class="drop"><b>Drop a photo here</b>Tool on the measuring sheet, shot from above</div>
+        <input id="file" type="file" accept="image/*" class="hide">
+        <div id="thumb" class="thumb hide"><img id="thumbImg" alt=""><div class="n" id="thumbName"></div></div>
+        <div class="lab2">Lens profile</div>
+        <select id="lens"><option value="p9a2x">Pixel 9a · 2× zoom</option><option value="none">None</option></select>
+      </div>
+      <div class="sec">
+        <h3>Sheet</h3>
+        <div class="kv"><span>Variant</span><span class="v" id="kvSheet">—</span></div>
+        <div class="kv"><span>Markers found</span><span class="v" id="kvMarkers">—</span></div>
+        <div class="kv"><span>Fit error</span><span class="v" id="kvFit">—</span></div>
+        <div class="kv"><span>Image</span><span class="v" id="kvImg">—</span></div>
+      </div>
+      <div class="sec">
+        <h3>Outline</h3>
+        <div class="ctl"><div class="lab"><span>Edge threshold</span><b id="thO">30</b></div><input id="th" type="range" min="10" max="70" value="30"></div>
+        <div class="ctl"><div class="lab"><span>Axis fine-tune</span><b id="rotO">0.0°</b></div><input id="rot" type="range" min="-45" max="45" step="0.5" value="0"></div>
+        <button id="flip" class="btn sm" style="width:100%;justify-content:center"><svg class="i"><use href="#i-flip"/></svg>Swap tip / handle end</button>
+        <div style="margin-top:12px">
+          <div class="kv"><span>Length</span><span class="v" id="kvLen">—</span></div>
+          <div class="kv"><span>Max width</span><span class="v" id="kvWmax">—</span></div>
+          <div class="kv"><span>Rotation</span><span class="v" id="kvRot">—</span></div>
+          <div class="kv"><span>Source</span><span class="v" id="kvSrc">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEWPORT -->
+    <div class="vp" id="vp">
+      <div class="float tl hide" id="topChips"><div class="chipbar"><span id="chipA">—</span><span id="chipB">—</span><span id="chipC">—</span></div></div>
+      <div class="layer empty" id="empty"><div style="max-width:440px">
+        <div class="big"><svg class="i"><use href="#i-img"/></svg></div>
+        <div style="color:var(--text);font-weight:500;font-size:15px;margin-bottom:6px">No photo yet</div>
+        <div style="margin-bottom:14px">Drop a photo on the left, use <b>Open photo</b>, or <a href="#" id="sampleLink" style="color:var(--accent)">try the sample</a>.</div>
+        <div style="text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:12.5px;line-height:1.6">
+          <div style="font-weight:500;color:var(--text);margin-bottom:4px">How to shoot</div>
+          1. Print the <a href="sheet/skadis_measure_sheet_A4.pdf" download style="color:var(--accent)">measuring sheet</a> on A4 at 100% (no "fit to page"). Check that the 150 mm marks measure 150 mm.<br>
+          2. Lay the tool flat in the middle of the sheet, along its long side, tip pointing up.<br>
+          3. Shoot straight down from about 60 cm with 2× zoom, lit from above with no hard shadows.<br>
+          4. Use the original photo file. Then pick Slot, Round hole or Tray and export the STL.
+        </div></div></div>
+      <div class="layer hide" id="lPhoto"><canvas id="cPhoto"></canvas></div>
+      <div class="layer hide" id="lProf"><canvas id="cProf"></canvas></div>
+      <div class="layer hide" id="three"></div>
+      <div class="float bc2 hide" id="toolHintWrap"><div class="tiphint" id="toolHint"></div></div>
+      <div class="float bc hide" id="photoTools"><div class="toolbar">
+        <button data-tool="pan" class="on" title="Pan (V)"><svg class="i"><use href="#i-hand"/></svg></button>
+        <button data-tool="edit" title="Edit points (E)"><svg class="i"><use href="#i-node"/></svg></button>
+        <button data-tool="draw" title="Draw a new outline (D)"><svg class="i"><use href="#i-pen"/></svg></button>
+        <span class="tsep"></span>
+        <button id="undoBtn" title="Undo (Ctrl+Z)" disabled><svg class="i"><use href="#i-undo"/></svg></button>
+        <button id="autoOutline" title="Back to the automatic outline" disabled><svg class="i"><use href="#i-wand"/></svg></button>
+        <span class="tsep"></span>
+        <button id="zoomOut" title="Zoom out"><svg class="i"><use href="#i-minus"/></svg></button><span class="pct" id="zoomPct">100%</span><button id="zoomIn" title="Zoom in"><svg class="i"><use href="#i-plus"/></svg></button>
+        <button id="zoomFit" title="Fit (F)"><svg class="i"><use href="#i-fit"/></svg></button>
+      </div></div>
+      <div class="float bc hide" id="caption"><div class="caption" id="captionText"></div></div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="panel">
+      <div class="head"><div class="seg full" id="typeSeg" style="width:100%">
+        <button data-v="slot" class="on">Slot</button><button data-v="round">Round hole</button><button data-v="tray">Tray</button>
+      </div></div>
+      <div class="sec">
+        <p class="hint" id="typeNote" style="margin:0">For pliers, nippers and scissors. The tool drops in tip-first and rests on its shoulders.</p>
+      </div>
+      <div class="sec photoOnly">
+        <h3>Pass-through</h3>
+        <div class="lab2" style="margin-top:0"><span>Must pass from the tip up to</span><button class="btn sm" id="autoPass"><svg class="i"><use href="#i-reset"/></svg>Auto</button></div>
+        <div class="f"><span class="t">L</span><input id="dpass" type="number" step="1" value="0"><span class="u">mm</span></div>
+        <p class="hint">Everything from the tip to this point goes through the opening. Auto picks the narrowest neck.</p>
+      </div>
+      <div class="sec photoOnly">
+        <h3>Opening size</h3>
+        <div class="lab2" style="margin-top:0"><span>Width <span style="color:var(--faint)">(along the board, mm)</span></span></div>
+        <div class="eqlab"><span>Widest part</span><span></span><span>Extra room</span><span></span><span>Opening</span></div>
+        <div class="eq">
+          <div class="f ro"><span class="t x">W</span><input id="wTool" readonly value="—"></div><span class="op">+</span>
+          <div class="f"><input id="clr" type="number" step="0.1" value="2.0"></div><span class="op">=</span>
+          <div class="f res"><input id="wOut" readonly value="—"></div>
+        </div>
+        <div id="depthBlock">
+          <div class="lab2"><span>Depth <span style="color:var(--faint)">(away from the board, mm)</span></span></div>
+          <div class="eqlab"><span>Tool thickness</span><span></span><span>Extra room</span><span></span><span>Opening</span></div>
+          <div class="eq">
+            <div class="f"><span class="t y">T</span><input id="thick" type="number" step="0.1" value="10.4"></div><span class="op">+</span>
+            <div class="f"><input id="tclr" type="number" step="0.1" value="1.1"></div><span class="op">=</span>
+            <div class="f res"><input id="uOut" readonly value="—"></div>
+          </div>
+          <p class="hint">Measure the thickness with calipers at its thickest point. The photo only sees width.</p>
+        </div>
+        <p class="hint">Extra room is the gap you want around the tool. ~2 mm drops in easily; under 1 mm feels snug. The printed P-14 holder used 2.8 / 1.1.</p>
+      </div>
+      <div class="sec trayOnly hide">
+        <h3>Inner size</h3>
+        <div class="grid3">
+          <div><div class="eqlab1">Length</div><div class="f"><span class="t x">L</span><input id="tL" type="number" step="1" value="120"></div></div>
+          <div><div class="eqlab1" id="tDLab">Depth</div><div class="f"><span class="t y" id="tDTag">D</span><input id="tD" type="number" step="0.5" value="20"></div></div>
+          <div><div class="eqlab1">Height</div><div class="f"><span class="t z">H</span><input id="tH" type="number" step="0.5" value="15"></div></div>
+        </div>
+        <div id="roomRow" class="hide" style="margin-top:6px"><div class="grid3"><div></div><div><div class="eqlab1">Extra room</div><div class="f"><input id="tRoom" type="number" step="0.5" value="2"></div></div><div></div></div></div>
+        <p class="hint" id="sizeHint">Inside dimensions in mm. Length runs along the board, depth away from it, height is from the floor to the rim.</p>
+        <button id="fromPhoto" class="btn sm" style="margin-top:8px" disabled><svg class="i"><use href="#i-img"/></svg>Size from photo</button>
+        <span class="hint" id="fromPhotoHint" style="margin-left:6px">needs a photo</span>
+      </div>
+      <div class="sec trayOnly hide">
+        <h3>Shape</h3>
+        <div class="lab2" style="margin-top:0">Cross-section</div>
+        <div class="seg full" id="profSeg"><button data-v="square" class="on">Square</button><button data-v="round">Round</button></div>
+        <div class="grid2" style="margin-top:4px">
+          <div><div class="lab2">Left end</div><div class="seg full" id="endL"><button data-v="closed" class="on">Closed</button><button data-v="open">Open</button></div></div>
+          <div><div class="lab2">Right end</div><div class="seg full" id="endR"><button data-v="closed" class="on">Closed</button><button data-v="open">Open</button></div></div>
+          <div><div class="lab2">Wall</div><div class="f"><input id="tWall" type="number" step="0.2" value="2.0"><span class="u">mm</span></div></div>
+          <div><div class="lab2">Floor</div><div class="f"><input id="tFloor" type="number" step="0.2" value="2.0"><span class="u">mm</span></div></div>
+        </div>
+        <p class="hint" id="trayNote"></p>
+      </div>
+      <div class="sec">
+        <h3>Edges</h3>
+        <div class="grid2">
+          <div><div class="lab2" style="margin-top:0">Front fillet</div><div class="seg full" id="filSeg"><button data-v="on" class="on">On</button><button data-v="off">Off</button></div></div>
+          <div><div class="lab2" style="margin-top:0">Radius</div><div class="f" id="filRBox"><span class="t">R</span><input id="filR" type="number" step="0.5" value="2"><span class="u">mm</span></div></div>
+        </div>
+        <p class="hint">Rounds the edges you see from the front. The top edge touches the print bed, so it only gets a small chamfer.</p>
+      </div>
+      <div class="sec">
+        <h3>Result</h3>
+        <div class="kv"><span>Holder width</span><span class="v" id="rW">—</span></div>
+        <div class="kv"><span>Hooks</span><span class="v" id="rHooks">—</span></div>
+        <div class="kv"><span id="lSeat">Stops at</span><span class="v" id="rSeat">—</span></div>
+        <div class="kv"><span id="lBear">Shoulder overlap</span><span class="v" id="rBear">—</span></div>
+        <div class="kv"><span>Volume</span><span class="v" id="rVol">—</span></div>
+      </div>
+      <div class="sec">
+        <details>
+          <summary><h3>Advanced</h3><svg class="i chev"><use href="#i-chev"/></svg></summary>
+          <div class="grid2">
+            <div><div class="lab2" style="margin-top:0">Shelf thickness</div><div class="f"><input id="shelfT" type="number" step="0.5" value="6"><span class="u">mm</span></div></div>
+            <div><div class="lab2" style="margin-top:0">Funnel (45°)</div><div class="f"><input id="fun" type="number" step="0.5" value="4"><span class="u">mm</span></div></div>
+            <div><div class="lab2">Front / back wall</div><div class="f"><input id="wall" type="number" step="0.25" value="3.25"><span class="u">mm</span></div></div>
+            <div><div class="lab2">Min side wall</div><div class="f"><input id="side" type="number" step="0.5" value="8"><span class="u">mm</span></div></div>
+            <div><div class="lab2">Back plate height</div><div class="f"><input id="plateH" type="number" step="1" value="18"><span class="u">mm</span></div></div>
+            <div><div class="lab2">Hook gap</div><div class="f"><input id="gap" type="number" step="0.05" value="5.1"><span class="u">mm</span></div></div>
+          </div>
+          <p class="hint">Hook gap 5.1 mm fits a 5.0 mm SKÅDIS board (tested in PETG).</p>
+        </details>
+      </div>
+      <div class="sec">
+        <h3>Export</h3>
+        <div class="f"><input id="fname" type="text" value="skadis_holder" style="text-align:left"><span class="u">.stl</span></div>
+        <p class="hint">Exported top-face-down, ready to print without supports.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>window.LIB_BASE = window.LIB_BASE || "https://cdn.jsdelivr.net/npm/";</script>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/",
+  "manifold-3d":"https://cdn.jsdelivr.net/npm/manifold-3d@3.5.5/manifold.js"
+}}
+</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import Module from "manifold-3d";
+
+/* ---------- constants ---------- */
+const SHEET = { ms: 18,
+  centers: [[-88,131],[-30,131],[30,131],[88,131],[88,78.6],[88,26.2],[88,-26.2],[88,-78.6],
+            [88,-131],[30,-131],[-30,-131],[-88,-131],[-88,-78.6],[-88,-26.2],[-88,26.2],[-88,78.6]],
+  variants: [["A",1.000],["B",1.003],["C",1.006],["D",1.010],["E",0.997]], zone: [75,118] };
+const LENS = { p9a2x:{f:5660, w:4000, k1:0.085}, none:null };
+const S = 10, RX = 80, RY = 122, RW = 2*RX*S, RH = 2*RY*S;
+const SK = { tabW:4.8, tau:3.0, latchL:7.0, latchT:2.4, pitch:40, plateT:3.5, yTop:3.0 };
+const C = { accent:"#1f7ae0", text:"#15171a", muted:"#6b7079", faint:"#9aa0a8", line:"#e6e8ec", red:"#e5484d", green:"#30a46c" };
+
+const st = { img:null, rect:null, mask:null, th:30, rot:0, flip:false, cen:[0,0], prof:null, type:"slot", holder:null };
+let cv, M;
+const $ = id => document.getElementById(id);
+function status(t, cls="busy"){ $("status").className="pill "+cls; $("statusText").textContent=t; }
+function setKV(id, v, cls=""){ const e=$(id); e.textContent=v; e.className="v "+cls; }
+function sliderFill(el){ const p=(el.value-el.min)/(el.max-el.min)*100; el.style.setProperty("--p",p+"%"); }
+
+function loadCV(){ return new Promise((res,rej)=>{
+  const s=document.createElement("script"); s.src=window.LIB_BASE+"@techstark/opencv-js@5.0.0-release.1/dist/opencv.js"; s.async=true;
+  s.onload=async()=>{ let c=window.cv; if(c instanceof Promise) c=await c; if(c.Mat) return res(c); c.onRuntimeInitialized=()=>res(c); };
+  s.onerror=()=>rej(new Error("Could not load OpenCV.js")); document.head.appendChild(s); }); }
+
+/* ---------- step 1: markers + rectification ---------- */
+function undistortPt(x,y,L){ if(!L) return [x,y]; const f=L.f*Math.max(L.cw,L.ch)/L.w, cx=L.cw/2, cy=L.ch/2;
+  const xd=(x-cx)/f, yd=(y-cy)/f; let xu=xd, yu=yd;
+  for(let i=0;i<8;i++){ const s=1+L.k1*(xu*xu+yu*yu); xu=xd/s; yu=yd/s; } return [cx+xu*f, cy+yu*f]; }
+function distortPt(x,y,L){ if(!L) return [x,y]; const f=L.f*Math.max(L.cw,L.ch)/L.w, cx=L.cw/2, cy=L.ch/2;
+  const xu=(x-cx)/f, yu=(y-cy)/f, s=1+L.k1*(xu*xu+yu*yu); return [cx+xu*s*f, cy+yu*s*f]; }
+
+function processImage(){
+  const img=st.img, W=img.naturalWidth, Hh=img.naturalHeight;
+  const cnv=document.createElement("canvas"); cnv.width=W; cnv.height=Hh; cnv.getContext("2d").drawImage(img,0,0);
+  const src=cv.imread(cnv), g=new cv.Mat(); cv.cvtColor(src,g,cv.COLOR_RGBA2GRAY);
+  const p=new cv.aruco_DetectorParameters(); p.cornerRefinementMethod=cv.CORNER_REFINE_SUBPIX;
+  const det=new cv.aruco_ArucoDetector(cv.getPredefinedDictionary(cv.DICT_4X4_100),p,new cv.aruco_RefineParameters(10,3,true));
+  const corners=new cv.MatVector(), ids=new cv.Mat(), rej=new cv.MatVector(); det.detectMarkers(g,corners,ids,rej);
+  const idv=Array.from(ids.data32S), groups={}; idv.forEach(i=>{const v=Math.floor(i/16); groups[v]=(groups[v]||0)+1;});
+  const vIdx=+Object.entries(groups).sort((a,b)=>b[1]-a[1])[0]?.[0];
+  if(isNaN(vIdx)||groups[vIdx]<4){ g.delete(); src.delete(); throw new Error("Fewer than 4 sheet markers found"); }
+  const [vName,vScale]=SHEET.variants[vIdx]||["?",1];
+  const lp=LENS[$("lens").value], L= lp ? {...lp, cw:W, ch:Hh} : null;
+  const ip=[], op=[], h=SHEET.ms/2;
+  idv.forEach((id,k)=>{ if(Math.floor(id/16)!==vIdx) return; const c=corners.get(k).data32F; const [cx,cy]=SHEET.centers[id%16];
+    [[-h,h],[h,h],[h,-h],[-h,-h]].forEach(([dx,dy],j)=>{ ip.push(undistortPt(c[2*j],c[2*j+1],L)); op.push([(cx+dx)*vScale,(cy+dy)*vScale]); }); });
+  const A=cv.matFromArray(ip.length,1,cv.CV_32FC2,ip.flat()), B=cv.matFromArray(op.length,1,cv.CV_32FC2,op.flat());
+  const Hm=cv.findHomography(A,B,0), H=Array.from(Hm.data64F);
+  let se=0; ip.forEach(([x,y],i)=>{ const w=H[6]*x+H[7]*y+H[8]; const X=(H[0]*x+H[1]*y+H[2])/w-op[i][0], Y=(H[3]*x+H[4]*y+H[5])/w-op[i][1]; se+=X*X+Y*Y; });
+  const rms=Math.sqrt(se/ip.length);
+  const Hi=cv.Mat.zeros(3,3,cv.CV_64F); cv.invert(Hm,Hi); const I=Array.from(Hi.data64F);
+  const mapX=new cv.Mat(RH,RW,cv.CV_32FC1), mapY=new cv.Mat(RH,RW,cv.CV_32FC1), mxD=mapX.data32F, myD=mapY.data32F;
+  for(let v=0; v<RH; v++){ const Y=RY-(v+0.5)/S; for(let u=0; u<RW; u++){ const X=(u+0.5)/S-RX;
+      const w=I[6]*X+I[7]*Y+I[8]; let x=(I[0]*X+I[1]*Y+I[2])/w, y=(I[3]*X+I[4]*Y+I[5])/w;
+      if(L){ [x,y]=distortPt(x,y,L); } const o=v*RW+u; mxD[o]=x-0.5; myD[o]=y-0.5; } }
+  const rgb=new cv.Mat(); cv.cvtColor(src,rgb,cv.COLOR_RGBA2RGB);
+  if(st.rect) st.rect.delete(); st.rect=new cv.Mat();
+  cv.remap(rgb,st.rect,mapX,mapY,cv.INTER_CUBIC,cv.BORDER_CONSTANT,new cv.Scalar(255,255,255));
+  [src,g,ids,A,B,Hm,Hi,mapX,mapY,rgb].forEach(m=>m.delete()); corners.delete(); rej.delete();
+  const n4=ip.length/4;
+  setKV("kvSheet",`${vName} · ${(vScale*100).toFixed(1)}%`);
+  setKV("kvMarkers",`${n4} / 16`, n4>=12?"ok":"warn");
+  setKV("kvFit",`${rms.toFixed(2)} mm`, rms<0.3?"ok":rms<0.6?"warn":"bad");
+  setKV("kvImg",`${W} × ${Hh}`, W>=3500?"":"warn");
+  st.meta={rms};
+  const lab=new cv.Mat(); cv.cvtColor(st.rect,lab,cv.COLOR_RGB2Lab);
+  const bgr=new cv.Mat(); cv.medianBlur(st.rect,bgr,51); const bgs=new cv.Mat(); cv.GaussianBlur(bgr,bgs,new cv.Size(0,0),25);
+  const bl=new cv.Mat(); cv.cvtColor(bgs,bl,cv.COLOR_RGB2Lab);
+  const n=RW*RH, dE=new Float32Array(n), a=lab.data, b=bl.data;
+  for(let i=0;i<n;i++){ const d0=a[3*i]-b[3*i], d1=a[3*i+1]-b[3*i+1], d2=a[3*i+2]-b[3*i+2]; dE[i]=Math.sqrt(d0*d0+d1*d1+d2*d2); }
+  const zx=(SHEET.zone[0]-2)*vScale, zy=(SHEET.zone[1]-2)*vScale;
+  for(let v=0; v<RH; v++){ const Y=RY-(v+0.5)/S; for(let u=0; u<RW; u++){ const X=(u+0.5)/S-RX; if(Math.abs(X)>zx||Math.abs(Y)>zy) dE[v*RW+u]=0; } }
+  st.dE=dE; [lab,bgr,bgs,bl].forEach(m=>m.delete());
+}
+
+/* ---------- step 2: segmentation + orientation + width profile ---------- */
+function segment(){
+  const n=RW*RH, m=new cv.Mat(RH,RW,cv.CV_8UC1), md=m.data;
+  for(let i=0;i<n;i++) md[i]= st.dE[i]>st.th ? 255:0;
+  const k3=cv.getStructuringElement(cv.MORPH_ELLIPSE,new cv.Size(3,3)), k7=cv.getStructuringElement(cv.MORPH_ELLIPSE,new cv.Size(7,7)), k15=cv.getStructuringElement(cv.MORPH_ELLIPSE,new cv.Size(15,15));
+  cv.morphologyEx(m,m,cv.MORPH_OPEN,k3); cv.morphologyEx(m,m,cv.MORPH_CLOSE,k7);
+  const lbl=new cv.Mat(), sts=new cv.Mat(), cen=new cv.Mat(), nl=cv.connectedComponentsWithStats(m,lbl,sts,cen);
+  let best=0, ba=0; for(let i=1;i<nl;i++){ const a=sts.intAt(i,cv.CC_STAT_AREA); if(a>ba){ba=a;best=i;} }
+  if(!best){ [m,lbl,sts,cen,k3,k7,k15].forEach(x=>x.delete()); throw new Error("No tool found — lower the edge threshold"); }
+  // keep the largest part plus any sizeable part lying within 8 mm of it (e.g. shiny metal tips split from handles)
+  const ld=lbl.data32S; for(let i=0;i<n;i++) md[i]= ld[i]===best?255:0;
+  // distance (px) from every pixel to the largest part — linear time, unlike a huge dilation
+  const inv=new cv.Mat(); cv.threshold(m,inv,0,255,cv.THRESH_BINARY_INV); const dist=new cv.Mat(); cv.distanceTransform(inv,dist,cv.DIST_L2,3); const dtd=dist.data32F;
+  const keep=new Uint8Array(nl); keep[best]=1; const lim=8*S;
+  for(let i=1;i<nl;i++){ if(i===best) continue; if(sts.intAt(i,cv.CC_STAT_AREA) < Math.max(400, ba*0.004)) continue;
+    const x0=sts.intAt(i,cv.CC_STAT_LEFT), y0=sts.intAt(i,cv.CC_STAT_TOP), w=sts.intAt(i,cv.CC_STAT_WIDTH), h=sts.intAt(i,cv.CC_STAT_HEIGHT);
+    let hit=false; for(let y=y0;y<y0+h && !hit;y+=2){ const o=y*RW; for(let x=x0;x<x0+w;x+=2){ if(ld[o+x]===i && dtd[o+x]<=lim){ hit=true; break; } } }
+    if(hit) keep[i]=1; }
+  inv.delete(); dist.delete();
+  for(let i=0;i<n;i++) md[i]= keep[ld[i]]?255:0;
+  cv.morphologyEx(m,m,cv.MORPH_CLOSE,k15);
+  const cs=new cv.MatVector(), hi=new cv.Mat(); cv.findContours(m,cs,hi,cv.RETR_EXTERNAL,cv.CHAIN_APPROX_NONE);
+  let ci=0, ca=0; for(let i=0;i<cs.size();i++){ const a=cv.contourArea(cs.get(i)); if(a>ca){ca=a;ci=i;} }
+  m.setTo(new cv.Scalar(0)); for(let i=0;i<cs.size();i++) if(cv.contourArea(cs.get(i))>200) cv.drawContours(m,cs,i,new cv.Scalar(255),cv.FILLED);
+  st.parts=[]; for(let i=0;i<cs.size();i++){ if(i===ci||cv.contourArea(cs.get(i))<=200) continue; const c=cs.get(i), q=[]; const ap2=new cv.Mat(); cv.approxPolyDP(c,ap2,0.5,true);
+    for(let j=0;j<ap2.rows;j++) q.push([(ap2.data32S[2*j]+0.5)/S-RX, RY-(ap2.data32S[2*j+1]+0.5)/S]); ap2.delete(); st.parts.push(q); }
+  const ap=new cv.Mat(); cv.approxPolyDP(cs.get(ci),ap,0.5,true);
+  const pts=[]; for(let i=0;i<ap.rows;i++) pts.push([(ap.data32S[2*i]+0.5)/S-RX, RY-(ap.data32S[2*i+1]+0.5)/S]);
+  st.outlineMM=pts;
+  st.polys=[st.outlineMM, ...st.parts]; st.manual=false; st.undo=[];
+  [lbl,sts,cen,k3,k7,k15,cs,hi,ap].forEach(x=>x.delete());
+  setMask(m);
+}
+function setMask(m){
+  const mo=cv.moments(m,true); if(!mo.m00) throw new Error("Outline is empty"); st.cen=[mo.m10/mo.m00, mo.m01/mo.m00];
+  const a20=mo.mu20, a02=mo.mu02, a11=mo.mu11, tr=(a20+a02)/2, dd=Math.sqrt(((a20-a02)/2)**2+a11*a11), ratio=(tr+dd)/Math.max(tr-dd,1e-9);
+  let ang=0.5*Math.atan2(2*a11, a20-a02);
+  // tools are laid along the sheet's long side; trust the shape's own axis only if it is clearly elongated and near vertical
+  const deg=((ang*180/Math.PI)%180+180)%180; const offV=Math.abs(deg-90);
+  if(ratio<2.5 || offV>30) ang=Math.PI/2;
+  st.autoAng=ang; st.elong=ratio;
+  if(st.mask && st.mask!==m) st.mask.delete(); st.mask=m;
+  $("kvSrc").textContent = st.manual ? "Edited" : "Auto"; $("kvSrc").className = "v "+(st.manual?"warn":"");
+}
+function profile(){
+  const ang = st.autoAng*180/Math.PI + 90 + st.rot;
+  const R=cv.getRotationMatrix2D(new cv.Point(st.cen[0],st.cen[1]), ang, 1);
+  const D=Math.ceil(Math.hypot(RW,RH)); R.data64F[2]+= D/2-st.cen[0]; R.data64F[5]+= D/2-st.cen[1];
+  const rm=new cv.Mat(); cv.warpAffine(st.mask,rm,R,new cv.Size(D,D),cv.INTER_NEAREST);
+  const d=rm.data, rows=[];
+  for(let y=0;y<D;y++){ let lo=-1,hi=-1; const o=y*D; for(let x=0;x<D;x++) if(d[o+x]){ if(lo<0) lo=x; hi=x; } if(lo>=0) rows.push([y,lo,hi]); }
+  const len=rows.length, wAt=i=>rows[i][2]-rows[i][1], k=Math.max(1,Math.round(len*0.08));
+  let topW=0, botW=0; for(let i=0;i<k;i++){ topW+=wAt(i); botW+=wAt(len-1-i); }
+  let tipTop = topW<=botW; if(st.flip) tipTop=!tipTop;
+  const ord = tipTop ? rows : rows.slice().reverse(), y0=ord[0][0], acc=[];
+  ord.forEach(r=>{ const idx=Math.floor(Math.abs(r[0]-y0)/S*2); (acc[idx] ||= []).push(r); });
+  st.prof=acc.map((g,i)=>{ if(!g) return null; let l=1e9,h=-1e9; g.forEach(r=>{l=Math.min(l,r[1]);h=Math.max(h,r[2]);}); return {d:i/2, w:(h-l+1)/S}; }).filter(Boolean);
+  st.rotDeg=ang; const Rm=Array.from(R.data64F), tipRow = tipTop ? rows[0][0] : rows[len-1][0];
+  st.toolPoly = st.outlineMM.map(([X,Y])=>{ const u=(X+RX)*S, v=(RY-Y)*S; const x=Rm[0]*u+Rm[1]*v+Rm[2], y=Rm[3]*u+Rm[4]*v+Rm[5];
+      return [(x-D/2)/S, -((y-tipRow)/S*(tipTop?1:-1))]; });
+  rm.delete(); R.delete();
+  const L=st.prof.at(-1).d, Wmax=Math.max(...st.prof.map(p=>p.w));
+  $("fromPhoto").disabled=false; $("fromPhotoHint").textContent=`tool ${L.toFixed(0)} × ${Wmax.toFixed(0)} mm`;
+  setKV("kvLen",`${L.toFixed(1)} mm`); setKV("kvWmax",`${Wmax.toFixed(1)} mm`); setKV("kvRot",`${((((ang%360)+540)%360)-180).toFixed(1)}°`);
+}
+
+/* ---------- drawing ---------- */
+function fitCanvas(c){ const r=c.parentElement.getBoundingClientRect(), dpr=devicePixelRatio||1; c.width=r.width*dpr; c.height=r.height*dpr; return [c.getContext("2d"),c.width,c.height,dpr]; }
+/* ---------- photo view: zoom / pan / outline editing ---------- */
+const V={z:1,tx:0,ty:0,sc0:1,init:false,tool:"pan",hoverPt:null,hoverEdge:null,drag:null,draft:[],cursor:null};
+function viewBase(W,H,dpr){ const sc0=Math.min(W/RW,(H-110*dpr)/RH); return {sc0, ox:(W-RW*sc0)/2, oy:(H-RH*sc0)/2-14*dpr}; }
+function fitView(){ const c=$("cPhoto"), dpr=devicePixelRatio||1, r=c.parentElement.getBoundingClientRect(); const b=viewBase(r.width*dpr,r.height*dpr,dpr); V.sc0=b.sc0; V.z=1; V.tx=b.ox; V.ty=b.oy; V.init=true; }
+const toS=([X,Y])=>[V.tx+(X+RX)*S*V.sc0*V.z, V.ty+(RY-Y)*S*V.sc0*V.z];
+const toMM=(x,y)=>[ (x-V.tx)/(S*V.sc0*V.z)-RX, RY-(y-V.ty)/(S*V.sc0*V.z) ];
+function zoomAt(f,cx,cy){ const z2=Math.min(Math.max(V.z*f,0.5),24); const k=z2/V.z; V.tx=cx-(cx-V.tx)*k; V.ty=cy-(cy-V.ty)*k; V.z=z2; drawPhoto(); }
+function polyPath(ctx,q){ ctx.beginPath(); q.forEach((p,i)=>{ const [x,y]=toS(p); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.closePath(); }
+function drawPhoto(){
+  const c=$("cPhoto"); const [ctx,W,H,dpr]=fitCanvas(c); ctx.clearRect(0,0,W,H);
+  if(!st.rect) return;
+  if(!V.init) fitView();
+  if(!st.rectCanvas){ const t=document.createElement("canvas"); cv.imshow(t,st.rect); st.rectCanvas=t; }
+  const k=S*V.sc0*V.z, x0=V.tx, y0=V.ty;
+  ctx.save(); ctx.shadowColor="rgba(16,24,40,.12)"; ctx.shadowBlur=18*dpr; ctx.shadowOffsetY=4*dpr; ctx.fillStyle="#fff"; ctx.fillRect(x0,y0,RW*V.sc0*V.z,RH*V.sc0*V.z); ctx.restore();
+  ctx.imageSmoothingQuality="high"; ctx.drawImage(st.rectCanvas,x0,y0,RW*V.sc0*V.z,RH*V.sc0*V.z);
+  const editing = V.tool==="edit", polys=st.polys||[];
+  polys.forEach(q=>{ polyPath(ctx,q); ctx.fillStyle="rgba(31,122,224,.10)"; ctx.fill(); ctx.strokeStyle=C.accent; ctx.lineWidth=(editing?1.4:1.6)*dpr; if(!editing) ctx.setLineDash([5*dpr,3*dpr]); ctx.stroke(); ctx.setLineDash([]); });
+  if(st.prof && V.tool==="pan"){ const a=st.rotDeg*Math.PI/180, [cx,cy]=st.cen, dx=-Math.sin(a), dy=Math.cos(a), Lp=st.prof.at(-1).d*S*0.62, sc=V.sc0*V.z;
+    ctx.strokeStyle=C.red; ctx.lineWidth=1.4*dpr; ctx.beginPath(); ctx.moveTo(x0+(cx-dx*Lp)*sc, y0+(cy-dy*Lp)*sc); ctx.lineTo(x0+(cx+dx*Lp)*sc, y0+(cy+dy*Lp)*sc); ctx.stroke();
+    ctx.fillStyle="#fff"; ctx.strokeStyle=C.red; ctx.beginPath(); ctx.arc(x0+cx*sc, y0+cy*sc, 3.5*dpr,0,7); ctx.fill(); ctx.stroke(); }
+  if(editing){ const hs=3.5*dpr;
+    polys.forEach((q,pi)=>q.forEach((p,i)=>{ const [x,y]=toS(p); const hot=V.hoverPt&&V.hoverPt[0]===pi&&V.hoverPt[1]===i;
+      ctx.fillStyle=hot?C.accent:"#fff"; ctx.strokeStyle=C.accent; ctx.lineWidth=1.2*dpr; ctx.fillRect(x-hs,y-hs,2*hs,2*hs); ctx.strokeRect(x-hs,y-hs,2*hs,2*hs); }));
+    if(V.hoverEdge && !V.hoverPt){ const [x,y]=toS(V.hoverEdge.p); ctx.strokeStyle=C.accent; ctx.lineWidth=1.5*dpr; ctx.beginPath(); ctx.arc(x,y,5*dpr,0,7); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-3*dpr,y); ctx.lineTo(x+3*dpr,y); ctx.moveTo(x,y-3*dpr); ctx.lineTo(x,y+3*dpr); ctx.stroke(); } }
+  if(V.tool==="draw" && V.draft.length){ const pts=V.draft.map(toS); ctx.strokeStyle=C.red; ctx.lineWidth=1.6*dpr; ctx.beginPath(); pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y)); if(V.cursor) ctx.lineTo(V.cursor[0],V.cursor[1]); ctx.stroke();
+    pts.forEach(([x,y],i)=>{ ctx.fillStyle=i===0?C.red:"#fff"; ctx.strokeStyle=C.red; ctx.beginPath(); ctx.arc(x,y,(i===0?5:3.5)*dpr,0,7); ctx.fill(); ctx.stroke(); }); }
+  $("zoomPct").textContent=Math.round(V.z*100)+"%";
+}
+function setTool(t){ V.tool=t; V.hoverPt=V.hoverEdge=null; if(t!=="draw") V.draft=[];
+  if(t==="edit" && st.polys && !st.manual){ // thin out the auto outline so its points are easy to grab (~0.4 mm tolerance)
+    st.polys=st.polys.map(q=>rdp(q,0.4)); }
+  document.querySelectorAll("#photoTools [data-tool]").forEach(b=>b.classList.toggle("on",b.dataset.tool===t));
+  $("cPhoto").className=t; toolHint(); drawPhoto(); }
+function toolHint(){ const h={pan:"Drag to pan · scroll to zoom · E edit points · D draw a new outline",
+  edit:"Drag a point · click an edge to add one · Alt-click or Delete removes · scroll to zoom",
+  draw:V.draft.length?`${V.draft.length} points · click the first point or press Enter to finish · Backspace undoes a point · Esc cancels`:"Click around the tool to place points · Space-drag or middle-drag pans"}[V.tool];
+  $("toolHint").textContent=h; }
+function rdp(pts,eps){ if(pts.length<4) return pts.slice();
+  const keep=new Uint8Array(pts.length); keep[0]=keep[pts.length-1]=1; const stack=[[0,pts.length-1]];
+  while(stack.length){ const [i0,i1]=stack.pop(); const [ax,ay]=pts[i0],[bx,by]=pts[i1]; const dx=bx-ax, dy=by-ay, L=Math.hypot(dx,dy)||1e-9; let md=-1, mi=-1;
+    for(let i=i0+1;i<i1;i++){ const d=Math.abs((pts[i][0]-ax)*dy-(pts[i][1]-ay)*dx)/L; if(d>md){md=d;mi=i;} }
+    if(md>eps){ keep[mi]=1; stack.push([i0,mi],[mi,i1]); } }
+  return pts.filter((_,i)=>keep[i]); }
+function polyArea(q){ let a=0; for(let i=0;i<q.length;i++){ const [x1,y1]=q[i],[x2,y2]=q[(i+1)%q.length]; a+=x1*y2-x2*y1; } return Math.abs(a)/2; }
+function pushUndo(){ st.undo=(st.undo||[]); st.undo.push(JSON.stringify(st.polys)); if(st.undo.length>60) st.undo.shift(); $("undoBtn").disabled=false; }
+function applyPolys(){ // rebuild the mask from the edited polygons and recompute everything downstream
+  const m=cv.Mat.zeros(RH,RW,cv.CV_8UC1); const mv=new cv.MatVector();
+  st.polys.filter(q=>q.length>=3).forEach(q=>{ const flat=[]; q.forEach(([X,Y])=>flat.push(Math.round((X+RX)*S-0.5),Math.round((RY-Y)*S-0.5))); mv.push_back(cv.matFromArray(q.length,1,cv.CV_32SC2,flat)); });
+  cv.fillPoly(m,mv,new cv.Scalar(255)); for(let i=0;i<mv.size();i++) mv.get(i).delete(); mv.delete();
+  const order=st.polys.filter(q=>q.length>=3).sort((a,b)=>polyArea(b)-polyArea(a)); st.outlineMM=order[0]; st.parts=order.slice(1);
+  st.manual=true; $("autoOutline").disabled=false;
+  try{ setMask(m); profile(); drawProfile(); refreshHolder(); }catch(e){ status(e.message,"err"); }
+  drawPhoto(); }
+function hitTest(x,y){ const dpr=devicePixelRatio||1, R2=(7*dpr)**2; let best=null, bd=R2;
+  (st.polys||[]).forEach((q,pi)=>q.forEach((p,i)=>{ const [sx,sy]=toS(p), d=(sx-x)**2+(sy-y)**2; if(d<bd){bd=d;best=[pi,i];} }));
+  if(best) return {pt:best};
+  let be=null, ed=(6*dpr)**2;
+  (st.polys||[]).forEach((q,pi)=>q.forEach((p,i)=>{ const [ax,ay]=toS(p),[bx,by]=toS(q[(i+1)%q.length]); const dx=bx-ax, dy=by-ay, L2=dx*dx+dy*dy||1; let t=((x-ax)*dx+(y-ay)*dy)/L2; t=Math.max(0,Math.min(1,t));
+    const px=ax+t*dx, py=ay+t*dy, d=(px-x)**2+(py-y)**2; if(d<ed){ ed=d; be={pi,i,p:toMM(px,py)}; } }));
+  return be?{edge:be}:{}; }
+function closeDraft(){ if(V.draft.length<3){ V.draft=[]; toolHint(); drawPhoto(); return; } pushUndo(); st.polys=[V.draft.slice()]; V.draft=[]; applyPolys(); setTool("edit"); }
+(function wireCanvas(){
+  const c=$("cPhoto"); let spaceDown=false;
+  const pos=e=>{ const r=c.getBoundingClientRect(), dpr=devicePixelRatio||1; return [(e.clientX-r.left)*dpr,(e.clientY-r.top)*dpr]; };
+  c.addEventListener("wheel",e=>{ if(!st.rect) return; e.preventDefault(); const [x,y]=pos(e); zoomAt(Math.exp(-e.deltaY*0.0015),x,y); },{passive:false});
+  c.addEventListener("contextmenu",e=>e.preventDefault());
+  c.addEventListener("pointerdown",e=>{ if(!st.rect) return; const [x,y]=pos(e); c.setPointerCapture(e.pointerId);
+    const panIt = V.tool==="pan" || e.button===1 || spaceDown;
+    if(panIt){ V.drag={kind:"pan",x,y,tx:V.tx,ty:V.ty}; c.classList.add("panning"); return; }
+    if(V.tool==="edit" && e.button===0){ const h=hitTest(x,y);
+      if(h.pt){ if(e.altKey){ const q=st.polys[h.pt[0]]; if(q.length>3){ pushUndo(); q.splice(h.pt[1],1); V.hoverPt=null; applyPolys(); } return; }
+        pushUndo(); V.drag={kind:"pt",pi:h.pt[0],i:h.pt[1],moved:false}; return; }
+      if(h.edge){ pushUndo(); st.polys[h.edge.pi].splice(h.edge.i+1,0,h.edge.p); V.drag={kind:"pt",pi:h.edge.pi,i:h.edge.i+1,moved:true}; V.hoverPt=[h.edge.pi,h.edge.i+1]; V.hoverEdge=null; drawPhoto(); return; }
+      V.drag={kind:"pan",x,y,tx:V.tx,ty:V.ty}; c.classList.add("panning"); return; }
+    if(V.tool==="draw" && e.button===0){ const p=toMM(x,y);
+      if(V.draft.length>=3){ const [fx,fy]=toS(V.draft[0]); if(Math.hypot(fx-x,fy-y)<9*(devicePixelRatio||1)){ closeDraft(); return; } }
+      V.draft.push(p); toolHint(); drawPhoto(); } });
+  c.addEventListener("pointermove",e=>{ if(!st.rect) return; const [x,y]=pos(e);
+    if(V.drag?.kind==="pan"){ V.tx=V.drag.tx+(x-V.drag.x); V.ty=V.drag.ty+(y-V.drag.y); drawPhoto(); return; }
+    if(V.drag?.kind==="pt"){ st.polys[V.drag.pi][V.drag.i]=toMM(x,y); V.drag.moved=true; drawPhoto(); return; }
+    if(V.tool==="edit"){ const h=hitTest(x,y); V.hoverPt=h.pt||null; V.hoverEdge=h.edge||null; c.className="edit"+(h.pt?" hoverpt":h.edge?" hoveredge":""); drawPhoto(); }
+    if(V.tool==="draw"){ V.cursor=[x,y]; drawPhoto(); } });
+  c.addEventListener("pointerup",e=>{ const d=V.drag; V.drag=null; c.classList.remove("panning");
+    if(d?.kind==="pt"){ if(d.moved) applyPolys(); else st.undo.pop(); } });
+  addEventListener("keydown",e=>{ if(curView!=="photo"||!st.rect) return; if(/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName)) return;
+    if(e.code==="Space"){ spaceDown=true; return; }
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){ e.preventDefault(); undoOutline(); return; }
+    const k=e.key.toLowerCase();
+    if(k==="v") setTool("pan"); else if(k==="e") setTool("edit"); else if(k==="d") setTool("draw"); else if(k==="f"){ fitView(); drawPhoto(); }
+    else if(k==="enter" && V.tool==="draw") closeDraft();
+    else if(k==="escape" && V.tool==="draw"){ V.draft=[]; toolHint(); drawPhoto(); }
+    else if(k==="backspace" && V.tool==="draw"){ V.draft.pop(); toolHint(); drawPhoto(); }
+    else if((k==="delete"||k==="backspace") && V.tool==="edit" && V.hoverPt){ const q=st.polys[V.hoverPt[0]]; if(q.length>3){ pushUndo(); q.splice(V.hoverPt[1],1); V.hoverPt=null; applyPolys(); } } });
+  addEventListener("keyup",e=>{ if(e.code==="Space") spaceDown=false; });
+})();
+function undoOutline(){ if(!st.undo?.length) return; st.polys=JSON.parse(st.undo.pop()); $("undoBtn").disabled=!st.undo.length; applyPolys(); }
+document.querySelectorAll("#photoTools [data-tool]").forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
+$("undoBtn").onclick=undoOutline;
+$("autoOutline").onclick=()=>{ $("autoOutline").disabled=true; $("undoBtn").disabled=true; V.draft=[]; resegment(); if(V.tool==="edit") setTool("edit"); };
+$("zoomIn").onclick=()=>{ const c=$("cPhoto"); zoomAt(1.25,c.width/2,c.height/2); };
+$("zoomOut").onclick=()=>{ const c=$("cPhoto"); zoomAt(0.8,c.width/2,c.height/2); };
+$("zoomFit").onclick=()=>{ fitView(); drawPhoto(); };
+function drawProfile(){
+  const c=$("cProf"); const [ctx,W,H,dpr]=fitCanvas(c); ctx.clearRect(0,0,W,H);
+  if(!st.prof) return; const P=st.prof, L=P.at(-1).d, Wmax=Math.max(...P.map(p=>p.w));
+  const pl=64*dpr, pr=40*dpr, pt=70*dpr, pb=90*dpr, sx=(W-pl-pr)/L, sy=(H-pt-pb)/Math.max(Wmax*1.12,10);
+  const X=d=>pl+d*sx, Y=w=>H-pb-w*sy;
+  ctx.font=`${11*dpr}px "JetBrains Mono", monospace`; ctx.lineWidth=1*dpr;
+  for(let d=0; d<=L; d+=10){ ctx.strokeStyle=d%50===0?"#d9dce1":C.line; ctx.beginPath(); ctx.moveTo(X(d),pt); ctx.lineTo(X(d),H-pb); ctx.stroke(); if(d%20===0){ ctx.fillStyle=C.faint; ctx.fillText(d,X(d)-6*dpr,H-pb+18*dpr);} }
+  for(let w=0; w<=Wmax*1.12; w+=10){ ctx.strokeStyle=C.line; ctx.beginPath(); ctx.moveTo(pl,Y(w)); ctx.lineTo(W-pr,Y(w)); ctx.stroke(); ctx.fillStyle=C.faint; ctx.fillText(w,pl-28*dpr,Y(w)+4*dpr); }
+  ctx.font=`${12*dpr}px Inter, sans-serif`; ctx.fillStyle=C.muted; ctx.fillText("Distance from tip (mm)",W/2-60*dpr,H-pb+40*dpr);
+  ctx.save(); ctx.translate(22*dpr,H/2+40*dpr); ctx.rotate(-Math.PI/2); ctx.fillText("Outer width (mm)",0,0); ctx.restore();
+  const hd=st.holder;
+  if(hd){ ctx.fillStyle="rgba(31,122,224,.07)"; ctx.fillRect(X(0),pt,X(hd.dpass)-X(0),H-pb-pt);
+    ctx.fillStyle=C.accent; ctx.font=`500 ${11*dpr}px Inter, sans-serif`; ctx.fillText("PASSES THROUGH",X(0)+8*dpr,pt+16*dpr);
+    ctx.strokeStyle=C.accent; ctx.lineWidth=1.3*dpr; ctx.setLineDash([6*dpr,4*dpr]); ctx.beginPath(); ctx.moveTo(pl,Y(hd.W)); ctx.lineTo(W-pr,Y(hd.W)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font=`${11*dpr}px "JetBrains Mono", monospace`; ctx.fillText(`opening ${hd.W.toFixed(1)}`,W-pr-110*dpr,Y(hd.W)-7*dpr);
+    ctx.strokeStyle="rgba(31,122,224,.45)"; ctx.setLineDash([2*dpr,3*dpr]); ctx.beginPath(); ctx.moveTo(pl,Y(hd.wmax)); ctx.lineTo(X(hd.dpass),Y(hd.wmax)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=C.muted; ctx.fillText(`widest ${hd.wmax.toFixed(1)}`,X(0)+8*dpr,Y(hd.wmax)-7*dpr); }
+  ctx.strokeStyle=C.text; ctx.lineWidth=1.8*dpr; ctx.beginPath(); P.forEach((p,i)=> i?ctx.lineTo(X(p.d),Y(p.w)):ctx.moveTo(X(p.d),Y(p.w))); ctx.stroke();
+  if(hd && hd.seat!=null){ ctx.fillStyle="#fff"; ctx.strokeStyle=C.green; ctx.lineWidth=2*dpr; ctx.beginPath(); ctx.arc(X(hd.seat),Y(hd.W),5.5*dpr,0,7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle=C.green; ctx.font=`${11*dpr}px "JetBrains Mono", monospace`; ctx.fillText(`stops ${hd.seat.toFixed(1)}`,X(hd.seat)+10*dpr,Y(hd.W)+18*dpr); }
+}
+
+/* ---------- step 3: holder ---------- */
+function autoPass(){ const P=st.prof, L=P.at(-1).d; let best=null; P.forEach(p=>{ if(p.d>L*0.2 && p.d<L*0.65 && (!best||p.w<best.w)) best=p; }); return Math.round(best?best.d:L*0.4); }
+function computeHolder(){
+  if(!st.prof) return null; const P=st.prof, L=P.at(-1).d, clr=+$("clr").value;
+  let dpass=+$("dpass").value; if(!dpass||dpass<=0||dpass>=L){ dpass=autoPass(); $("dpass").value=dpass; }
+  const wmax=Math.max(...P.filter(p=>p.d<=dpass).map(p=>p.w)), W=wmax+clr;
+  const U = st.type==="round" ? W : (+$("thick").value + +$("tclr").value);
+  let seat=null; for(const p of P){ if(p.d>dpass && p.w>=W){ seat=p.d; break; } }
+  const bear = seat==null?0 : Math.max(...P.filter(p=>p.d>=seat && p.d<=seat+5).map(p=>p.w))-W;
+  return { type:st.type, W, U, dpass, seat, bear, wmax };
+}
+/* ---------- geometry helpers ---------- */
+function filletR(){ return segVal("filSeg")==="on" ? Math.max(0,+$("filR").value||0) : 0; }
+// rounded / chamfered rectangle. corners: {x0y0,x1y0,x1y1,x0y1}: r>0 fillet, r<0 chamfer
+function rr(x0,x1,y0,y1,c={}){ const {CrossSection}=M;
+  let cs=CrossSection.square([x1-x0,y1-y0]).translate([x0,y0]);
+  for(const [k,r] of Object.entries(c)){ if(!r) continue; const a=Math.min(Math.abs(r),(x1-x0)/2-0.01,(y1-y0)/2-0.01); if(a<=0.05) continue;
+    const cx=k[1]==="0"?x0:x1, cy=k[3]==="0"?y0:y1, sx=cx===x0?1:-1, sy=cy===y0?1:-1;
+    const sq=CrossSection.square([a,a]).translate([sx>0?cx:cx-a, sy>0?cy:cy-a]);
+    if(r>0) cs=cs.subtract(sq).add(CrossSection.circle(a,64).translate([cx+sx*a,cy+sy*a]).intersect(sq));
+    else { let tri=[[cx,cy],[cx+sx*a,cy],[cx,cy+sy*a]]; if(sx*sy<0) tri.reverse(); cs=cs.subtract(new CrossSection([tri])); } }
+  return cs; }
+const toX=(cs,x0,len)=>M.Manifold.extrude(cs.mirror([1,0]),len).rotate([0,90,0]).translate([x0,0,0]);   // profile (z,y) along x
+const toY=(cs,y0,h)=>M.Manifold.extrude(cs.mirror([0,1]),h).rotate([-90,0,0]).translate([0,y0,0]);    // plan (x,z) along y
+function hooksFor(len){ const {Manifold,CrossSection}=M; const G=+$("gap").value, yT=SK.yTop;
+  const hp=[[0.5,yT],[-(G+SK.latchT),yT],[-(G+SK.latchT),yT-SK.tau-SK.latchL],[-G,yT-SK.tau-SK.latchL],[-G,yT-SK.tau],[0.5,yT-SK.tau]].map(([u,v])=>[-u,v]).reverse();
+  const hook=Manifold.extrude(new CrossSection([hp]),SK.tabW).rotate([0,90,0]);
+  const n = len>=48 ? Math.floor((len-8)/SK.pitch)+1 : 1; let hs=null;
+  for(let i=0;i<n;i++){ const x=(i-(n-1)/2)*SK.pitch, h=hook.translate([x-SK.tabW/2,0,0]); hs= hs? hs.add(h) : h; }
+  return {hooks:hs, n}; }
+const BED_CH = -0.6;   // small chamfer on edges that touch the print bed
+
+function buildHolder(hd){
+  const {Manifold, CrossSection}=M; const F=+$("fun").value, shelfT=+$("shelfT").value, wall=+$("wall").value, side=+$("side").value, plateH=+$("plateH").value;
+  const PT=SK.plateT, yT=SK.yTop, R=filletR();
+  let PW=Math.max(48, Math.ceil((hd.W+2*side)/2)*2);
+  const nH=Math.max(2, Math.floor((PW-8)/SK.pitch)+1); PW=Math.max(PW,(nH-1)*SK.pitch+8);
+  const z0=PT+wall, z1=z0+hd.U, zF=z1+wall, yb=yT-plateH, ys=yT-shelfT;
+  // back plate: round its front edges (limited by plate thickness)
+  const rp=Math.min(R,PT-0.8);
+  const plate=toX(rr(0,PT,yb,yT,{x1y0:rp}),-PW/2,PW).intersect(toY(rr(-PW/2,PW/2,-1,PT,{x0y1:rp,x1y1:rp}),yb-1,plateH+2));
+  // shelf: fillet the front-bottom edge and the two front vertical edges; bed edge gets a small chamfer
+  const rs=Math.min(R,shelfT-1), rv=Math.min(R,(PW-hd.W)/2-1.5,zF-PT);
+  const shelf=toX(rr(PT-0.5,zF,ys,yT,{x1y0:rs, x1y1: R>0?BED_CH:0}),-PW/2,PW).intersect(toY(rr(-PW/2,PW/2,PT-1,zF,{x0y1:rv,x1y1:rv}),ys-1,shelfT+2));
+  let body=plate.add(shelf);
+  const zc=(z0+z1)/2, cut=ys-1;
+  if(hd.type==="slot"){
+    const W2=hd.W/2; const fCS=new CrossSection([[[-W2,cut],[W2,cut],[W2,yT-F],[W2+F+1,yT+1],[-W2-F-1,yT+1],[-W2,yT-F]]]);
+    body=body.subtract(Manifold.extrude(fCS,hd.U).translate([0,0,z0]));
+  } else {
+    const r=hd.W/2; const cyl=Manifold.cylinder(shelfT+2,r,r,96).rotate([-90,0,0]).translate([0,cut,zc]);
+    const cone=Manifold.cylinder(F+1,r,r+F+1,96).rotate([-90,0,0]).translate([0,yT-F,zc]);
+    body=body.subtract(cyl).subtract(cone);
+  }
+  const {hooks,n}=hooksFor(PW); body=body.add(hooks);
+  return {body, PW, nHook:n, zc, F, depth:zF};
+}
+
+/* ---------- tray ---------- */
+function segVal(id){ return document.querySelector(`#${id} button.on`).dataset.v; }
+function buildTray(){
+  const {CrossSection}=M; const PT=SK.plateT, yT=SK.yTop, R=filletR();
+  const prof=segVal("profSeg"), cL=segVal("endL")==="closed", cR=segVal("endR")==="closed";
+  const L=Math.max(10,+$("tL").value), H=Math.max(3,+$("tH").value), t=Math.max(0.8,+$("tWall").value), fl=Math.max(0.8,+$("tFloor").value);
+  const rect=(z0,z1,y0,y1)=>CrossSection.square([z1-z0,y1-y0]).translate([z0,y0]);
+  let D, inner, outer, yBot, Rc=null;
+  if(prof==="square"){
+    D=Math.max(4,+$("tD").value);
+    inner=rr(PT,PT+D,yT-H,yT+1,{x1y0:Math.max(R-t,0)});
+    outer=rr(PT-0.5,PT+D+t,yT-H-fl,yT,{x1y0:Math.min(R,H), x1y1: R>0?BED_CH:0}); yBot=yT-H-fl;
+  } else {
+    Rc=(Math.max(2,+$("tD").value)+Math.max(0,+$("tRoom").value))/2; D=2*Rc;
+    const zc=PT+Rc, yc=yT-H+Rc;
+    inner=CrossSection.circle(Rc,160).translate([zc,yc]);
+    if(yc<yT+1) inner=inner.add(rect(PT,PT+D,yc,yT+1));
+    yBot=yc-Rc-t;
+    outer=inner.offset(t,"Round",2,128).add(rect(PT-0.5,zc,yBot,Math.min(yc,yT))).intersect(rect(0,PT+D+t+1,yBot-1,yT));
+    if(R>0 && H>=Rc) outer=outer.subtract(new CrossSection([[[PT+D+t+1,yT+1],[PT+D+t-0.6,yT+1],[PT+D+t+1,yT-1.6]]]).simplify(0));
+  }
+  const plateBot=Math.min(yBot, yT-12);
+  const rp = plateBot<yBot-0.5 ? Math.min(R,PT-0.8) : 0;
+  outer=outer.add(rr(0,PT,plateBot,yT,{x1y0:rp})).simplify(0.02); inner=inner.simplify(0.02);
+  const Lo=L+(cL?t:0)+(cR?t:0), x0=-Lo/2, xi0=x0+(cL?t:-1), xi1=Lo/2-(cR?t:-1), zFr=PT+D+t;
+  const rv=Math.min(R, zFr-PT-0.5), ri=Math.max(R-t,0);
+  const outerS=toX(outer,x0,Lo).intersect(toY(rr(x0,-x0,-1,zFr,{x0y1:rv,x1y1:rv}),plateBot-1,yT-plateBot+2));
+  const innerS=toX(inner,xi0,xi1-xi0).intersect(toY(rr(xi0,xi1,PT-1,PT+D,{x0y1:cL?ri:0,x1y1:cR?ri:0}),yBot-1,yT-yBot+4));
+  let body=outerS.subtract(innerS);
+  const {hooks,n}=hooksFor(Lo); body=body.add(hooks);
+  return {body, PW:Lo, nHook:n, depth:zFr, height:yT-plateBot, prof, D, L, H, Rc};
+}
+/* ---------- three.js ---------- */
+let renderer, scene, camera, controls, holderObj, toolObj, boardObj;
+function init3D(){
+  const el=$("three"); renderer=new THREE.WebGLRenderer({antialias:true,alpha:true}); renderer.setPixelRatio(devicePixelRatio); el.appendChild(renderer.domElement);
+  renderer.domElement.style.width="100%"; renderer.domElement.style.height="100%";
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(30,1,1,5000); camera.position.set(250,95,380);
+  controls=new OrbitControls(camera,renderer.domElement); controls.target.set(0,-25,12); controls.enableDamping=true;
+  scene.add(new THREE.HemisphereLight(0xffffff,0xdfe3ea,2.0)); const dl=new THREE.DirectionalLight(0xffffff,1.5); dl.position.set(90,160,140); scene.add(dl);
+  const dl2=new THREE.DirectionalLight(0xffffff,0.5); dl2.position.set(-120,40,80); scene.add(dl2);
+  // SKÅDIS board patch with slot pattern (white)
+  const bw=200, bh=160; const shape=new THREE.Shape([new THREE.Vector2(-bw/2,-bh/2-25),new THREE.Vector2(bw/2,-bh/2-25),new THREE.Vector2(bw/2,bh/2-25),new THREE.Vector2(-bw/2,bh/2-25)]);
+  const slot=(cx,cy)=>{ const p=new THREE.Path(); p.absarc(cx,cy+5,2.5,0,Math.PI,false); p.lineTo(cx-2.5,cy-5); p.absarc(cx,cy-5,2.5,Math.PI,2*Math.PI,false); p.lineTo(cx+2.5,cy+5); return p; };
+  for(let x=-80;x<=80;x+=40) for(let y=-100;y<=40;y+=40){ shape.holes.push(slot(x,y)); if(x+20<95) shape.holes.push(slot(x+20,y+20)); }
+  const bg=new THREE.ExtrudeGeometry(shape,{depth:5,bevelEnabled:false}); bg.translate(0,0,-5.05);
+  boardObj=new THREE.Mesh(bg,new THREE.MeshStandardMaterial({color:0xf4f4f1,roughness:.85})); scene.add(boardObj);
+  const edges=new THREE.LineSegments(new THREE.EdgesGeometry(bg,30),new THREE.LineBasicMaterial({color:0xd9dce1})); scene.add(edges);
+  const loop=()=>{ const r=el.getBoundingClientRect(); if(r.width&&r.height){ renderer.setSize(r.width,r.height,false); camera.aspect=r.width/r.height; camera.updateProjectionMatrix(); }
+    controls.update(); renderer.render(scene,camera); requestAnimationFrame(loop); }; loop();
+}
+function meshToGeom(mesh){ const g=new THREE.BufferGeometry(), n=mesh.numProp, vp=mesh.vertProperties, pos=new Float32Array(mesh.numVert*3);
+  for(let i=0;i<mesh.numVert;i++){ pos[3*i]=vp[n*i]; pos[3*i+1]=vp[n*i+1]; pos[3*i+2]=vp[n*i+2]; }
+  g.setAttribute("position",new THREE.BufferAttribute(pos,3)); g.setIndex(new THREE.BufferAttribute(new Uint32Array(mesh.triVerts),1)); g.computeVertexNormals(); return g; }
+function update3DTray(b){
+  if(holderObj){ scene.remove(holderObj); holderObj.geometry.dispose(); }
+  holderObj=new THREE.Mesh(meshToGeom(b.body.getMesh()), new THREE.MeshStandardMaterial({color:0x4a8fe0,roughness:.45,metalness:0,flatShading:true})); scene.add(holderObj);
+  if(toolObj){ scene.remove(toolObj); toolObj.geometry.dispose(); toolObj=null; }
+}
+function update3D(built,hd){
+  if(holderObj){ scene.remove(holderObj); holderObj.geometry.dispose(); }
+  holderObj=new THREE.Mesh(meshToGeom(built.body.getMesh()), new THREE.MeshStandardMaterial({color:0x4a8fe0,roughness:.45,metalness:0,flatShading:true}));
+  scene.add(holderObj);
+  if(toolObj){ scene.remove(toolObj); toolObj.geometry.dispose(); toolObj=null; }
+  if(st.toolPoly && hd.seat!=null){ let g;
+    if(hd.type==="round"){ // round tools: revolve the width profile around the axis
+      const P=st.prof, pts=[new THREE.Vector2(0,0)]; for(let i=0;i<P.length;i+=2) pts.push(new THREE.Vector2(P[i].w/2,P[i].d)); pts.push(new THREE.Vector2(0,P.at(-1).d));
+      g=new THREE.LatheGeometry(pts,64); g.translate(0,(SK.yTop-built.F)-hd.seat, built.zc);
+    } else {
+      const shape=new THREE.Shape(st.toolPoly.map(([x,y])=>new THREE.Vector2(x,y))), T=+$("thick").value;
+      g=new THREE.ExtrudeGeometry(shape,{depth:T,bevelEnabled:false,curveSegments:1});
+      g.scale(1,-1,1); g.translate(0,(SK.yTop-built.F)-hd.seat, built.zc-T/2);
+    }
+    toolObj=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0x8a9099,transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false})); scene.add(toolObj); }
+}
+
+/* ---------- STL ---------- */
+function stlBlob(mesh){
+  const n=mesh.numProp, vp=mesh.vertProperties, tv=mesh.triVerts, nt=tv.length/3, buf=new ArrayBuffer(84+50*nt), dv=new DataView(buf); dv.setUint32(80,nt,true);
+  const P=i=>[vp[n*i], vp[n*i+2], SK.yTop-vp[n*i+1]];
+  for(let t=0;t<nt;t++){ const a=P(tv[3*t]), b=P(tv[3*t+1]), c=P(tv[3*t+2]), o=84+50*t;
+    const u=[b[0]-a[0],b[1]-a[1],b[2]-a[2]], v=[c[0]-a[0],c[1]-a[1],c[2]-a[2]], N=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]], l=Math.hypot(...N)||1;
+    [N[0]/l,N[1]/l,N[2]/l,...a,...b,...c].forEach((x,k)=>dv.setFloat32(o+4*k,x,true)); }
+  return new Blob([buf],{type:"model/stl"}); }
+
+/* ---------- glue ---------- */
+let rebuildTimer;
+function refreshHolder(){ clearTimeout(rebuildTimer); rebuildTimer=setTimeout(()=>{ try{
+  if(st.type==="tray"){ refreshTray(); return; }
+  const hd=computeHolder(); if(!hd) return; st.holder=hd;
+  const built=buildHolder(hd); st.built=built; update3D(built,hd);
+  $("wTool").value=hd.wmax.toFixed(1); $("wOut").value=hd.W.toFixed(1); $("uOut").value=hd.U.toFixed(1);
+  setKV("rW",`${built.PW} mm`); setKV("rHooks",`${built.nHook} × 40 mm pitch`); setKV("rVol",`${(built.body.volume()/1000).toFixed(1)} cm³`);
+  if(hd.seat==null){ setKV("rSeat","falls through","bad"); setKV("rBear","—"); }
+  else { setKV("rSeat",`${hd.seat.toFixed(1)} mm from tip`,"ok"); setKV("rBear",`+${hd.bear.toFixed(1)} mm`, hd.bear>=3?"ok":"warn"); }
+  $("chipA").innerHTML=`Opening <b class="mono">${hd.W.toFixed(1)} × ${hd.U.toFixed(1)}</b>`;
+  $("chipB").innerHTML=`Holder <b class="mono">${built.PW} mm</b>`;
+  $("chipC").innerHTML= hd.seat==null ? `<b style="color:var(--bad)">Falls through</b>` : `Stops <b class="mono">${hd.seat.toFixed(1)} mm</b>`;
+  $("topChips").classList.remove("hide"); updateCaption();
+  $("dl").disabled=false; drawProfile(); status("Ready","ok");
+}catch(e){ console.error(e); status(e.message,"err"); } },120); }
+
+function refreshTray(){
+  $("tFloor").disabled = segVal("profSeg")==="round"; $("tFloor").closest(".f").style.opacity = segVal("profSeg")==="round" ? .45 : 1;
+  const b=buildTray(); st.built=b; st.holder=null;
+  update3DTray(b);
+  setKV("rW",`${b.PW.toFixed(1)} mm`); setKV("rHooks", b.nHook>1?`${b.nHook} × 40 mm pitch`:"1 (may swivel)", b.nHook>1?"":"warn"); setKV("rVol",`${(b.body.volume()/1000).toFixed(1)} cm³`);
+  $("lSeat").textContent="Outer depth"; setKV("rSeat",`${b.depth.toFixed(1)} mm`); $("lBear").textContent="Outer height"; setKV("rBear",`${b.height.toFixed(1)} mm`);
+  $("chipA").innerHTML= b.prof==="round" ? `Cradle <b class="mono">R ${b.Rc.toFixed(1)} × ${b.L}</b>` : `Inside <b class="mono">${b.L} × ${b.D} × ${b.H}</b>`; $("chipB").innerHTML=`Outer <b class="mono">${b.PW.toFixed(0)} mm</b>`; $("chipC").innerHTML=`<b>${b.prof==="square"?"Square":"Round"}</b>`;
+  $("topChips").classList.remove("hide");
+  const span=b.D; $("trayNote").innerHTML = b.prof==="square"
+    ? (span>40?`<span style="color:var(--warn)">Printed top-face-down, the floor bridges ${span} mm. Over ~40 mm may sag.</span>`:`Printed top-face-down; the floor bridges ${span} mm (fine).`)
+    : `Cradle radius ${b.Rc.toFixed(1)} mm. Printed top-face-down, the bottom of the curve is a short ${(2*b.Rc*Math.sin(Math.PI/9)).toFixed(0)} mm bridge; no supports needed.`;
+  if(b.PW>175) $("trayNote").innerHTML+=`<br><span style="color:var(--bad)">Longer than the A1 mini bed (180 mm).</span>`;
+  $("dl").disabled=false; $("empty").classList.add("hide"); updateCaption(); status("Ready","ok");
+}
+function updateCaption(){
+  if(st.type==="tray"&&st.built){ $("captionText").textContent=`tray · prints top-face-down · drag to orbit`; $("caption").classList.remove("hide"); return; }
+  if(curView==="photo"){ $("caption").classList.add("hide"); return; }
+  const hd=st.holder; if(!hd){ $("caption").classList.add("hide"); return; }
+  const t={photo:`${S} px/mm · fit ${st.meta.rms.toFixed(2)} mm`, prof:`widest ${hd.wmax.toFixed(1)} + ${(+$("clr").value).toFixed(1)} = ${hd.W.toFixed(1)} mm opening`, "3d":`${hd.type==="slot"?"slot":"Ø"} ${hd.W.toFixed(1)} × ${hd.U.toFixed(1)} mm · drag to orbit`}[curView];
+  $("captionText").textContent=t; $("caption").classList.remove("hide"); }
+function resegment(){ const t0=performance.now(); try{ segment(); profile(); drawPhoto(); drawProfile(); refreshHolder(); window.__segMs=performance.now()-t0; }catch(e){ console.error(e); status(e.message,"err"); } }
+function reprofile(){ try{ profile(); drawPhoto(); drawProfile(); refreshHolder(); }catch(e){ status(e.message,"err"); } }
+
+async function onFile(file){
+  if(!cv){ status("Still loading libraries…","busy"); return; }
+  status("Finding sheet markers…","busy");
+  const url=URL.createObjectURL(file), img=new Image(); img.src=url; await img.decode(); st.img=img; st.rectCanvas=null;
+  const base=file.name.replace(/\.[^.]+$/,""); $("fname").value="skadis_holder_"+base; $("crumbName").textContent=base;
+  $("thumbImg").src=url; $("thumbName").textContent=file.name; $("thumb").classList.remove("hide");
+  await new Promise(r=>setTimeout(r,30));
+  V.init=false; V.draft=[]; $("undoBtn").disabled=true; $("autoOutline").disabled=true;
+  try{ processImage(); $("empty").classList.add("hide"); $("dpass").value=0; showView(curView); resegment(); }
+  catch(e){ console.error(e); status(e.message,"err"); }
+}
+async function loadSample(){ try{ status("Loading sample…","busy"); const r=await fetch("samples/hozan_p14_pliers.jpg"); if(!r.ok) throw new Error();
+  const b=await r.blob(); await onFile(new File([b],"sample_hozan_p14_pliers.jpg",{type:"image/jpeg"})); $("thick").value=10.4; }
+  catch(e){ status("Sample needs the hosted page (not a local file)","err"); } }
+$("sampleBtn").onclick=loadSample; $("sampleLink").onclick=e=>{ e.preventDefault(); loadSample(); };
+window.__loadFile=onFile; window.__st=st; window.__toS=toS; window.__V=V;
+
+let curView="photo";
+function showView(v){ curView=v; document.querySelectorAll("#viewSeg button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  if(!st.rect && st.type!=="tray") return;
+  if(!st.rect && st.type==="tray" && v!=="3d"){ v="3d"; curView=v; document.querySelectorAll("#viewSeg button").forEach(b=>b.classList.toggle("on",b.dataset.v===v)); }
+  $("empty").classList.toggle("hide", !!st.rect || st.type==="tray"); $("lPhoto").classList.toggle("hide",v!=="photo"); $("lProf").classList.toggle("hide",v!=="prof"); $("three").classList.toggle("hide",v!=="3d");
+  $("photoTools").classList.toggle("hide", v!=="photo"||!st.rect); $("toolHintWrap").classList.toggle("hide", v!=="photo"||!st.rect); toolHint();
+  if(v==="photo") drawPhoto(); if(v==="prof") drawProfile(); updateCaption(); }
+$("viewSeg").onclick=e=>{ const b=e.target.closest("button"); if(b) showView(b.dataset.v); };
+$("typeSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; st.type=b.dataset.v; document.querySelectorAll("#typeSeg button").forEach(x=>x.classList.toggle("on",x===b));
+  $("typeNote").textContent= st.type==="slot" ? "For pliers, nippers and scissors. The tool drops in tip-first and rests on its shoulders." : "For screwdrivers. The shaft goes through a round hole and the handle rests on the rim.";
+  $("depthBlock").classList.toggle("hide",st.type==="round");
+  document.querySelectorAll(".photoOnly").forEach(e=>e.classList.toggle("hide",st.type==="tray")); document.querySelectorAll(".trayOnly").forEach(e=>e.classList.toggle("hide",st.type!=="tray"));
+  $("lSeat").textContent="Stops at"; $("lBear").textContent="Shoulder overlap";
+  if(st.type==="tray"){ $("typeNote").textContent="A plain tray for things without a neck: pens, markers, tape rolls. No photo needed."; showView("3d"); }
+  else if(!st.rect){ $("dl").disabled=true; $("topChips").classList.add("hide"); $("caption").classList.add("hide"); }
+  refreshHolder(); };
+const drop=$("drop");
+drop.onclick=()=>$("file").click(); $("openBtn").onclick=()=>$("file").click(); $("file").onchange=e=>e.target.files[0]&&onFile(e.target.files[0]);
+["dragover","dragenter"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add("over");}));
+["dragleave","drop"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove("over");}));
+drop.addEventListener("drop",e=>{ const f=e.dataTransfer.files[0]; if(f) onFile(f); });
+["th","rot"].forEach(id=>sliderFill($(id)));
+$("th").oninput=e=>{ sliderFill(e.target); $("thO").textContent=e.target.value; };
+$("th").onchange=e=>{ st.th=+e.target.value; status(st.manual?"Re-detecting (manual edits replaced)…":"Updating outline…","busy"); $("undoBtn").disabled=true; $("autoOutline").disabled=true; setTimeout(()=>{ resegment(); if(V.tool==="edit") setTool("edit"); },20); };
+$("rot").oninput=e=>{ sliderFill(e.target); $("rotO").textContent=(+e.target.value).toFixed(1)+"°"; };
+$("rot").onchange=e=>{ st.rot=+e.target.value; setTimeout(reprofile,20); };
+$("flip").onclick=()=>{ st.flip=!st.flip; $("dpass").value=0; reprofile(); };
+["profSeg","endL","endR"].forEach(id=>$(id).onclick=e=>{ const b=e.target.closest("button"); if(!b) return; $(id).querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
+  if(id==="profSeg"){ const round=b.dataset.v==="round"; $("tD").value= round?30:20; $("tH").value= round?16:15; syncTrayInputs(); } refreshHolder(); });
+["tL","tD","tH","tWall","tFloor","tRoom","filR"].forEach(id=>$(id).addEventListener("input",refreshHolder));
+$("filSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; $("filSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b)); $("filRBox").style.opacity=b.dataset.v==="on"?1:.45; refreshHolder(); };
+function syncTrayInputs(){ const round=segVal("profSeg")==="round";
+  $("tDLab").textContent= round?"Item Ø":"Depth"; $("tDTag").textContent= round?"Ø":"D"; $("roomRow").classList.toggle("hide",!round);
+  $("sizeHint").textContent= round ? "Ø is the diameter of what lies in it (e.g. a tape roll). The cradle radius is (Ø + extra room) / 2. Height = radius gives a half-round cradle; lower is shallower."
+                                   : "Inside dimensions in mm. Length runs along the board, depth away from it, height is from the floor to the rim."; }
+$("fromPhoto").onclick=()=>{ if(!st.prof) return; const L=st.prof.at(-1).d, W=Math.max(...st.prof.map(p=>p.w)), r=+$("clr").value||2;
+  $("tL").value=Math.ceil(L+2*r); $("tD").value= segVal("profSeg")==="round" ? Math.ceil(W) : Math.ceil(W+r); refreshHolder(); };
+$("autoPass").onclick=()=>{ $("dpass").value=0; refreshHolder(); };
+["dpass","clr","thick","tclr","shelfT","fun","wall","side","plateH","gap"].forEach(id=>$(id).addEventListener("input",refreshHolder));
+$("dl").onclick=()=>{ if(!st.built) return; const a=document.createElement("a"); a.href=URL.createObjectURL(stlBlob(st.built.body.getMesh())); a.download=($("fname").value||"skadis_holder")+".stl"; a.click(); };
+$("lens").onchange=async()=>{ if(!st.img) return; status("Recalculating…","busy"); await new Promise(r=>setTimeout(r,30)); try{ st.rectCanvas=null; processImage(); resegment(); }catch(e){ status(e.message,"err"); } };
+addEventListener("resize",()=>{ V.init=false; showView(curView); });
+
+(async()=>{ try{ const [c,wasm]=await Promise.all([loadCV(),Module()]); cv=c; wasm.setup(); M=wasm; init3D(); status("Waiting for a photo","ok"); window.__ready=true; }
+  catch(e){ console.error(e); status(e.message,"err"); } })();
+</script>
+</body>
+</html>
