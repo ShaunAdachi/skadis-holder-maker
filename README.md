@@ -1,6 +1,6 @@
-# SKÅDIS Holder Maker
+# Tool Holder Maker
 
-Browser tool that turns a photo of a hand tool into a 3D-printable holder for the IKEA SKÅDIS pegboard.
+Browser tool that turns a photo of a hand tool into 3D-printable storage: holders for the IKEA SKÅDIS pegboard, simple trays, and Gridfinity drawer bins.
 
 **Use it:** open the GitHub Pages site for this repo in Chrome on a PC.
 

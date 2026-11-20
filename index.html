@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SKÅDIS Holder Maker</title>
+<title>Tool Holder Maker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -168,7 +168,7 @@ details summary .chev{transition:transform .15s;color:var(--faint)} details[open
     <div class="crumb">
       <div class="logo"><svg class="i" style="width:17px;height:17px"><use href="#i-hex"/></svg></div>
       <div class="sep"></div>
-      <div class="path">SKÅDIS Holder &nbsp;/&nbsp; <b id="crumbName">Untitled</b></div>
+      <div class="path">Tool Holder Maker &nbsp;/&nbsp; <b id="crumbName">Untitled</b></div>
       <div id="status" class="pill busy"><span class="dot"></span><span id="statusText">Loading libraries…</span></div>
     </div>
     <div class="seg" id="viewSeg">
@@ -379,7 +379,7 @@ details summary .chev{transition:transform .15s;color:var(--faint)} details[open
       </div>
       <div class="sec">
         <h3>Export</h3>
-        <div class="f"><input id="fname" type="text" value="skadis_holder" style="text-align:left"><span class="u">.stl</span></div>
+        <div class="f"><input id="fname" type="text" value="tool_holder" style="text-align:left"><span class="u">.stl</span></div>
         <p class="hint">Exported top-face-down, ready to print without supports.</p>
       </div>
     </div>
@@ -1055,7 +1055,7 @@ async function onFile(file){
   if(!cv){ status(T("Still loading libraries…"),"busy"); return; }
   status(T("Finding sheet markers…"),"busy");
   const url=URL.createObjectURL(file), img=new Image(); img.src=url; await img.decode(); st.img=img; st.rectCanvas=null;
-  const base=file.name.replace(/\.[^.]+$/,""); $("fname").value="skadis_holder_"+base; $("crumbName").textContent=base;
+  const base=file.name.replace(/\.[^.]+$/,""); $("fname").value="tool_holder_"+base; $("crumbName").textContent=base;
   $("thumbImg").src=url; $("thumbName").textContent=file.name; $("thumb").classList.remove("hide");
   await new Promise(r=>setTimeout(r,30));
   V.init=false; V.draft=[]; G.notches=[]; G.auto=true; $("undoBtn").disabled=true; $("autoOutline").disabled=true;
@@ -1116,7 +1116,7 @@ $("gNClear").onclick=()=>{ G.notches=[]; refreshHolder(); };
 $("autoPass").onclick=()=>{ $("dpass").value=0; refreshHolder(); };
 ["dpass","clr","thick","tclr","shelfT","fun","wall","side","plateH","gap"].forEach(id=>$(id).addEventListener("input",refreshHolder));
 $("dl").onclick=()=>{ if(!st.built) return; const a=document.createElement("a"); const isG=st.type==="grid"; let body=st.built.body; if(isG&&body.simplify) body=body.simplify(0.02);
-  a.href=URL.createObjectURL(stlBlob(body.getMesh(),isG)); a.download=($("fname").value||"skadis_holder")+".stl"; a.click(); };
+  a.href=URL.createObjectURL(stlBlob(body.getMesh(),isG)); a.download=($("fname").value||"tool_holder")+".stl"; a.click(); };
 $("lens").onchange=async()=>{ if(!st.img) return; status(T("Recalculating…"),"busy"); await new Promise(r=>setTimeout(r,30)); try{ st.rectCanvas=null; processImage(); resegment(); }catch(e){ status(e.message,"err"); } };
 addEventListener("resize",()=>{ V.init=false; showView(curView); });
 
