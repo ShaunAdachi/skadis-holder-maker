@@ -30,6 +30,12 @@ You can also drop or open several photos at once (each becomes one item), and in
 
 On SKÅDIS the openings sit side by side on one shelf with the chosen spacing; the hooks follow the total width. Each tool can be a slot, a round hole or a cup (closed bottom, for pens). Tools without a neck that would fall through get a cup automatically. In a Gridfinity bin the pockets are placed side by side; drag a pocket in the Layout view to move it, and use the turn button to swap a tool end for end. Both warn when the part does not fit the chosen printer.
 
+### Editing any tool in a multi-tool photo
+Click the node button on a row in the tools list, or double-click a tool in the photo, to make it the active tool. Its outline can then be edited with the usual tools, and axis fine-tune, tip/handle swap, thickness and pass-through apply to it. Edits stay when you switch to another tool; changing the edge threshold re-detects everything.
+
+### Name labels
+Turn on **Name labels** to engrave each tool's name (0.6 mm deep). Click a name in the list to change it. On SKÅDIS the name goes on the front face of the shelf, scaled to fit its opening; the text height is limited by the shelf thickness (about 2.6 mm at the default 6 mm shelf with a 2 mm fillet — raise *Shelf thickness* for larger text). In a Gridfinity bin the name is engraved in the pocket floor where it fits best, or in the top face where it falls outside the pocket. Text is traced from the browser's own fonts, so Japanese works.
+
 ## Printer
 Pick your printer under **Export** (Bambu Lab A1 mini / A1 / P1S·P1P·P2S·X1C / H2S / H2D, Prusa MINI+ / MK4S / CORE One, Creality Ender-3 V3·K1C / K2 Plus, Elegoo Centauri Carbon, Anycubic Kobra 3, or a custom size). Holders, trays and bins are checked against its build plate (2 mm margin, either orientation) and height, and the Gridfinity hint shows the largest bin that fits. The choice is remembered in the browser.
 
