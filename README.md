@@ -48,9 +48,12 @@ A tool standing on edge is up to its full width above the sheet, and its upper p
 
 Typed depths win over the side photo. The Layout view shades deeper parts darker.
 
+### Snapping in the outline editor
+While dragging a point (or placing points in Draw mode), the edges next to it snap to straight lines: along or square to the red centre line, the sheet's horizontal and vertical, parallel to any other edge of the outline (the reference edge is highlighted), or level with another point. When two guides are close it snaps to their crossing, so corners come out square. Pink dashed lines show the guides. Hold Ctrl/⌘ to move freely.
+
 ### Arranging tools in a Gridfinity bin
 In the Layout view, click a tool (or its row in the list) to select it; its red centre line and a round handle appear, and a Placement panel opens under its row.
-- Drag to move. The centre line snaps to the bin centre, grid-cell centres and other tools' centre lines (hold Alt to move freely).
+- Drag to move. The centre line snaps to the bin centre, grid-cell centres and other tools' centre lines (hold Ctrl/⌘ to move freely).
 - Drag the round handle to turn it (15° steps, Shift for 1°), or type an angle / use ±90° in the panel. Arrow keys move 0.5 mm (Shift 5 mm), R turns 90°.
 - Finger notches: double-click to add, click to select, Delete (or right-click, or × in the notch list) to remove, drag to move. A single click no longer adds a notch.
 
