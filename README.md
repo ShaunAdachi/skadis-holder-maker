@@ -26,6 +26,8 @@ The **Tools in this holder** list (right panel) collects what goes into one SKÅ
 - **Several tools in this photo** (left panel, Outline) turns every separate tool on the sheet into its own item.
 - **Pen / round item** adds a pen or marker by diameter and length, no photo needed.
 
+You can also drop or open several photos at once (each becomes one item), and in the phone dialog tick *Collect every photo into one holder*. Use ↑ to change the order. Kept tools and your clearance settings are remembered in the browser (localStorage); *Clear kept tools* empties the list.
+
 On SKÅDIS the openings sit side by side on one shelf with the chosen spacing; the hooks follow the total width. Each tool can be a slot, a round hole or a cup (closed bottom, for pens). Tools without a neck that would fall through get a cup automatically. In a Gridfinity bin the pockets are placed side by side; drag a pocket in the Layout view to move it, and use the turn button to swap a tool end for end. Both warn when the part does not fit the chosen printer.
 
 ## Printer
