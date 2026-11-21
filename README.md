@@ -48,6 +48,14 @@ A tool standing on edge is up to its full width above the sheet, and its upper p
 
 Typed depths win over the side photo. The Layout view shades deeper parts darker.
 
+### Arranging tools in a Gridfinity bin
+In the Layout view, click a tool (or its row in the list) to select it; its red centre line and a round handle appear, and a Placement panel opens under its row.
+- Drag to move. The centre line snaps to the bin centre, grid-cell centres and other tools' centre lines (hold Alt to move freely).
+- Drag the round handle to turn it (15° steps, Shift for 1°), or type an angle / use ±90° in the panel. Arrow keys move 0.5 mm (Shift 5 mm), R turns 90°.
+- Finger notches: double-click to add, click to select, Delete (or right-click, or × in the notch list) to remove, drag to move. A single click no longer adds a notch.
+
+Layout offsets and angles of kept tools are remembered in the browser. In the photo, the ends of the red centre line can be dragged to set the tool's axis. With several tools from one photo, the list shows each tool's number in the same colour as in the photo and marks the one whose outline is being edited.
+
 ## Printer
 Pick your printer under **Export** (Bambu Lab A1 mini / A1 / P1S·P1P·P2S·X1C / H2S / H2D, Prusa MINI+ / MK4S / CORE One, Creality Ender-3 V3·K1C / K2 Plus, Elegoo Centauri Carbon, Anycubic Kobra 3, or a custom size). Holders, trays and bins are checked against its build plate (2 mm margin, either orientation) and height, and the Gridfinity hint shows the largest bin that fits. The choice is remembered in the browser.
 
