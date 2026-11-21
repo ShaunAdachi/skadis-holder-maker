@@ -134,6 +134,19 @@ details summary .chev{transition:transform .15s;color:var(--faint)} details[open
 .empty,.hint,#typeNote{text-wrap:pretty}
 :lang(ja) .empty,:lang(ja) .hint,:lang(ja) #typeNote{word-break:auto-phrase}
 .hide{display:none!important}
+.setrow{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;padding:6px 8px;border-radius:9px;background:var(--field);margin-bottom:5px}
+.setrow .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.setrow .sz{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.setrow .ac{display:flex;gap:4px;align-items:center}
+.setrow .ac button{border:1px solid var(--line2);background:var(--panel);color:var(--text);font:inherit;font-size:11px;border-radius:7px;padding:3px 7px;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.setrow .ac button:hover{background:var(--field-h)} .setrow .ac button:disabled{opacity:.5;cursor:default}
+.setrow .ac .k{min-width:44px;justify-content:center}
+.setrow.cur{background:var(--accent-soft)} .setrow.off{opacity:.55}
+.setrow .ac input{width:56px;border:1px solid var(--line2);border-radius:7px;background:var(--panel);font-family:var(--mono);font-size:11px;padding:3px 5px;text-align:right;color:var(--text)}
+.setbtns{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.setbtns .btn{justify-content:center;white-space:normal;text-align:center;line-height:1.25}
+.ckrow{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:var(--text);cursor:pointer}
+.ckrow input{accent-color:var(--accent);width:15px;height:15px;margin:0}
 .scrim{position:absolute;inset:0;background:rgba(20,24,30,.28);display:grid;place-items:center;z-index:50}
 .dlg{width:min(440px,92%);background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 60px -20px rgba(0,0,0,.35);padding:18px 20px}
 .dlg h2{margin:0;font-size:15px;font-weight:600}
@@ -197,7 +210,7 @@ details summary .chev{transition:transform .15s;color:var(--faint)} details[open
         <button class="btn" id="langBtn" title="Language / 言語"><svg class="i"><use href="#i-globe"/></svg><span id="langLbl">日本語</span></button>
         <button class="btn" id="themeBtn" title="Dark mode"><svg class="i"><use href="#i-moon" id="themeIco"/></svg></button>
       </div>
-      <a class="btn" href="sheet/measure_sheet_v2_A4.pdf" download title="Sheet PDF"><svg class="i"><use href="#i-down"/></svg><span class="lbl">Sheet PDF</span></a>
+      <a class="btn" id="sheetBtn" href="sheet/measure_sheet_v2_A4.pdf" download title="Measuring sheet, A4 or US Letter, print at 100%"><svg class="i"><use href="#i-down"/></svg><span class="lbl">Sheet PDF</span></a>
       <button class="btn" id="phoneBtn" title="Shoot with a phone and send it here"><svg class="i"><use href="#i-phone"/></svg><span class="lbl">Phone</span></button>
       <button class="btn" id="sampleBtn" title="Load a sample photo"><svg class="i"><use href="#i-img"/></svg><span class="lbl">Try sample</span></button>
       <button class="btn" id="openBtn"><svg class="i"><use href="#i-up"/></svg><span class="lbl">Open photo</span></button>
@@ -229,6 +242,7 @@ details summary .chev{transition:transform .15s;color:var(--faint)} details[open
         <div class="ctl"><div class="lab"><span>Edge threshold</span><b id="thO">30</b></div><input id="th" type="range" min="10" max="70" value="30"></div>
         <div class="ctl"><div class="lab"><span>Axis fine-tune</span><b id="rotO">0.0°</b></div><input id="rot" type="range" min="-45" max="45" step="0.5" value="0"></div>
         <button id="flip" class="btn sm" style="width:100%;justify-content:center"><svg class="i"><use href="#i-flip"/></svg>Swap tip / handle end</button>
+        <label class="ckrow" title="Each separate tool on the sheet becomes its own item"><input type="checkbox" id="multiCk"><span>Several tools in this photo</span></label>
         <div style="margin-top:12px">
           <div class="kv"><span>Length</span><span class="v" id="kvLen">—</span></div>
           <div class="kv"><span>Max width</span><span class="v" id="kvWmax">—</span></div>
@@ -247,7 +261,7 @@ details summary .chev{transition:transform .15s;color:var(--faint)} details[open
         <div style="margin-bottom:14px" data-i18n-html="emptyLead">Drop a photo on the left, use <b>Open photo</b>, or <a href="#" id="sampleLink" style="color:var(--accent)">try the sample</a>.</div>
         <div style="text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:12.5px;line-height:1.6">
           <div style="font-weight:500;color:var(--text);margin-bottom:4px">How to shoot</div>
-          <div data-i18n-html="step1">1. Print the <a href="sheet/measure_sheet_v2_A4.pdf" download style="color:var(--accent)">measuring sheet</a> on A4 at 100% (no "fit to page"). Check that the 150 mm marks measure 150 mm.</div>
+          <div data-i18n-html="step1">1. Print the measuring sheet (<a href="sheet/measure_sheet_v2_A4.pdf" download style="color:var(--accent)">A4</a> or <a href="sheet/measure_sheet_v2_Letter.pdf" download style="color:var(--accent)">US Letter</a>) at 100% (no "fit to page"). Check that the 150 mm marks measure 150 mm.</div>
           <div>2. Lay the tool flat in the middle of the sheet, along its long side, tip pointing up.</div>
           <div>3. Shoot straight down from about 60 cm with 2× zoom, lit from above with no hard shadows.</div>
           <div>4. Use the original photo file. Then pick Slot, Round hole or Tray and export the STL.</div>
@@ -279,6 +293,26 @@ details summary .chev{transition:transform .15s;color:var(--faint)} details[open
       </div></div>
       <div class="sec">
         <p class="hint" id="typeNote" style="margin:0">For pliers, nippers and scissors. The tool drops in tip-first and rests on its shoulders.</p>
+      </div>
+      <div class="sec" id="setSec">
+        <h3>Tools in this holder</h3>
+        <div id="setList"></div>
+        <div class="setbtns">
+          <button class="btn sm" id="keepBtn" title="Keep this tool in the list, then open the next photo"><svg class="i"><use href="#i-plus"/></svg>Keep, add another photo</button>
+          <button class="btn sm" id="penBtn" title="Add a pen, marker or other round item by size"><svg class="i"><use href="#i-plus"/></svg>Pen / round item</button>
+        </div>
+        <div id="penForm" class="hide" style="margin-top:8px">
+          <div class="grid3">
+            <div><div class="eqlab1">Ø</div><div class="f"><input id="penD" type="number" step="0.5" value="10"><span class="u">mm</span></div></div>
+            <div><div class="eqlab1">Length</div><div class="f"><input id="penL" type="number" step="1" value="140"><span class="u">mm</span></div></div>
+            <div><div class="eqlab1">Cup depth</div><div class="f"><input id="penDepth" type="number" step="1" value="40"><span class="u">mm</span></div></div>
+          </div>
+          <div class="setbtns"><button class="btn sm" id="penCancel">Cancel</button><button class="btn sm primary" id="penAdd">Add</button></div>
+          <p class="hint">On SKÅDIS a pen stands in a cup with a closed bottom (cup depth). In a Gridfinity bin it lies flat.</p>
+        </div>
+        <div class="lab2">Spacing between tools</div>
+        <div class="f" style="max-width:50%"><input id="setSep" type="number" step="0.5" value="6"><span class="u">mm</span></div>
+        <p class="hint" id="setHint">One holder can take several tools. Keep this one and open the next photo, tick “Several tools in this photo”, or add pens by size.</p>
       </div>
       <div class="sec photoOnly">
         <h3>Pass-through</h3>
@@ -428,10 +462,12 @@ import Module from "manifold-3d";
 import qrcode from "qrcode-generator";
 
 /* ---------- constants ---------- */
+const A4C=[[-88,131],[-30,131],[30,131],[88,131],[88,78.6],[88,26.2],[88,-26.2],[88,-78.6],[88,-131],[30,-131],[-30,-131],[-88,-131],[-88,-78.6],[-88,-26.2],[-88,26.2],[-88,78.6]];
+const LTC=[[-88,124],[-30,124],[30,124],[88,124],[88,74.4],[88,24.8],[88,-24.8],[88,-74.4],[88,-124],[30,-124],[-30,-124],[-88,-124],[-88,-74.4],[-88,-24.8],[-88,24.8],[-88,74.4]];
 const SHEET = { ms: 18,
-  centers: [[-88,131],[-30,131],[30,131],[88,131],[88,78.6],[88,26.2],[88,-26.2],[88,-78.6],
-            [88,-131],[30,-131],[-30,-131],[-88,-131],[-88,-78.6],[-88,-26.2],[-88,26.2],[-88,78.6]],
-  variants: [["A",1.000],["B",1.003],["C",1.006],["D",1.010],["E",0.997],["v2",1.000]], zone: [75,118], guideVariant: 5 };
+  layouts: { a4:{centers:A4C, zone:[75,118], guide:null}, a4g:{centers:A4C, zone:[75,118], guide:{gy:110, cl:116}}, letter:{centers:LTC, zone:[75,111], guide:{gy:100, cl:109}} },
+  // marker ids: variant = floor(id/16). DICT_4X4_250 starts with the same 100 markers as DICT_4X4_100, so old sheets still read.
+  variants: [["A",1.000,"a4"],["B",1.003,"a4"],["C",1.006,"a4"],["D",1.010,"a4"],["E",0.997,"a4"],["v2",1.000,"a4g"],["v2 Letter",1.000,"letter"]] };
 const LENS = { auto:{auto:true}, p9a2x:{f:5660, w:4000, k1:0.085}, none:null };
 const S = 10, RX = 80, RY = 122, RW = 2*RX*S, RH = 2*RY*S;
 const SK = { tabW:4.8, tau:3.0, latchL:7.0, latchT:2.4, pitch:40, plateT:3.5, yTop:3.0 };
@@ -443,7 +479,7 @@ const st = { img:null, rect:null, mask:null, th:30, rot:0, flip:false, cen:[0,0]
 let cv, M;
 const $ = id => document.getElementById(id);
 /* ---------- language + theme ---------- */
-const JA={"Phone": "スマホ","Shoot with a phone and send it here": "スマホで撮ってここに送る","Shoot with your phone": "スマホで撮影","Scan this code with your phone camera. It opens a capture page that checks the markers, tilt and detail, shoots by itself, and sends the photo here.": "スマホのカメラでこのコードを読み取ってください。撮影ページが開き、マーカー・傾き・解像度を確認して自動で撮影し、写真をこちらに送ります。","Copy link": "リンクをコピー","Copied": "コピーしました","Close (Esc)": "閉じる（Esc）","Waiting for the phone…": "スマホからの写真を待っています…","The photo passes through a relay and is deleted as soon as this page picks it up (or after 15 minutes). You can keep shooting; each photo replaces the current one.": "写真は中継サーバーを経由し、このページが受け取るとすぐ削除されます（受け取られなくても15分で削除）。続けて何枚でも撮れます。新しい写真が届くと、今の写真と入れ替わります。","Photo received ({s} MB)": "写真を受け取りました（{s} MB）","A photo arrived but expired — shoot again": "写真が届きましたが期限切れでした。もう一度撮ってください","Relay error {s}": "中継サーバーのエラー {s}","Can't reach the relay — retrying…": "中継サーバーにつながりません。再試行中…", "SKÅDIS Holder /": "SKÅDIS ホルダー /", "Untitled": "無題", "Loading libraries…": "ライブラリを読み込み中…", "Photo": "写真", "Profile": "幅プロファイル", "Sheet PDF": "測定シートPDF", "Try sample": "サンプルを試す", "Open photo": "写真を開く", "Export STL": "STLを書き出す", "Drop a photo here": "ここに写真をドロップ", "Tool on the measuring sheet, shot from above": "測定シートに置いた工具を真上から撮った写真", "Lens profile": "レンズ補正", "Pixel 9a · 2× zoom": "Pixel 9a・2倍ズーム", "None": "なし", "Sheet": "シート", "Variant": "種類", "Markers found": "検出マーカー", "Fit error": "補正誤差", "Image": "画像", "Outline": "輪郭", "Edge threshold": "エッジしきい値", "Axis fine-tune": "軸の角度調整", "Swap tip / handle end": "先端と柄を入れ替え", "Length": "長さ", "Max width": "最大幅", "Rotation": "回転", "Source": "輪郭の種類", "No photo yet": "まだ写真がありません", "How to shoot": "撮影のしかた", "2. Lay the tool flat in the middle of the sheet, along its long side, tip pointing up.": "2. 工具をシートの中央に平らに置きます。長辺に沿わせ、先端を上に向けます。", "3. Shoot straight down from about 60 cm with 2× zoom, lit from above with no hard shadows.": "3. 約60cmの高さから2倍ズームで真上から撮ります。照明は真上から当て、強い影を避けます。", "4. Use the original photo file. Then pick Slot, Round hole or Tray and export the STL.": "4. 元の写真ファイルを使い、スロット・丸穴・トレイから選んでSTLを書き出します。", "Slot": "スロット", "Round hole": "丸穴", "Tray": "トレイ", "For pliers, nippers and scissors. The tool drops in tip-first and rests on its shoulders.": "ペンチ・ニッパー・ハサミ向け。先端から差し込み、肩の部分で止まります。", "For screwdrivers. The shaft goes through a round hole and the handle rests on the rim.": "ドライバー向け。軸を丸穴に通し、柄で止まります。", "A plain tray for things without a neck: pens, markers, tape rolls. No photo needed.": "くびれのない物（ペン、マーカー、テープなど）用のトレイ。写真は不要です。", "Pass-through": "通過範囲", "Must pass from the tip up to": "先端からここまでを通す", "Auto": "自動", "Everything from the tip to this point goes through the opening. Auto picks the narrowest neck.": "先端からこの位置までが開口を通り抜けます。「自動」は一番細いくびれを選びます。", "Opening size": "開口サイズ", "Width": "幅", "(along the board, mm)": "（板に沿った方向, mm）", "Widest part": "通過部の最大", "Extra room": "余裕", "Opening": "開口", "Depth": "奥行き", "(away from the board, mm)": "（板から離れる方向, mm）", "Tool thickness": "工具の厚み", "Measure the thickness with calipers at its thickest point. The photo only sees width.": "厚みはノギスで一番厚い所を測ってください。写真からは幅しか分かりません。", "Extra room is the gap you want around the tool. ~2 mm drops in easily; under 1 mm feels snug. The printed P-14 holder used 2.8 / 1.1.": "余裕は工具のまわりのすき間です。約2mmならすっと入り、1mm未満はきつめです。印刷済みのP-14用ホルダーは 2.8 / 1.1 でした。", "Inner size": "内寸", "Height": "高さ", "Inside dimensions in mm. Length runs along the board, depth away from it, height is from the floor to the rim.": "内寸（mm）。長さは板に沿った方向、奥行きは板から離れる方向、高さは底から縁までです。", "Ø is the diameter of what lies in it (e.g. a tape roll). The cradle radius is (Ø + extra room) / 2. Height = radius gives a half-round cradle; lower is shallower.": "Ø は載せる物（テープなど）の直径です。受けの半径は (Ø + 余裕) ÷ 2。高さを半径と同じにすると半円、低くすると浅い受けになります。", "Item Ø": "直径 Ø", "Size from photo": "写真から寸法を入れる", "needs a photo": "写真が必要です", "Shape": "形", "Cross-section": "断面", "Square": "角型", "Round": "丸型", "Left end": "左端", "Right end": "右端", "Closed": "閉じる", "Open": "開ける", "Wall": "壁", "Floor": "底", "Edges": "エッジ", "Front fillet": "前面のフィレット", "On": "オン", "Off": "オフ", "Radius": "半径", "Rounds the edges you see from the front. The top edge touches the print bed, so it only gets a small chamfer.": "正面から見える角を丸めます。上面の前の角は印刷時にベッドに付くので、小さな面取りだけにしています。", "Result": "結果", "Holder width": "ホルダー幅", "Hooks": "フック", "Stops at": "止まる位置", "Shoulder overlap": "引っかかり", "Volume": "体積", "Advanced": "詳細設定", "Shelf thickness": "棚の厚み", "Funnel (45°)": "漏斗（45°）", "Front / back wall": "前後の壁", "Min side wall": "左右の壁（最小）", "Back plate height": "背板の高さ", "Hook gap": "フックのすき間", "Hook gap 5.1 mm fits a 5.0 mm SKÅDIS board (tested in PETG).": "フックのすき間 5.1mm で、厚さ 5.0mm のSKÅDIS板に合います（PETGで確認済み）。", "Export": "書き出し", "Exported top-face-down, ready to print without supports.": "上面を下にした向きで書き出します。サポートなしで印刷できます。", "Measuring sheet, A4, print at 100%": "測定シート（A4・100%で印刷）", "Load a sample photo": "サンプル写真を読み込む", "Pan (V)": "移動 (V)", "Edit points (E)": "点を編集 (E)", "Draw a new outline (D)": "輪郭を描き直す (D)", "Delete selected points (Del)": "選択した点を削除 (Del)", "Undo (Ctrl+Z)": "元に戻す (Ctrl+Z)", "Back to the automatic outline": "自動の輪郭に戻す", "Zoom out": "縮小", "Zoom in": "拡大", "Fit (F)": "全体表示 (F)", "Dark mode": "ダークモード", "Light mode": "ライトモード", "Ready": "準備完了", "Waiting for a photo": "写真を待っています", "Still loading libraries…": "ライブラリを読み込み中です…", "Finding sheet markers…": "シートのマーカーを検出中…", "Loading sample…": "サンプルを読み込み中…", "Sample needs the hosted page (not a local file)": "サンプルは公開ページでのみ使えます（ローカルファイルでは不可）", "Recalculating…": "再計算中…", "Updating outline…": "輪郭を更新中…", "Re-detecting (manual edits replaced)…": "再検出中（手で直した輪郭は置き換わります）…", "Can't delete every point — keep at least 3": "すべての点は消せません。3点以上残してください", "Removed {n} points": "{n}点を削除しました", "Removed 1 point": "1点を削除しました", "Could not load OpenCV.js": "OpenCV.js を読み込めませんでした", "Fewer than 4 sheet markers found": "シートのマーカーが4個未満しか見つかりません", "No tool found — lower the edge threshold": "工具が見つかりません。エッジしきい値を下げてください", "Outline is empty": "輪郭が空です", "Edited": "手修正", "tool {l} × {w} mm": "工具 {l} × {w} mm", "Distance from tip (mm)": "先端からの距離 (mm)", "Outer width (mm)": "外幅 (mm)", "PASSES THROUGH": "通過範囲", "opening {v}": "開口 {v}", "widest {v}": "最大幅 {v}", "stops {v}": "止まる位置 {v}", "{n} × 40 mm pitch": "{n}個（40mm間隔）", "1 (may swivel)": "1個（回転するかも）", "falls through": "抜け落ちます", "{v} mm from tip": "先端から {v} mm", "Opening {v}": "開口 {v}", "Holder {v}": "ホルダー {v}", "Falls through": "抜け落ちます", "Stops {v}": "止まる位置 {v}", "Outer depth": "外寸の奥行き", "Outer height": "外寸の高さ", "Cradle {v}": "受け {v}", "Inside {v}": "内寸 {v}", "Outer {v}": "外寸 {v}", "Printed top-face-down, the floor bridges {s} mm. Over ~40 mm may sag.": "上面を下にして印刷すると、底が {s}mm 空中をまたぎます。40mmを超えると垂れることがあります。", "Printed top-face-down; the floor bridges {s} mm (fine).": "上面を下にして印刷すると、底が {s}mm 空中をまたぎます（問題ない範囲）。", "Cradle radius {r} mm. Printed top-face-down, the curve needs supports inside (tree supports, build plate only).": "受けの半径 {r}mm。上面を下にして印刷すると、円弧の内側にサポートが必要です（ツリー・ビルドプレートのみ）。", "Longer than the A1 mini bed (180 mm).": "A1 mini のベッド（180mm）より長いです。", "tray · prints top-face-down · drag to orbit": "トレイ・上面を下にして印刷・ドラッグで回転", "widest {a} + {b} = {c} mm opening": "最大幅 {a} + 余裕 {b} = 開口 {c} mm", "{t} {w} × {u} mm · drag to orbit": "{t} {w} × {u} mm・ドラッグで回転", "slot": "スロット", "Drag to pan · scroll to zoom · E edit points · D draw a new outline": "ドラッグで移動・ホイールで拡大縮小・E 点を編集・D 輪郭を描き直す", "{n} selected · Delete removes them · drag one to move them all · Esc clears": "{n}点を選択中・Deleteで削除・ドラッグでまとめて移動・Escで解除", "Drag a box to select points · Delete removes them · drag a point to move · double-click a line to add a point · Space-drag pans": "ドラッグで範囲選択・Deleteで削除・点をドラッグで移動・線をダブルクリックで点を追加・Space+ドラッグで画面移動", "{n} points · click the first point or press Enter to finish · Backspace undoes a point · Esc cancels": "{n}点・最初の点をクリックかEnterで完了・Backspaceで1点戻す・Escで中止", "Click around the tool to place points · Space-drag or middle-drag pans": "工具のまわりをクリックして点を置きます・Space+ドラッグかホイールボタンで画面移動", "Gridfinity": "Gridfinity", "Bin": "ビン", "Grid X": "グリッド X", "Grid Y": "グリッド Y", "Height (×7 mm)": "高さ（×7mm）", "Auto fit": "自動で合わせる", "Tool direction": "工具の向き", "Along Y": "縦向き", "Along X": "横向き", "Stacking lip": "スタッキングリップ", "Standard Gridfinity: 42 mm grid, 7 mm height units. The A1 mini bed fits up to 4 × 4.": "標準のGridfinity規格（42mmグリッド、高さ7mm単位）。A1 miniのベッドには4×4まで載ります。", "Pocket": "くぼみ", "Floor fillet": "底のフィレット", "Rim fillet": "縁のフィレット", "The outline is grown by the extra room all round. Fillets round the bottom edge of the pocket and its top rim.": "輪郭を「余裕」の分だけ全周に広げます。フィレットはくぼみの底の角と、天面の縁を丸めます。", "Finger notches": "指を入れる凹み", "Notch radius": "凹みの半径", "Clear all": "すべて消す", "Open the Layout view and click where a finger should go. Drag to move, Alt-click to remove.": "「配置」ビューで、指を入れたい所をクリックします。ドラッグで移動、Alt+クリックで削除。", "{n} placed.": "{n}個配置済み。", "Layout": "配置", "A Gridfinity drawer bin with a pocket shaped like the tool. Add finger notches in the Layout view.": "工具の形のくぼみを持つ、引き出し用のGridfinityビン。指を入れる凹みは「配置」ビューで追加します。", "Gridfinity needs a photo of the tool": "Gridfinityには工具の写真が必要です", "Bin size": "ビンの大きさ", "Grid": "グリッド", "Total height": "全体の高さ", "Thinnest wall": "一番薄い壁", "Bin {v}": "ビン {v}", "Pocket {v}": "くぼみ {v}", "Notches {v}": "凹み {v}", "auto": "自動", "manual": "手動", "The pocket nearly touches the wall — add a grid unit": "くぼみが壁に近すぎます。グリッドを1つ増やしてください", "click to add a finger notch · drag to move · Alt-click removes": "クリックで凹みを追加・ドラッグで移動・Alt+クリックで削除", "Gridfinity bin · prints as shown · drag to orbit": "Gridfinityビン・この向きで印刷・ドラッグで回転", "Curve / corner for selected points (S)": "選択した点を曲線／角に切り替え (S)", "{n} selected · S curves them · Delete removes them · drag to move · Esc clears": "{n}点を選択中・Sで曲線に・Deleteで削除・ドラッグで移動・Escで解除", "Curved {n} points": "{n}点を曲線にしました", "Made {n} corners": "{n}点を角に戻しました", "Play (all round)": "アソビ（全周）", "Shrink compensation": "収縮補正", "Play widens the pocket by this much on every side (0.5–1 mm is typical). Shrink compensation enlarges the outline by a percentage to offset filament shrinkage (PETG ≈ 0.3–0.5 %). Fillets round the pocket floor edge and the top rim.": "アソビは、くぼみを全周この幅だけ広げます（0.5〜1mmが目安）。収縮補正は、フィラメントの縮みを見込んで輪郭を％で拡大します（PETGで約0.3〜0.5％）。フィレットはくぼみの底の角と天面の縁を丸めます。", "Auto (from sheet)": "自動（シートから推定）", "Pixel 9a · 2× zoom (fixed)": "Pixel 9a・2倍ズーム（固定）", "Lens": "レンズ", "off": "オフ"}, JA_HTML={"emptyLead": "左に写真をドロップするか、<b>写真を開く</b>から選んでください。<a href=\"#\" id=\"sampleLink\" style=\"color:var(--accent)\">サンプル</a>も試せます。", "step1": "1. <a href=\"sheet/measure_sheet_v2_A4.pdf\" download style=\"color:var(--accent)\">測定シート</a>をA4・100%（「用紙に合わせる」はオフ）で印刷し、150mmの目盛が150mmになっているか確かめます。"}, EN_OF={}; for(const [k,v] of Object.entries(JA)) if(!(v in EN_OF)) EN_OF[v]=k;
+const JA={"Bigger than the A1 mini bed (180 mm) — put fewer tools in this bin": "A1 miniのベッド（180mm）より大きいです。このビンに入れる工具を減らしてください", "Several tools in this photo": "この写真に複数の工具","Each separate tool on the sheet becomes its own item": "シート上の離れた工具を、それぞれ別の工具として扱います","Tools in this holder": "このホルダーに入れる工具","Keep, add another photo": "残して次の写真へ","Keep this tool in the list, then open the next photo": "この工具をリストに残し、次の写真を開きます","Pen / round item": "ペン・丸い物を追加","Add a pen, marker or other round item by size": "ペンやマーカーなど丸い物を寸法で追加します","Cup depth": "カップの深さ","Cancel": "キャンセル","Add": "追加","On SKÅDIS a pen stands in a cup with a closed bottom (cup depth). In a Gridfinity bin it lies flat.": "SKÅDISでは、ペンは底付きのカップに立てて入れます（カップの深さ）。Gridfinityのビンでは寝かせて入れます。","Spacing between tools": "工具どうしの間隔","One holder can take several tools. Keep this one and open the next photo, tick “Several tools in this photo”, or add pens by size.": "1つのホルダーに複数の工具を入れられます。この工具を残して次の写真を開くか、「この写真に複数の工具」にチェックするか、ペンを寸法で追加してください。","This photo": "この写真","This photo · #{n}": "この写真・#{n}","Cup": "カップ","Hole": "穴","Set by Slot / Round hole above": "上の「スロット／丸穴」で切り替えます","Slot or round hole": "スロットか丸穴か","Tool thickness (mm)": "工具の厚み（mm）","Turn end for end": "向きを反転","Remove": "外す","kept above — open the next photo": "上に残しました。次の写真を開いてください","left out": "除外中","Include": "戻す","No tools yet. Open a photo or add a pen.": "まだ工具がありません。写真を開くか、ペンを追加してください。","{n} tools side by side. Drag pockets in the Layout view to rearrange.": "{n}個の工具を横に並べています。「配置」ビューでくぼみをドラッグすると並べ替えられます。","{n} tools side by side.": "{n}個の工具を横に並べています。","Kept. Open the next photo, or export.": "残しました。次の写真を開くか、書き出してください。","Pen Ø{d}": "ペン Ø{d}","{n} fall through": "{n}個が抜け落ちます","all {n} hold": "{n}個とも止まります","Tools {v}": "工具 {v}","Height {v}": "高さ {v}","Wider than the A1 mini bed (180 mm) — split it into two holders": "A1 miniのベッド（180mm）より幅が広いです。2つのホルダーに分けてください","{n} tools · {w} mm wide · drag to orbit": "工具{n}個・幅{w}mm・ドラッグで回転", "Phone": "スマホ","Shoot with a phone and send it here": "スマホで撮ってここに送る","Shoot with your phone": "スマホで撮影","Scan this code with your phone camera. It opens a capture page that checks the markers, tilt and detail, shoots by itself, and sends the photo here.": "スマホのカメラでこのコードを読み取ってください。撮影ページが開き、マーカー・傾き・解像度を確認して自動で撮影し、写真をこちらに送ります。","Copy link": "リンクをコピー","Copied": "コピーしました","Close (Esc)": "閉じる（Esc）","Waiting for the phone…": "スマホからの写真を待っています…","The photo passes through a relay and is deleted as soon as this page picks it up (or after 15 minutes). You can keep shooting; each photo replaces the current one.": "写真は中継サーバーを経由し、このページが受け取るとすぐ削除されます（受け取られなくても15分で削除）。続けて何枚でも撮れます。新しい写真が届くと、今の写真と入れ替わります。","Photo received ({s} MB)": "写真を受け取りました（{s} MB）","A photo arrived but expired — shoot again": "写真が届きましたが期限切れでした。もう一度撮ってください","Relay error {s}": "中継サーバーのエラー {s}","Can't reach the relay — retrying…": "中継サーバーにつながりません。再試行中…", "SKÅDIS Holder /": "SKÅDIS ホルダー /", "Untitled": "無題", "Loading libraries…": "ライブラリを読み込み中…", "Photo": "写真", "Profile": "幅プロファイル", "Sheet PDF": "測定シートPDF", "Try sample": "サンプルを試す", "Open photo": "写真を開く", "Export STL": "STLを書き出す", "Drop a photo here": "ここに写真をドロップ", "Tool on the measuring sheet, shot from above": "測定シートに置いた工具を真上から撮った写真", "Lens profile": "レンズ補正", "Pixel 9a · 2× zoom": "Pixel 9a・2倍ズーム", "None": "なし", "Sheet": "シート", "Variant": "種類", "Markers found": "検出マーカー", "Fit error": "補正誤差", "Image": "画像", "Outline": "輪郭", "Edge threshold": "エッジしきい値", "Axis fine-tune": "軸の角度調整", "Swap tip / handle end": "先端と柄を入れ替え", "Length": "長さ", "Max width": "最大幅", "Rotation": "回転", "Source": "輪郭の種類", "No photo yet": "まだ写真がありません", "How to shoot": "撮影のしかた", "2. Lay the tool flat in the middle of the sheet, along its long side, tip pointing up.": "2. 工具をシートの中央に平らに置きます。長辺に沿わせ、先端を上に向けます。", "3. Shoot straight down from about 60 cm with 2× zoom, lit from above with no hard shadows.": "3. 約60cmの高さから2倍ズームで真上から撮ります。照明は真上から当て、強い影を避けます。", "4. Use the original photo file. Then pick Slot, Round hole or Tray and export the STL.": "4. 元の写真ファイルを使い、スロット・丸穴・トレイから選んでSTLを書き出します。", "Slot": "スロット", "Round hole": "丸穴", "Tray": "トレイ", "For pliers, nippers and scissors. The tool drops in tip-first and rests on its shoulders.": "ペンチ・ニッパー・ハサミ向け。先端から差し込み、肩の部分で止まります。", "For screwdrivers. The shaft goes through a round hole and the handle rests on the rim.": "ドライバー向け。軸を丸穴に通し、柄で止まります。", "A plain tray for things without a neck: pens, markers, tape rolls. No photo needed.": "くびれのない物（ペン、マーカー、テープなど）用のトレイ。写真は不要です。", "Pass-through": "通過範囲", "Must pass from the tip up to": "先端からここまでを通す", "Auto": "自動", "Everything from the tip to this point goes through the opening. Auto picks the narrowest neck.": "先端からこの位置までが開口を通り抜けます。「自動」は一番細いくびれを選びます。", "Opening size": "開口サイズ", "Width": "幅", "(along the board, mm)": "（板に沿った方向, mm）", "Widest part": "通過部の最大", "Extra room": "余裕", "Opening": "開口", "Depth": "奥行き", "(away from the board, mm)": "（板から離れる方向, mm）", "Tool thickness": "工具の厚み", "Measure the thickness with calipers at its thickest point. The photo only sees width.": "厚みはノギスで一番厚い所を測ってください。写真からは幅しか分かりません。", "Extra room is the gap you want around the tool. ~2 mm drops in easily; under 1 mm feels snug. The printed P-14 holder used 2.8 / 1.1.": "余裕は工具のまわりのすき間です。約2mmならすっと入り、1mm未満はきつめです。印刷済みのP-14用ホルダーは 2.8 / 1.1 でした。", "Inner size": "内寸", "Height": "高さ", "Inside dimensions in mm. Length runs along the board, depth away from it, height is from the floor to the rim.": "内寸（mm）。長さは板に沿った方向、奥行きは板から離れる方向、高さは底から縁までです。", "Ø is the diameter of what lies in it (e.g. a tape roll). The cradle radius is (Ø + extra room) / 2. Height = radius gives a half-round cradle; lower is shallower.": "Ø は載せる物（テープなど）の直径です。受けの半径は (Ø + 余裕) ÷ 2。高さを半径と同じにすると半円、低くすると浅い受けになります。", "Item Ø": "直径 Ø", "Size from photo": "写真から寸法を入れる", "needs a photo": "写真が必要です", "Shape": "形", "Cross-section": "断面", "Square": "角型", "Round": "丸型", "Left end": "左端", "Right end": "右端", "Closed": "閉じる", "Open": "開ける", "Wall": "壁", "Floor": "底", "Edges": "エッジ", "Front fillet": "前面のフィレット", "On": "オン", "Off": "オフ", "Radius": "半径", "Rounds the edges you see from the front. The top edge touches the print bed, so it only gets a small chamfer.": "正面から見える角を丸めます。上面の前の角は印刷時にベッドに付くので、小さな面取りだけにしています。", "Result": "結果", "Holder width": "ホルダー幅", "Hooks": "フック", "Stops at": "止まる位置", "Shoulder overlap": "引っかかり", "Volume": "体積", "Advanced": "詳細設定", "Shelf thickness": "棚の厚み", "Funnel (45°)": "漏斗（45°）", "Front / back wall": "前後の壁", "Min side wall": "左右の壁（最小）", "Back plate height": "背板の高さ", "Hook gap": "フックのすき間", "Hook gap 5.1 mm fits a 5.0 mm SKÅDIS board (tested in PETG).": "フックのすき間 5.1mm で、厚さ 5.0mm のSKÅDIS板に合います（PETGで確認済み）。", "Export": "書き出し", "Exported top-face-down, ready to print without supports.": "上面を下にした向きで書き出します。サポートなしで印刷できます。", "Measuring sheet, A4 or US Letter, print at 100%": "測定シート（A4またはUSレター・100%で印刷）", "Load a sample photo": "サンプル写真を読み込む", "Pan (V)": "移動 (V)", "Edit points (E)": "点を編集 (E)", "Draw a new outline (D)": "輪郭を描き直す (D)", "Delete selected points (Del)": "選択した点を削除 (Del)", "Undo (Ctrl+Z)": "元に戻す (Ctrl+Z)", "Back to the automatic outline": "自動の輪郭に戻す", "Zoom out": "縮小", "Zoom in": "拡大", "Fit (F)": "全体表示 (F)", "Dark mode": "ダークモード", "Light mode": "ライトモード", "Ready": "準備完了", "Waiting for a photo": "写真を待っています", "Still loading libraries…": "ライブラリを読み込み中です…", "Finding sheet markers…": "シートのマーカーを検出中…", "Loading sample…": "サンプルを読み込み中…", "Sample needs the hosted page (not a local file)": "サンプルは公開ページでのみ使えます（ローカルファイルでは不可）", "Recalculating…": "再計算中…", "Updating outline…": "輪郭を更新中…", "Re-detecting (manual edits replaced)…": "再検出中（手で直した輪郭は置き換わります）…", "Can't delete every point — keep at least 3": "すべての点は消せません。3点以上残してください", "Removed {n} points": "{n}点を削除しました", "Removed 1 point": "1点を削除しました", "Could not load OpenCV.js": "OpenCV.js を読み込めませんでした", "Fewer than 4 sheet markers found": "シートのマーカーが4個未満しか見つかりません", "No tool found — lower the edge threshold": "工具が見つかりません。エッジしきい値を下げてください", "Outline is empty": "輪郭が空です", "Edited": "手修正", "tool {l} × {w} mm": "工具 {l} × {w} mm", "Distance from tip (mm)": "先端からの距離 (mm)", "Outer width (mm)": "外幅 (mm)", "PASSES THROUGH": "通過範囲", "opening {v}": "開口 {v}", "widest {v}": "最大幅 {v}", "stops {v}": "止まる位置 {v}", "{n} × 40 mm pitch": "{n}個（40mm間隔）", "1 (may swivel)": "1個（回転するかも）", "falls through": "抜け落ちます", "{v} mm from tip": "先端から {v} mm", "Opening {v}": "開口 {v}", "Holder {v}": "ホルダー {v}", "Falls through": "抜け落ちます", "Stops {v}": "止まる位置 {v}", "Outer depth": "外寸の奥行き", "Outer height": "外寸の高さ", "Cradle {v}": "受け {v}", "Inside {v}": "内寸 {v}", "Outer {v}": "外寸 {v}", "Printed top-face-down, the floor bridges {s} mm. Over ~40 mm may sag.": "上面を下にして印刷すると、底が {s}mm 空中をまたぎます。40mmを超えると垂れることがあります。", "Printed top-face-down; the floor bridges {s} mm (fine).": "上面を下にして印刷すると、底が {s}mm 空中をまたぎます（問題ない範囲）。", "Cradle radius {r} mm. Printed top-face-down, the curve needs supports inside (tree supports, build plate only).": "受けの半径 {r}mm。上面を下にして印刷すると、円弧の内側にサポートが必要です（ツリー・ビルドプレートのみ）。", "Longer than the A1 mini bed (180 mm).": "A1 mini のベッド（180mm）より長いです。", "tray · prints top-face-down · drag to orbit": "トレイ・上面を下にして印刷・ドラッグで回転", "widest {a} + {b} = {c} mm opening": "最大幅 {a} + 余裕 {b} = 開口 {c} mm", "{t} {w} × {u} mm · drag to orbit": "{t} {w} × {u} mm・ドラッグで回転", "slot": "スロット", "Drag to pan · scroll to zoom · E edit points · D draw a new outline": "ドラッグで移動・ホイールで拡大縮小・E 点を編集・D 輪郭を描き直す", "{n} selected · Delete removes them · drag one to move them all · Esc clears": "{n}点を選択中・Deleteで削除・ドラッグでまとめて移動・Escで解除", "Drag a box to select points · Delete removes them · drag a point to move · double-click a line to add a point · Space-drag pans": "ドラッグで範囲選択・Deleteで削除・点をドラッグで移動・線をダブルクリックで点を追加・Space+ドラッグで画面移動", "{n} points · click the first point or press Enter to finish · Backspace undoes a point · Esc cancels": "{n}点・最初の点をクリックかEnterで完了・Backspaceで1点戻す・Escで中止", "Click around the tool to place points · Space-drag or middle-drag pans": "工具のまわりをクリックして点を置きます・Space+ドラッグかホイールボタンで画面移動", "Gridfinity": "Gridfinity", "Bin": "ビン", "Grid X": "グリッド X", "Grid Y": "グリッド Y", "Height (×7 mm)": "高さ（×7mm）", "Auto fit": "自動で合わせる", "Tool direction": "工具の向き", "Along Y": "縦向き", "Along X": "横向き", "Stacking lip": "スタッキングリップ", "Standard Gridfinity: 42 mm grid, 7 mm height units. The A1 mini bed fits up to 4 × 4.": "標準のGridfinity規格（42mmグリッド、高さ7mm単位）。A1 miniのベッドには4×4まで載ります。", "Pocket": "くぼみ", "Floor fillet": "底のフィレット", "Rim fillet": "縁のフィレット", "The outline is grown by the extra room all round. Fillets round the bottom edge of the pocket and its top rim.": "輪郭を「余裕」の分だけ全周に広げます。フィレットはくぼみの底の角と、天面の縁を丸めます。", "Finger notches": "指を入れる凹み", "Notch radius": "凹みの半径", "Clear all": "すべて消す", "Open the Layout view and click where a finger should go. Drag to move, Alt-click to remove.": "「配置」ビューで、指を入れたい所をクリックします。ドラッグで移動、Alt+クリックで削除。", "{n} placed.": "{n}個配置済み。", "Layout": "配置", "A Gridfinity drawer bin with a pocket shaped like the tool. Add finger notches in the Layout view.": "工具の形のくぼみを持つ、引き出し用のGridfinityビン。指を入れる凹みは「配置」ビューで追加します。", "Gridfinity needs a photo of the tool": "Gridfinityには工具の写真が必要です", "Bin size": "ビンの大きさ", "Grid": "グリッド", "Total height": "全体の高さ", "Thinnest wall": "一番薄い壁", "Bin {v}": "ビン {v}", "Pocket {v}": "くぼみ {v}", "Notches {v}": "凹み {v}", "auto": "自動", "manual": "手動", "The pocket nearly touches the wall — add a grid unit": "くぼみが壁に近すぎます。グリッドを1つ増やしてください", "click to add a finger notch · drag to move · Alt-click removes": "クリックで凹みを追加・ドラッグで移動・Alt+クリックで削除", "Gridfinity bin · prints as shown · drag to orbit": "Gridfinityビン・この向きで印刷・ドラッグで回転", "Curve / corner for selected points (S)": "選択した点を曲線／角に切り替え (S)", "{n} selected · S curves them · Delete removes them · drag to move · Esc clears": "{n}点を選択中・Sで曲線に・Deleteで削除・ドラッグで移動・Escで解除", "Curved {n} points": "{n}点を曲線にしました", "Made {n} corners": "{n}点を角に戻しました", "Play (all round)": "アソビ（全周）", "Shrink compensation": "収縮補正", "Play widens the pocket by this much on every side (0.5–1 mm is typical). Shrink compensation enlarges the outline by a percentage to offset filament shrinkage (PETG ≈ 0.3–0.5 %). Fillets round the pocket floor edge and the top rim.": "アソビは、くぼみを全周この幅だけ広げます（0.5〜1mmが目安）。収縮補正は、フィラメントの縮みを見込んで輪郭を％で拡大します（PETGで約0.3〜0.5％）。フィレットはくぼみの底の角と天面の縁を丸めます。", "Auto (from sheet)": "自動（シートから推定）", "Pixel 9a · 2× zoom (fixed)": "Pixel 9a・2倍ズーム（固定）", "Lens": "レンズ", "off": "オフ"}, JA_HTML={"emptyLead": "左に写真をドロップするか、<b>写真を開く</b>から選んでください。<a href=\"#\" id=\"sampleLink\" style=\"color:var(--accent)\">サンプル</a>も試せます。", "step1": "1. 測定シート（<a href=\"sheet/measure_sheet_v2_A4.pdf\" download style=\"color:var(--accent)\">A4</a> または <a href=\"sheet/measure_sheet_v2_Letter.pdf\" download style=\"color:var(--accent)\">USレター</a>）を100%（「用紙に合わせる」はオフ）で印刷し、150mmの目盛が150mmになっているか確かめます。"}, EN_OF={}; for(const [k,v] of Object.entries(JA)) if(!(v in EN_OF)) EN_OF[v]=k;
 let LANG="en";
 function T(s,v){ let out = LANG==="ja" && JA[s]!=null ? JA[s] : s; if(v) out=out.replace(/\{(\w+)\}/g,(m,k)=> v[k]!=null ? v[k] : m); return out; }
 const EN_HTML={}; document.querySelectorAll("[data-i18n-html]").forEach(e=>EN_HTML[e.dataset.i18nHtml]=e.innerHTML);
@@ -459,7 +495,7 @@ function applyLang(){
   try{ toolHint(); if(st.type==="tray") $("typeNote").textContent=T("A plain tray for things without a neck: pens, markers, tape rolls. No photo needed.");
        else if(st.type==="grid") $("typeNote").textContent=T("A Gridfinity drawer bin with a pocket shaped like the tool. Add finger notches in the Layout view.");
        else $("typeNote").textContent=T(st.type==="slot"?"For pliers, nippers and scissors. The tool drops in tip-first and rests on its shoulders.":"For screwdrivers. The shaft goes through a round hole and the handle rests on the rim.");
-       if(typeof syncTrayInputs==="function") syncTrayInputs();
+       if(typeof syncTrayInputs==="function") syncTrayInputs(); if(typeof renderSet==="function") renderSet();
        if(st.mask) $("kvSrc").textContent=T(st.manual?"Edited":"Auto");
        if(st.prof){ const L=st.prof.at(-1).d, W=Math.max(...st.prof.map(p=>p.w)); $("fromPhotoHint").textContent=T("tool {l} × {w} mm",{l:L.toFixed(0),w:W.toFixed(0)}); }
        if(!st.type==="tray"){} $("lSeat").textContent=T(st.type==="tray"?"Outer depth":"Stops at"); $("lBear").textContent=T(st.type==="tray"?"Outer height":"Shoulder overlap");
@@ -493,11 +529,11 @@ function distortPt(x,y,L){ if(!L) return [x,y];
   if(L.div){ const ux=(x-L.cx)/L.R, uy=(y-L.cy)/L.R; let dx=ux, dy=uy; for(let i=0;i<8;i++){ const s=1+L.lam*(dx*dx+dy*dy); dx=ux*s; dy=uy*s; } return [L.cx+L.R*dx, L.cy+L.R*dy]; } const f=L.f*Math.max(L.cw,L.ch)/L.w, cx=L.cw/2, cy=L.ch/2;
   const xu=(x-cx)/f, yu=(y-cy)/f, s=1+L.k1*(xu*xu+yu*yu); return [cx+xu*s*f, cy+yu*s*f]; }
 
-function guideMask(){ // pixels (rectified, S px/mm) covered by the v2 alignment guides, padded by ~0.35 mm
+function guideMask(GD){ // pixels (rectified, S px/mm) covered by the v2 alignment guides, padded by ~0.35 mm
   const m=new Uint8Array(RW*RH), pad=0.35, set=(X0,X1,Y0,Y1)=>{ const u0=Math.max(0,Math.floor((X0+RX)*S)), u1=Math.min(RW-1,Math.ceil((X1+RX)*S)), v0=Math.max(0,Math.floor((RY-Y1)*S)), v1=Math.min(RH-1,Math.ceil((RY-Y0)*S));
     for(let v=v0;v<=v1;v++) m.fill(1,v*RW+u0,v*RW+u1+1); };
-  for(let gx=-70;gx<=70;gx+=10) for(let gy=-110;gy<=110;gy+=10){ if(!gx||!gy) continue; set(gx-1.5-pad,gx+1.5+pad,gy-pad,gy+pad); set(gx-pad,gx+pad,gy-1.5-pad,gy+1.5+pad); }
-  set(-pad,pad,-116,116); set(-73,73,-pad,pad);
+  for(let gx=-70;gx<=70;gx+=10) for(let gy=-GD.gy;gy<=GD.gy;gy+=10){ if(!gx||!gy) continue; set(gx-1.5-pad,gx+1.5+pad,gy-pad,gy+pad); set(gx-pad,gx+pad,gy-1.5-pad,gy+1.5+pad); }
+  set(-pad,pad,-GD.cl,GD.cl); set(-73,73,-pad,pad);
   for(let v=0;v<RH;v++){ const Y=RY-(v+0.5)/S; if(Math.abs(Y)>4) continue; for(let u=0;u<RW;u++){ const X=(u+0.5)/S-RX, r=Math.hypot(X,Y); if(r<1.3 || Math.abs(r-3)<0.45) m[v*RW+u]=1; } }
   return m; }
 function processImage(){
@@ -505,15 +541,15 @@ function processImage(){
   const cnv=document.createElement("canvas"); cnv.width=W; cnv.height=Hh; cnv.getContext("2d").drawImage(img,0,0);
   const src=cv.imread(cnv), g=new cv.Mat(); cv.cvtColor(src,g,cv.COLOR_RGBA2GRAY);
   const p=new cv.aruco_DetectorParameters(); p.cornerRefinementMethod=cv.CORNER_REFINE_SUBPIX;
-  const det=new cv.aruco_ArucoDetector(cv.getPredefinedDictionary(cv.DICT_4X4_100),p,new cv.aruco_RefineParameters(10,3,true));
+  const det=new cv.aruco_ArucoDetector(cv.getPredefinedDictionary(cv.DICT_4X4_250),p,new cv.aruco_RefineParameters(10,3,true));
   const corners=new cv.MatVector(), ids=new cv.Mat(), rej=new cv.MatVector(); det.detectMarkers(g,corners,ids,rej);
   const idv=Array.from(ids.data32S), groups={}; idv.forEach(i=>{const v=Math.floor(i/16); groups[v]=(groups[v]||0)+1;});
   const vIdx=+Object.entries(groups).sort((a,b)=>b[1]-a[1])[0]?.[0];
   if(isNaN(vIdx)||groups[vIdx]<4){ g.delete(); src.delete(); throw new Error(T("Fewer than 4 sheet markers found")); }
-  const [vName,vScale]=SHEET.variants[vIdx]||["?",1];
+  const [vName,vScale,vLay]=SHEET.variants[vIdx]||["?",1,"a4"]; const LAY=SHEET.layouts[vLay]; st.layout=LAY;
   const lp=LENS[$("lens").value]; let L= lp && !lp.auto ? {...lp, cw:W, ch:Hh} : null;
   const raw=[], op=[], h=SHEET.ms/2;
-  idv.forEach((id,k)=>{ if(Math.floor(id/16)!==vIdx) return; const c=corners.get(k).data32F; const [cx,cy]=SHEET.centers[id%16];
+  idv.forEach((id,k)=>{ if(Math.floor(id/16)!==vIdx) return; const c=corners.get(k).data32F; const [cx,cy]=LAY.centers[id%16];
     [[-h,h],[h,h],[h,-h],[-h,-h]].forEach(([dx,dy],j)=>{ raw.push([c[2*j],c[2*j+1]]); op.push([(cx+dx)*vScale,(cy+dy)*vScale]); }); });
   if(lp && lp.auto){ // fit lens distortion from the sheet itself: 1-parameter division model, centre = image centre
     const base={div:true, cx:W/2, cy:Hh/2, R:Math.hypot(W,Hh)/2};
@@ -543,7 +579,7 @@ function processImage(){
   setKV("kvFit",`${rms.toFixed(2)} mm`, rms<0.3?"ok":rms<0.6?"warn":"bad");
   setKV("kvImg",`${W} × ${Hh}`, Math.max(W,Hh)>=3500?"":"warn");
   setKV("kvLens", L&&L.div ? `${T("auto")} · λ ${L.lam.toFixed(3)}` : L ? "Pixel 9a 2×" : T("off"));
-  st.guides = vIdx===SHEET.guideVariant ? guideMask() : null;
+  st.guides = LAY.guide ? guideMask(LAY.guide) : null;
   st.meta={rms};
   const lab=new cv.Mat(); cv.cvtColor(st.rect,lab,cv.COLOR_RGB2Lab);
   const bgr=new cv.Mat(); cv.medianBlur(st.rect,bgr,51); const bgs=new cv.Mat(); cv.GaussianBlur(bgr,bgs,new cv.Size(0,0),25);
@@ -554,6 +590,9 @@ function processImage(){
   // so a wide, dark tool does not tint the background estimate and swell the outline.
   { const F=8, sw=Math.ceil(RW/F), sh=Math.ceil(RH/F), sm=new Float32Array(sw*sh*3), wt=new Float32Array(sw*sh), cnt=new Float32Array(sw*sh);
     const pad=30; const cm=new cv.Mat(RH,RW,cv.CV_8UC1), cmd=cm.data; for(let i=0;i<n;i++) cmd[i]= dE[i]>22?255:0;
+    // only the clean zone counts: markers, ticks and the frame line outside it are not paper and not tool
+    const zx0=(st.layout.zone[0]-2)*vScale, zy0=(st.layout.zone[1]-2)*vScale, inZ=new Uint8Array(n);
+    for(let v=0;v<RH;v++){ const Y=RY-(v+0.5)/S; for(let u=0;u<RW;u++){ const X=(u+0.5)/S-RX; if(Math.abs(X)<=zx0&&Math.abs(Y)<=zy0) inZ[v*RW+u]=1; else cmd[v*RW+u]=0; } }
     { const k=cv.getStructuringElement(cv.MORPH_ELLIPSE,new cv.Size(9,9)); cv.morphologyEx(cm,cm,cv.MORPH_CLOSE,k); k.delete();
       const cs=new cv.MatVector(), hi=new cv.Mat(); cv.findContours(cm,cs,hi,cv.RETR_EXTERNAL,cv.CHAIN_APPROX_SIMPLE);   // fill object interiors:
       for(let i=0;i<cs.size();i++) if(cv.contourArea(cs.get(i))>200) cv.drawContours(cm,cs,i,new cv.Scalar(255),cv.FILLED); // a wide tool reads as "edges only" in pass 1
@@ -563,7 +602,7 @@ function processImage(){
     const hit=new Uint8Array(sw*sh); for(let v=0;v<RH;v++){ const o=v*RW, cv8=(v/F)|0; for(let u=0;u<RW;u++) if(coarse[o+u]) hit[cv8*sw+((u/F)|0)]=1; }
     const rad=Math.ceil(pad/F), hitD=new Uint8Array(sw*sh);
     for(let y=0;y<sh;y++) for(let x=0;x<sw;x++) if(hit[y*sw+x]) for(let dy=-rad;dy<=rad;dy++) for(let dx=-rad;dx<=rad;dx++){ const yy=y+dy, xx=x+dx; if(yy>=0&&yy<sh&&xx>=0&&xx<sw) hitD[yy*sw+xx]=1; }
-    for(let v=0;v<RH;v++){ const o=v*RW, row=((v/F)|0)*sw; for(let u=0;u<RW;u++){ const c=row+((u/F)|0); if(hitD[c]) continue; const q=3*(o+u); sm[3*c]+=a[q]; sm[3*c+1]+=a[q+1]; sm[3*c+2]+=a[q+2]; cnt[c]++; } }
+    for(let v=0;v<RH;v++){ const o=v*RW, row=((v/F)|0)*sw; for(let u=0;u<RW;u++){ const c=row+((u/F)|0); if(hitD[c]||!inZ[o+u]) continue; const q=3*(o+u); sm[3*c]+=a[q]; sm[3*c+1]+=a[q+1]; sm[3*c+2]+=a[q+2]; cnt[c]++; } }
     for(let c=0;c<sw*sh;c++){ if(cnt[c]>0){ sm[3*c]/=cnt[c]; sm[3*c+1]/=cnt[c]; sm[3*c+2]/=cnt[c]; wt[c]=1; } }
     const M3=cv.matFromArray(sh,sw,cv.CV_32FC3,Array.from(sm)), MW=cv.matFromArray(sh,sw,cv.CV_32FC1,Array.from(wt));
     const blurAt=(sig)=>{ const n3=new cv.Mat(), nw=new cv.Mat(); cv.GaussianBlur(M3,n3,new cv.Size(0,0),sig); cv.GaussianBlur(MW,nw,new cv.Size(0,0),sig); return [n3,nw]; };
@@ -574,7 +613,7 @@ function processImage(){
     // darker-than-paper differences count less: soft shadows are a lightness drop with the paper's colour; dark tools still stand out
     for(let i=0;i<n;i++){ const dl=a[3*i]-bf[3*i], d0= dl<0 ? 0.45*dl : dl, d1=a[3*i+1]-bf[3*i+1], d2=a[3*i+2]-bf[3*i+2]; dE[i]=Math.sqrt(d0*d0+d1*d1+d2*d2); }
     BS.delete(); BF.delete(); }
-  const zx=(SHEET.zone[0]-2)*vScale, zy=(SHEET.zone[1]-2)*vScale;
+  const zx=(st.layout.zone[0]-2)*vScale, zy=(st.layout.zone[1]-2)*vScale;
   for(let v=0; v<RH; v++){ const Y=RY-(v+0.5)/S; for(let u=0; u<RW; u++){ const X=(u+0.5)/S-RX; if(Math.abs(X)>zx||Math.abs(Y)>zy) dE[v*RW+u]=0; } }
   st.dE=dE; [lab,bgr,bgs,bl].forEach(m=>m.delete());
 }
@@ -602,6 +641,8 @@ function segment(){
     let hit=false; for(let y=y0;y<y0+h && !hit;y+=2){ const o=y*RW; for(let x=x0;x<x0+w;x+=2){ if(ld[o+x]===i && dtd[o+x]<=lim){ hit=true; break; } } }
     if(hit) keep[i]=1; }
   inv.delete(); dist.delete();
+  const oldEx=st.extras||[]; st.extras = $("multiCk").checked ? findExtras(lbl,sts,nl,keep) : [];
+  st.extras.forEach((e,i)=>{ const o=oldEx[i]; e.flip=o?.flip||false; e.kind=o?.kind; e.off=o?.off||false; e.thick=o?.thick ?? +$("thick").value; measureExtra(e); });
   for(let i=0;i<n;i++) md[i]= keep[ld[i]]?255:0;
   cv.morphologyEx(m,m,cv.MORPH_CLOSE,k15);
   const cs=new cv.MatVector(), hi=new cv.Mat(); cv.findContours(m,cs,hi,cv.RETR_EXTERNAL,cv.CHAIN_APPROX_NONE);
@@ -616,40 +657,75 @@ function segment(){
   [lbl,sts,cen,k3,k7,k15,cs,hi,ap].forEach(x=>x.delete());
   setMask(m);
 }
-function setMask(m){
-  const mo=cv.moments(m,true); if(!mo.m00) throw new Error(T("Outline is empty")); st.cen=[mo.m10/mo.m00, mo.m01/mo.m00];
+function axisOf(m){
+  const mo=cv.moments(m,true); if(!mo.m00) return null; const cen=[mo.m10/mo.m00, mo.m01/mo.m00];
   const a20=mo.mu20, a02=mo.mu02, a11=mo.mu11, tr=(a20+a02)/2, dd=Math.sqrt(((a20-a02)/2)**2+a11*a11), ratio=(tr+dd)/Math.max(tr-dd,1e-9);
   let ang=0.5*Math.atan2(2*a11, a20-a02);
   // tools are laid along the sheet's long side; trust the shape's own axis only if it is clearly elongated and near vertical
   const deg=((ang*180/Math.PI)%180+180)%180; const offV=Math.abs(deg-90);
   if(ratio<2.5 || offV>30) ang=Math.PI/2;
-  st.autoAng=ang; st.elong=ratio;
+  return {cen, ang, ratio}; }
+function setMask(m){
+  const ax=axisOf(m); if(!ax) throw new Error(T("Outline is empty")); st.cen=ax.cen; st.autoAng=ax.ang; st.elong=ax.ratio;
   if(st.mask && st.mask!==m) st.mask.delete(); st.mask=m;
   $("kvSrc").textContent = T(st.manual ? "Edited" : "Auto"); $("kvSrc").className = "v "+(st.manual?"warn":"");
 }
-function profile(){
-  const ang = st.autoAng*180/Math.PI + 90 + st.rot;
-  const R=cv.getRotationMatrix2D(new cv.Point(st.cen[0],st.cen[1]), ang, 1);
-  const D=Math.ceil(Math.hypot(RW,RH)); R.data64F[2]+= D/2-st.cen[0]; R.data64F[5]+= D/2-st.cen[1];
-  const rm=new cv.Mat(); cv.warpAffine(st.mask,rm,R,new cv.Size(D,D),cv.INTER_NEAREST);
+function measureMask(mask, cen, autoAng, rot, flip, outline, polys){
+  const ang = autoAng*180/Math.PI + 90 + rot;
+  const R=cv.getRotationMatrix2D(new cv.Point(cen[0],cen[1]), ang, 1);
+  const D=Math.ceil(Math.hypot(RW,RH)); R.data64F[2]+= D/2-cen[0]; R.data64F[5]+= D/2-cen[1];
+  const rm=new cv.Mat(); cv.warpAffine(mask,rm,R,new cv.Size(D,D),cv.INTER_NEAREST);
   const d=rm.data, rows=[];
   for(let y=0;y<D;y++){ let lo=-1,hi=-1; const o=y*D; for(let x=0;x<D;x++) if(d[o+x]){ if(lo<0) lo=x; hi=x; } if(lo>=0) rows.push([y,lo,hi]); }
   const len=rows.length, wAt=i=>rows[i][2]-rows[i][1], k=Math.max(1,Math.round(len*0.08));
   let topW=0, botW=0; for(let i=0;i<k;i++){ topW+=wAt(i); botW+=wAt(len-1-i); }
-  let tipTop = topW<=botW; if(st.flip) tipTop=!tipTop;
+  let tipTop = topW<=botW; if(flip) tipTop=!tipTop;
   const ord = tipTop ? rows : rows.slice().reverse(), y0=ord[0][0], acc=[];
   ord.forEach(r=>{ const idx=Math.floor(Math.abs(r[0]-y0)/S*2); (acc[idx] ||= []).push(r); });
-  st.prof=acc.map((g,i)=>{ if(!g) return null; let l=1e9,h=-1e9; g.forEach(r=>{l=Math.min(l,r[1]);h=Math.max(h,r[2]);}); return {d:i/2, w:(h-l+1)/S}; }).filter(Boolean);
-  st.rotDeg=ang; const Rm=Array.from(R.data64F), tipRow = tipTop ? rows[0][0] : rows[len-1][0];
-  st.toolPoly = st.outlineMM.map(([X,Y])=>{ const u=(X+RX)*S, v=(RY-Y)*S; const x=Rm[0]*u+Rm[1]*v+Rm[2], y=Rm[3]*u+Rm[4]*v+Rm[5];
-      return [(x-D/2)/S, -((y-tipRow)/S*(tipTop?1:-1))]; });
-  st.toolPolysAll = (st.polys||[st.outlineMM]).filter(q=>q.length>=3).map(q=>expandPoly(q).map(([X,Y])=>{ const u=(X+RX)*S, v=(RY-Y)*S; const x=Rm[0]*u+Rm[1]*v+Rm[2], y=Rm[3]*u+Rm[4]*v+Rm[5];
-      return [(x-D/2)/S, -((y-tipRow)/S*(tipTop?1:-1))]; }));
+  const prof=acc.map((g,i)=>{ if(!g) return null; let l=1e9,h=-1e9; g.forEach(r=>{l=Math.min(l,r[1]);h=Math.max(h,r[2]);}); return {d:i/2, w:(h-l+1)/S}; }).filter(Boolean);
+  const Rm=Array.from(R.data64F), tipRow = tipTop ? rows[0][0] : rows[len-1][0];
+  const tf=([X,Y])=>{ const u=(X+RX)*S, v=(RY-Y)*S; const x=Rm[0]*u+Rm[1]*v+Rm[2], y=Rm[3]*u+Rm[4]*v+Rm[5]; return [(x-D/2)/S, -((y-tipRow)/S*(tipTop?1:-1))]; };
+  const toolPoly = outline.map(tf);
+  const toolPolysAll = polys.filter(q=>q.length>=3).map(q=>expandPoly(q).map(tf));
   rm.delete(); R.delete();
-  const L=st.prof.at(-1).d, Wmax=Math.max(...st.prof.map(p=>p.w));
+  return {prof, rotDeg:ang, toolPoly, toolPolysAll, L:prof.at(-1).d, Wmax:Math.max(...prof.map(p=>p.w))}; }
+function profile(){
+  const r=measureMask(st.mask, st.cen, st.autoAng, st.rot, st.flip, st.outlineMM, st.polys||[st.outlineMM]);
+  st.prof=r.prof; st.rotDeg=r.rotDeg; st.toolPoly=r.toolPoly; st.toolPolysAll=r.toolPolysAll;
+  const L=r.L, Wmax=r.Wmax, ang=r.rotDeg;
   $("fromPhoto").disabled=false; $("fromPhotoHint").textContent=T("tool {l} × {w} mm",{l:L.toFixed(0),w:Wmax.toFixed(0)});
   setKV("kvLen",`${L.toFixed(1)} mm`); setKV("kvWmax",`${Wmax.toFixed(1)} mm`); setKV("kvRot",`${((((ang%360)+540)%360)-180).toFixed(1)}°`);
+  renderSet();
 }
+/* extra tools found in the same photo ("Several tools in this photo") */
+function polysToMask(polys){ const m=new cv.Mat(RH,RW,cv.CV_8UC1,new cv.Scalar(0)), mv=new cv.MatVector();
+  polys.forEach(q=>{ const e=expandPoly(q); mv.push_back(cv.matFromArray(e.length,1,cv.CV_32SC2,e.flatMap(([X,Y])=>[Math.round((X+RX)*S-0.5),Math.round((RY-Y)*S-0.5)]))); });
+  cv.fillPoly(m,mv,new cv.Scalar(255)); for(let i=0;i<mv.size();i++) mv.get(i).delete(); mv.delete(); return m; }
+function measureExtra(e){ const m=polysToMask(e.polysMM), ax=axisOf(m); if(!ax){ m.delete(); return; }
+  const r=measureMask(m, ax.cen, ax.ang, 0, !!e.flip, e.polysMM[0], e.polysMM); m.delete(); Object.assign(e, r, {cen:ax.cen}); }
+function findExtras(lbl, sts, nl, keep){
+  const ld=lbl.data32S, n=RW*RH, F=4, sw=Math.ceil(RW/F), sh=Math.ceil(RH/F), low=new cv.Mat(sh,sw,cv.CV_8UC1,new cv.Scalar(0)), lw=low.data;
+  const area=i=>sts.intAt(i,cv.CC_STAT_AREA), cand=new Uint8Array(nl);
+  for(let i=1;i<nl;i++) if(!keep[i] && area(i)>=400) cand[i]=1;
+  for(let v=0;v<RH;v++){ const o=v*RW, r=((v/F)|0)*sw; for(let u=0;u<RW;u++){ const l=ld[o+u]; if(l && cand[l]) lw[r+((u/F)|0)]=255; } }
+  // parts closer than ~8 mm belong to the same tool
+  const k=cv.getStructuringElement(cv.MORPH_ELLIPSE,new cv.Size(21,21)); cv.dilate(low,low,k); k.delete();
+  const gl=new cv.Mat(); cv.connectedComponents(low,gl); const gd=gl.data32S, groups={};
+  for(let i=1;i<nl;i++){ if(!cand[i]) continue; const x0=sts.intAt(i,cv.CC_STAT_LEFT), y0=sts.intAt(i,cv.CC_STAT_TOP), w=sts.intAt(i,cv.CC_STAT_WIDTH), h=sts.intAt(i,cv.CC_STAT_HEIGHT);
+    let g=0; for(let y=y0;y<y0+h && !g;y++) for(let x=x0;x<x0+w;x++) if(ld[y*RW+x]===i){ g=gd[((y/F)|0)*sw+((x/F)|0)]; break; }
+    if(!g) continue; (groups[g] ||= {members:[], area:0}); groups[g].members.push(i); groups[g].area+=area(i); }
+  low.delete(); gl.delete();
+  const out=[], k15=cv.getStructuringElement(cv.MORPH_ELLIPSE,new cv.Size(15,15));
+  Object.values(groups).filter(g=>g.area>=150*S*S).forEach(g=>{ const mem=new Uint8Array(nl); g.members.forEach(i=>mem[i]=1);
+    const m=new cv.Mat(RH,RW,cv.CV_8UC1), md=m.data; for(let i=0;i<n;i++) md[i]= mem[ld[i]]?255:0;
+    cv.morphologyEx(m,m,cv.MORPH_CLOSE,k15);
+    const cs=new cv.MatVector(), hi=new cv.Mat(); cv.findContours(m,cs,hi,cv.RETR_EXTERNAL,cv.CHAIN_APPROX_NONE);
+    const ps=[]; for(let i=0;i<cs.size();i++){ const c=cs.get(i), a=cv.contourArea(c); if(a<=200) continue; const ap=new cv.Mat(); cv.approxPolyDP(c,ap,0.5,true);
+      const q=[]; for(let j=0;j<ap.rows;j++) q.push([(ap.data32S[2*j]+0.5)/S-RX, RY-(ap.data32S[2*j+1]+0.5)/S]); ap.delete(); ps.push({q,a}); }
+    cs.delete(); hi.delete(); m.delete(); ps.sort((a,b)=>b.a-a.a);
+    if(ps.length) out.push({polysMM:ps.map(p=>p.q), cx:ps[0].q.reduce((s,p)=>s+p[0],0)/ps[0].q.length}); });
+  k15.delete(); out.sort((a,b)=>a.cx-b.cx);
+  return out; }
 
 /* ---------- drawing ---------- */
 function fitCanvas(c){ const r=c.parentElement.getBoundingClientRect(), dpr=devicePixelRatio||1; c.width=r.width*dpr; c.height=r.height*dpr; return [c.getContext("2d"),c.width,c.height,dpr]; }
@@ -681,6 +757,9 @@ function drawPhoto(){
   ctx.imageSmoothingQuality="high"; ctx.drawImage(st.rectCanvas,x0,y0,RW*V.sc0*V.z,RH*V.sc0*V.z);
   const editing = V.tool==="edit", polys=st.polys||[];
   polys.forEach(q=>{ polyPath(ctx,q); ctx.fillStyle="rgba(31,122,224,.10)"; ctx.fill(); ctx.strokeStyle=C.accent; ctx.lineWidth=(editing?1.4:1.6)*dpr; if(!editing) ctx.setLineDash([5*dpr,3*dpr]); ctx.stroke(); ctx.setLineDash([]); });
+  (st.extras||[]).forEach((e,i)=>{ const col="#8e4ec6"; e.polysMM.forEach(q=>{ polyPath(ctx,q); ctx.fillStyle= e.off?"rgba(142,78,198,.04)":"rgba(142,78,198,.10)"; ctx.fill(); ctx.strokeStyle=col; ctx.lineWidth=1.5*dpr; ctx.setLineDash([5*dpr,3*dpr]); ctx.stroke(); ctx.setLineDash([]); });
+    const q=e.polysMM[0], top=q.reduce((b,p)=>p[1]>b[1]?p:b,q[0]), [x,y]=toS(top); ctx.font=`600 ${12*dpr}px Inter, sans-serif`; ctx.fillStyle=col; ctx.fillText("#"+(i+2)+(e.off?" ✕":""),x-8*dpr,y-8*dpr); });
+  if(st.extras?.length && st.outlineMM){ const q=st.outlineMM, top=q.reduce((b,p)=>p[1]>b[1]?p:b,q[0]), [x,y]=toS(top); ctx.font=`600 ${12*dpr}px Inter, sans-serif`; ctx.fillStyle=C.accent; ctx.fillText("#1",x-8*dpr,y-8*dpr); }
   if(st.prof && V.tool==="pan"){ const a=st.rotDeg*Math.PI/180, [cx,cy]=st.cen, dx=-Math.sin(a), dy=Math.cos(a), Lp=st.prof.at(-1).d*S*0.62, sc=V.sc0*V.z;
     ctx.strokeStyle=C.red; ctx.lineWidth=1.4*dpr; ctx.beginPath(); ctx.moveTo(x0+(cx-dx*Lp)*sc, y0+(cy-dy*Lp)*sc); ctx.lineTo(x0+(cx+dx*Lp)*sc, y0+(cy+dy*Lp)*sc); ctx.stroke();
     ctx.fillStyle="#fff"; ctx.strokeStyle=C.red; ctx.beginPath(); ctx.arc(x0+cx*sc, y0+cy*sc, 3.5*dpr,0,7); ctx.fill(); ctx.stroke(); }
@@ -816,7 +895,8 @@ function drawProfile(){
 }
 
 /* ---------- step 3: holder ---------- */
-function autoPass(){ const P=st.prof, L=P.at(-1).d; let best=null; P.forEach(p=>{ if(p.d>L*0.2 && p.d<L*0.65 && (!best||p.w<best.w)) best=p; }); return Math.round(best?best.d:L*0.4); }
+function autoPass(){ return autoPassP(st.prof); }
+function autoPassP(P){ const L=P.at(-1).d; let best=null; P.forEach(p=>{ if(p.d>L*0.2 && p.d<L*0.65 && (!best||p.w<best.w)) best=p; }); return Math.round(best?best.d:L*0.4); }
 function computeHolder(){
   if(!st.prof) return null; const P=st.prof, L=P.at(-1).d, clr=+$("clr").value;
   let dpass=+$("dpass").value; if(!dpass||dpass<=0||dpass>=L){ dpass=autoPass(); $("dpass").value=dpass; }
@@ -826,6 +906,105 @@ function computeHolder(){
   const bear = seat==null?0 : Math.max(...P.filter(p=>p.d>=seat && p.d<=seat+5).map(p=>p.w))-W;
   return { type:st.type, W, U, dpass, seat, bear, wmax };
 }
+/* ---------- several tools in one holder ---------- */
+const SET={ items:[], seq:0 };            // kept tools and pens
+const OFF={}, FLIPG={};                    // Gridfinity: per-item offset (mm) and 180° turn
+function curKind(){ return st.type==="round" ? "round" : "slot"; }
+function stadium(d,L){ const r=d/2, q=[]; for(let i=0;i<=18;i++){ const a=Math.PI*i/18; q.push([r*Math.cos(a), -r+r*Math.sin(a)]); }
+  for(let i=0;i<=18;i++){ const a=Math.PI+Math.PI*i/18; q.push([r*Math.cos(a), -L+r+r*Math.sin(a)]); } return q; }
+function allItems(){
+  const out=SET.items.map(it=>({...it, kind: it.kind==="cup" ? "cup" : (it.kind||curKind())}));
+  if(st.prof && !st.curKept){
+    out.push({key:"cur", src:"cur", name:T("This photo"), kind:curKind(), prof:st.prof, polys:st.toolPolysAll, thick:+$("thick").value, L:st.prof.at(-1).d, Wmax:Math.max(...st.prof.map(p=>p.w))});
+    (st.extras||[]).forEach((e,i)=>{ if(!e.off && e.prof) out.push({key:"x"+i, src:"extra", idx:i, name:T("This photo · #{n}",{n:i+2}), kind:e.kind||curKind(), kindSet:!!e.kindSet, pen:e.pen, prof:e.prof, polys:e.toolPolysAll, thick:e.thick, L:e.L, Wmax:e.Wmax}); });
+  }
+  return out.map(autoCup); }
+function penFrom(it){ return {d:+it.Wmax.toFixed(1), L:+it.L.toFixed(0), depth:Math.round(Math.min(45,Math.max(20,it.L*0.3)))}; }
+// a tool with no neck (pen, marker) would fall through a slot or hole: unless the user chose otherwise, it gets a cup
+function autoCup(it){ if(it.src==="cur" || it.kindSet || it.kind==="cup" || st.type==="grid") return it;
+  const h=holderFor(it); if(h.seat!=null) return it; return {...it, kind:"cup", autoCup:true, pen:it.pen||penFrom(it)}; }
+function holderFor(it){
+  const clr=+$("clr").value;
+  if(it.kind==="cup"){ const W=it.pen.d+clr; return {type:"cup", W, U:W, dpass:0, seat:it.pen.depth, bear:0, wmax:it.pen.d, depth:it.pen.depth, item:it}; }
+  const P=it.prof, L=P.at(-1).d;
+  let dpass; if(it.src==="cur"){ dpass=+$("dpass").value; if(!dpass||dpass<=0||dpass>=L){ dpass=autoPassP(P); $("dpass").value=dpass; } } else dpass=autoPassP(P);
+  const wmax=Math.max(...P.filter(p=>p.d<=dpass).map(p=>p.w)), W=wmax+clr;
+  const U = it.kind==="round" ? W : (+it.thick + +$("tclr").value);
+  let seat=null; for(const p of P){ if(p.d>dpass && p.w>=W){ seat=p.d; break; } }
+  const bear = seat==null?0 : Math.max(...P.filter(p=>p.d>=seat && p.d<=seat+5).map(p=>p.w))-W;
+  return { type:it.kind, W, U, dpass, seat, bear, wmax, item:it }; }
+function buildHolderMulti(hds){
+  const {Manifold, CrossSection}=M; const F=+$("fun").value, shelfT=+$("shelfT").value, wall=+$("wall").value, side=+$("side").value, plateH=+$("plateH").value;
+  const PT=SK.plateT, yT=SK.yTop, R=filletR(), sep=Math.max(2,+$("setSep").value||6);
+  const total=hds.reduce((a,h)=>a+h.W,0)+(hds.length-1)*sep;
+  let PW=Math.max(48, Math.ceil((total+2*side)/2)*2);
+  const nH=Math.max(2, Math.floor((PW-8)/SK.pitch)+1); PW=Math.max(PW,(nH-1)*SK.pitch+8);
+  const Umax=Math.max(...hds.map(h=>h.U)), z0=PT+wall, zF=z0+Umax+wall, ys=yT-shelfT, cw=Math.min(wall,2), floor=1.6;
+  const cupBot=Math.min(Infinity, ...hds.filter(h=>h.type==="cup").map(h=>yT-h.depth-floor));
+  const yb=Math.min(yT-plateH, cupBot), rp=Math.min(R,PT-0.8);
+  const plate=toX(rr(0,PT,yb,yT,{x1y0:rp}),-PW/2,PW).intersect(toY(rr(-PW/2,PW/2,-1,PT,{x0y1:rp,x1y1:rp}),yb-1,yT-yb+2));
+  const rs=Math.min(R,shelfT-1), rv=Math.min(R,(PW-total)/2-1.5,zF-PT);
+  const shelf=toX(rr(PT-0.5,zF,ys,yT,{x1y0:rs, x1y1: R>0?BED_CH:0}),-PW/2,PW).intersect(toY(rr(-PW/2,PW/2,PT-1,zF,{x0y1:rv,x1y1:rv}),ys-1,shelfT+2));
+  let body=plate.add(shelf);
+  const xs=[], zcs=[]; let x=-total/2; hds.forEach(h=>{ xs.push(x+h.W/2); zcs.push(z0+h.U/2); x+=h.W+sep; });
+  const Fm=Math.max(0,Math.min(F,(sep-1.2)/2)), cut=ys-1;
+  hds.forEach((h,i)=>{ if(h.type!=="cup") return; const r=h.W/2, yB=yT-h.depth-floor;   // closed-bottom cup hanging under the shelf
+    const ring=CrossSection.circle(r+cw,96).translate([xs[i],zcs[i]]).add(CrossSection.square([2*(r+cw), zcs[i]-(PT-0.5)]).translate([xs[i]-r-cw,PT-0.5]));
+    body=body.add(toY(ring,yB,ys-yB+0.5)); });
+  let cutter=null; const addC=m=>{ cutter= cutter? cutter.add(m) : m; };
+  hds.forEach((h,i)=>{ const xc=xs[i], zc=zcs[i];
+    if(h.type==="slot"){ const W2=h.W/2; addC(Manifold.extrude(new CrossSection([[[xc-W2,cut],[xc+W2,cut],[xc+W2,yT-Fm],[xc+W2+Fm+1,yT+1],[xc-W2-Fm-1,yT+1],[xc-W2,yT-Fm]]]),h.U).translate([0,0,z0])); }
+    else { const r=h.W/2, y0= h.type==="cup" ? yT-h.depth : cut;
+      addC(Manifold.cylinder(yT+1-y0,r,r,96).rotate([-90,0,0]).translate([xc,y0,zc]));
+      addC(Manifold.cylinder(Fm+1,r,r+Fm+1,96).rotate([-90,0,0]).translate([xc,yT-Fm,zc])); } });
+  if(cutter) body=body.subtract(cutter);
+  const {hooks,n}=hooksFor(PW); body=body.add(hooks);
+  return {body, PW, nHook:n, zc:zcs[0], F:Fm, depth:zF, multi:true, hds, xs, zcs, total, height:yT-yb}; }
+function renderSet(){
+  const el=$("setList"); if(!el) return; const items=allItems(), grid=st.type==="grid";
+  const ico=id=>`<svg class="i" style="width:12px;height:12px"><use href="#${id}"/></svg>`;
+  const kindLbl=k=>T(k==="cup"?"Cup":k==="round"?"Hole":"Slot");
+  let h="";
+  const row=(it,cls)=>{ const dims = it.kind==="cup" ? `Ø${it.pen.d} × ${it.pen.L}` : `${it.L.toFixed(0)} × ${it.Wmax.toFixed(0)}`;
+    let ac="";
+    const byPen = !!it.byPen;
+    if(!grid && (it.kind!=="cup" || !byPen)) ac+= it.src==="cur" ? `<button class="k" disabled title="${T("Set by Slot / Round hole above")}">${kindLbl(it.kind)}</button>` : `<button class="k" data-a="kind" data-k="${it.key}" title="${T("Slot or round hole")}">${kindLbl(it.kind)}</button>`;
+    if(!grid && byPen) ac+=`<button class="k" disabled>${kindLbl("cup")}</button>`;
+    if(!grid && it.kind==="slot" && it.src!=="cur") ac+=`<input type="number" step="0.1" data-a="thick" data-k="${it.key}" value="${(+it.thick).toFixed(1)}" title="${T("Tool thickness (mm)")}">`;
+    if(grid) ac+=`<button data-a="turn" data-k="${it.key}" title="${T("Turn end for end")}">${ico("i-flip")}</button>`;
+    if(it.src!=="cur") ac+=`<button data-a="del" data-k="${it.key}" title="${T("Remove")}">${ico("i-x")}</button>`;
+    h+=`<div class="setrow ${cls||""}"><div style="min-width:0"><div class="nm">${it.byPen ? T("Pen Ø{d}",{d:it.pen.d}) : it.name}</div><div class="sz">${dims} mm</div></div><div class="ac">${ac}</div></div>`; };
+  items.forEach(it=>row(it, it.src==="saved"?"":"cur"));
+  if(st.prof && st.curKept) h+=`<div class="setrow off"><div><div class="nm">${T("This photo")}</div><div class="sz">${T("kept above — open the next photo")}</div></div><div></div></div>`;
+  (st.extras||[]).forEach((e,i)=>{ if(e.off && !st.curKept) h+=`<div class="setrow off"><div><div class="nm">${T("This photo · #{n}",{n:i+2})}</div><div class="sz">${T("left out")}</div></div><div class="ac"><button data-a="restore" data-k="x${i}">${T("Include")}</button></div></div>`; });
+  if(!items.length) h=`<p class="hint" style="margin:0 0 4px">${T("No tools yet. Open a photo or add a pen.")}</p>`;
+  el.innerHTML=h;
+  $("keepBtn").disabled = !st.prof || !!st.curKept;
+  $("setHint").textContent = items.length>1 ? (grid ? T("{n} tools side by side. Drag pockets in the Layout view to rearrange.",{n:items.length}) : T("{n} tools side by side.",{n:items.length})) : T("One holder can take several tools. Keep this one and open the next photo, tick “Several tools in this photo”, or add pens by size.");
+}
+function findItem(key){ if(key[0]==="s") return SET.items.find(i=>i.key===key); if(key[0]==="x") return st.extras[+key.slice(1)]; return null; }
+$("setList").addEventListener("click",e=>{ const b=e.target.closest("button[data-a]"); if(!b) return; const a=b.dataset.a, key=b.dataset.k, it=findItem(key);
+  if(a==="kind" && it){ const shown=allItems().find(x=>x.key===key)?.kind||"slot", next={slot:"round",round:"cup",cup:"slot"}[shown];
+    it.kind=next; it.kindSet=true; if(next==="cup" && !it.pen) it.pen=penFrom(it); }
+  if(a==="del"){ if(key[0]==="s") SET.items=SET.items.filter(i=>i.key!==key); else if(it) it.off=true; delete OFF[key]; }
+  if(a==="restore" && it) it.off=false;
+  if(a==="turn") FLIPG[key]=!FLIPG[key];
+  renderSet(); drawPhoto(); afterSetChange(); });
+$("setList").addEventListener("change",e=>{ const t=e.target; if(t.dataset.a!=="thick") return; const it=findItem(t.dataset.k); if(it){ it.thick=Math.max(0.5,+t.value||it.thick); refreshHolder(); } });
+function afterSetChange(){ if(!st.rect) showView(curView); refreshHolder(); }
+$("keepBtn").onclick=()=>{ if(!st.prof || st.curKept) return; const base=($("crumbName").textContent||"tool").replace(/^phone_/,T("Phone")+" ");
+  allItems().filter(i=>i.src!=="saved").forEach(it=>{ const key="s"+(++SET.seq);
+    if(OFF[it.key]) { OFF[key]=OFF[it.key]; delete OFF[it.key]; } if(FLIPG[it.key]) { FLIPG[key]=FLIPG[it.key]; delete FLIPG[it.key]; }
+    SET.items.push({key, src:"saved", name: it.src==="extra" ? `${base} #${it.idx+2}` : base, kind: (it.src==="cur"||it.autoCup) ? null : it.kind, kindSet: !it.autoCup && !!it.kindSet, pen: it.autoCup ? undefined : it.pen, prof:it.prof, polys:it.polys, thick:it.thick, L:it.L, Wmax:it.Wmax}); });
+  st.curKept=true; renderSet(); refreshHolder(); status(T("Kept. Open the next photo, or export."),"ok"); };
+$("penBtn").onclick=()=>{ $("penForm").classList.toggle("hide"); };
+$("penCancel").onclick=()=>$("penForm").classList.add("hide");
+$("penAdd").onclick=()=>{ const d=Math.max(2,+$("penD").value||10), L=Math.max(d+2,+$("penL").value||140), depth=Math.max(5,Math.min(L-5,+$("penDepth").value||40));
+  const key="s"+(++SET.seq); SET.items.push({key, src:"saved", byPen:true, name:T("Pen Ø{d}",{d}), kind:"cup", pen:{d,L,depth}, prof:[{d:0,w:d},{d:L,w:d}], polys:[stadium(d,L)], thick:d, L, Wmax:d});
+  $("penForm").classList.add("hide"); renderSet(); afterSetChange(); };
+$("setSep").addEventListener("input",refreshHolder);
+$("multiCk").onchange=()=>{ if(!st.rect) return; status(T("Updating outline…"),"busy"); setTimeout(()=>{ resegment(); drawPhoto(); },20); };
+
 /* ---------- geometry helpers ---------- */
 function filletR(){ return segVal("filSeg")==="on" ? Math.max(0,+$("filR").value||0) : 0; }
 // rounded / chamfered rectangle. corners: {x0y0,x1y0,x1y1,x0y1}: r>0 fillet, r<0 chamfer
@@ -976,11 +1155,20 @@ function init3D(){
 function meshToGeom(mesh){ const g=new THREE.BufferGeometry(), n=mesh.numProp, vp=mesh.vertProperties, pos=new Float32Array(mesh.numVert*3);
   for(let i=0;i<mesh.numVert;i++){ pos[3*i]=vp[n*i]; pos[3*i+1]=vp[n*i+1]; pos[3*i+2]=vp[n*i+2]; }
   g.setAttribute("position",new THREE.BufferAttribute(pos,3)); g.setIndex(new THREE.BufferAttribute(new Uint32Array(mesh.triVerts),1)); g.computeVertexNormals(); return g; }
+function clearTool(){ if(toolObj){ scene.remove(toolObj); toolObj.traverse(o=>o.geometry&&o.geometry.dispose()); toolObj=null; } }
+function ghostFor(hd, x, zc, F){ const it=hd.item; let g=null;
+  if(hd.type==="cup"){ const r=it.pen.d/2; g=new THREE.CylinderGeometry(r,r,it.pen.L,32); g.translate(x, SK.yTop-hd.depth+it.pen.L/2, zc); return g; }
+  if(hd.seat==null || !it.prof) return null;
+  if(hd.type==="round"){ const P=it.prof, pts=[new THREE.Vector2(0,0)]; for(let i=0;i<P.length;i+=2) pts.push(new THREE.Vector2(P[i].w/2,P[i].d)); pts.push(new THREE.Vector2(0,P.at(-1).d));
+    g=new THREE.LatheGeometry(pts,64); g.translate(x,(SK.yTop-F)-hd.seat, zc); return g; }
+  const q=it.polys?.[0]; if(!q) return null; const T_=+it.thick;
+  g=new THREE.ExtrudeGeometry(new THREE.Shape(q.map(([a,b])=>new THREE.Vector2(a,b))),{depth:T_,bevelEnabled:false,curveSegments:1});
+  g.scale(1,-1,1); g.translate(x,(SK.yTop-F)-hd.seat, zc-T_/2); return g; }
 function update3DGrid(b,o){
   if(holderObj){ scene.remove(holderObj); holderObj.geometry.dispose(); }
   const g=meshToGeom(b.body.getMesh()); g.rotateX(-Math.PI/2); g.translate(0,-30,0);
   holderObj=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0x4a8fe0,roughness:.45,metalness:0,flatShading:true})); scene.add(holderObj);
-  if(toolObj){ scene.remove(toolObj); toolObj.geometry.dispose(); toolObj=null; }
+  clearTool();
   const shapes=o.P.filter(q=>q.length>=3).map(q=>new THREE.Shape(q.map(([x,y])=>new THREE.Vector2(x,y))));
   if(shapes.length){ const tg=new THREE.ExtrudeGeometry(shapes,{depth:Math.max(2,o.depth*0.9),bevelEnabled:false,curveSegments:1}); tg.translate(0,0,b.top-o.depth+0.05); tg.rotateX(-Math.PI/2); tg.translate(0,-30,0);
     toolObj=new THREE.Mesh(tg,new THREE.MeshStandardMaterial({color:0x8a9099,transparent:true,opacity:.45,side:THREE.DoubleSide,depthWrite:false})); scene.add(toolObj); }
@@ -990,30 +1178,32 @@ function update3DTray(b){
   boardObj.visible=true; window.__boardEdges.visible=true;
   if(holderObj){ scene.remove(holderObj); holderObj.geometry.dispose(); }
   holderObj=new THREE.Mesh(meshToGeom(b.body.getMesh()), new THREE.MeshStandardMaterial({color:0x4a8fe0,roughness:.45,metalness:0,flatShading:true})); scene.add(holderObj);
-  if(toolObj){ scene.remove(toolObj); toolObj.geometry.dispose(); toolObj=null; }
+  clearTool();
 }
 function update3D(built,hd){
   boardObj.visible=true; window.__boardEdges.visible=true;
   if(holderObj){ scene.remove(holderObj); holderObj.geometry.dispose(); }
   holderObj=new THREE.Mesh(meshToGeom(built.body.getMesh()), new THREE.MeshStandardMaterial({color:0x4a8fe0,roughness:.45,metalness:0,flatShading:true}));
   scene.add(holderObj);
-  if(toolObj){ scene.remove(toolObj); toolObj.geometry.dispose(); toolObj=null; }
-  if(st.toolPoly && hd.seat!=null){ let g;
-    if(hd.type==="round"){ // round tools: revolve the width profile around the axis
-      const P=st.prof, pts=[new THREE.Vector2(0,0)]; for(let i=0;i<P.length;i+=2) pts.push(new THREE.Vector2(P[i].w/2,P[i].d)); pts.push(new THREE.Vector2(0,P.at(-1).d));
-      g=new THREE.LatheGeometry(pts,64); g.translate(0,(SK.yTop-built.F)-hd.seat, built.zc);
-    } else {
-      const shape=new THREE.Shape(st.toolPoly.map(([x,y])=>new THREE.Vector2(x,y))), T=+$("thick").value;
-      g=new THREE.ExtrudeGeometry(shape,{depth:T,bevelEnabled:false,curveSegments:1});
-      g.scale(1,-1,1); g.translate(0,(SK.yTop-built.F)-hd.seat, built.zc-T/2);
-    }
-    toolObj=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0x8a9099,transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false})); scene.add(toolObj); }
+  clearTool();
+  const mat=new THREE.MeshStandardMaterial({color:0x8a9099,transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false});
+  const hds=built.hds||[hd], xs=built.xs||[0], zcs=built.zcs||[built.zc];
+  const grp=new THREE.Group(); hds.forEach((h,i)=>{ const g=ghostFor(h, xs[i], zcs[i], built.F); if(g) grp.add(new THREE.Mesh(g,mat)); });
+  if(grp.children.length){ toolObj=grp; scene.add(grp); }
 }
 
 
 /* ---------- Gridfinity: state, layout view, refresh ---------- */
 const G={notches:[], auto:true, drag:null};
-function gridOpts(){ const rot90=segVal("gRot")==="90"; const fr=gfToolFrame(st.toolPolysAll,rot90);
+function arrangeItems(items, clr){ // tools side by side along X (tool axis along Y), spacing between pocket edges
+  const sp=Math.max(1,+$("setSep").value||6), parts=[];
+  items.forEach(it=>{ let P=(it.polys||[]).filter(q=>q.length>=3); if(!P.length) return; if(FLIPG[it.key]) P=P.map(q=>q.map(([a,b])=>[-a,-b]));
+    const xs=P.flat().map(p=>p[0]), ys=P.flat().map(p=>p[1]); parts.push({it,P,w:Math.max(...xs)-Math.min(...xs),cx:(Math.min(...xs)+Math.max(...xs))/2,cy:(Math.min(...ys)+Math.max(...ys))/2}); });
+  const total=parts.reduce((a,p)=>a+p.w+2*clr,0)+Math.max(0,parts.length-1)*sp; let x=-total/2; const polys=[], owner=[];
+  parts.forEach(p=>{ const off=OFF[p.it.key]||[0,0], ox=x+clr+p.w/2-p.cx+off[0], oy=-p.cy+off[1];
+    p.P.forEach(q=>{ polys.push(q.map(([a,b])=>[a+ox,b+oy])); owner.push(p.it.key); }); x+=p.w+2*clr+sp; });
+  return {polys, owner}; }
+function gridOpts(){ const rot90=segVal("gRot")==="90"; const ar=arrangeItems(allItems(), Math.max(0,+$("gClr").value||0)); const fr=gfToolFrame(ar.polys,rot90); fr.owner=ar.owner;
   const k=1+(+$("gScale").value||0)/100; fr.P=fr.P.map(q=>q.map(([x,y])=>[x*k,y*k]));
   return {...fr, rot90, clearance:Math.max(0,+$("gClr").value||0), notches:G.notches.map(fr.map), notchR:Math.max(2,+$("gNr").value||10),
     nx:Math.max(1,Math.round(+$("gX").value||1)), ny:Math.max(1,Math.round(+$("gY").value||1)), u:Math.max(2,Math.round(+$("gU").value||3)),
@@ -1022,7 +1212,7 @@ function gridAutoFit(o){ const cs=gfPocketCS(o), b=cs.bounds(), wall=3;
   const nx=Math.max(1,Math.ceil((b.max[0]-b.min[0]+2*wall+GF.gap)/GF.pitch)), ny=Math.max(1,Math.ceil((b.max[1]-b.min[1]+2*wall+GF.gap)/GF.pitch));
   const u=Math.max(2,Math.ceil((GF.baseH+1.2+o.depth)/GF.unitH)); $("gX").value=nx; $("gY").value=ny; $("gU").value=u; return {...o,nx,ny,u}; }
 function refreshGrid(){
-  if(!st.toolPolysAll){ status(T("Gridfinity needs a photo of the tool"),"err"); return; }
+  if(!allItems().length){ status(T("Gridfinity needs a photo of the tool"),"err"); return; }
   let o=gridOpts(); if(G.auto) o=gridAutoFit(o);
   const b=buildGrid(o); st.built=b; st.grid=o; st.holder=null;
   update3DGrid(b,o);
@@ -1035,11 +1225,12 @@ function refreshGrid(){
   $("lW").textContent=T("Bin size"); $("lHooks").textContent=T("Grid"); $("lSeat").textContent=T("Total height"); $("lBear").textContent=T("Thinnest wall");
   $("chipA").innerHTML=T("Bin {v}",{v:`<b class="mono">${o.nx}×${o.ny}×${o.u}U</b>`});
   $("chipB").innerHTML=T("Pocket {v}",{v:`<b class="mono">${pw.toFixed(0)} × ${ph.toFixed(0)} × ${o.depth}</b>`});
-  $("chipC").innerHTML=T("Notches {v}",{v:`<b class="mono">${G.notches.length}</b>`});
+  $("chipC").innerHTML= o.owner && new Set(o.owner).size>1 ? T("Tools {v}",{v:`<b class="mono">${new Set(o.owner).size}</b>`}) : T("Notches {v}",{v:`<b class="mono">${G.notches.length}</b>`});
   $("topChips").classList.remove("hide");
   $("gFitHint").textContent = G.auto ? T("auto") : T("manual");
   $("gNHint").textContent = T("Open the Layout view and click where a finger should go. Drag to move, Alt-click to remove.") + (G.notches.length? " "+T("{n} placed.",{n:G.notches.length}):"");
-  if(room<1.2) status(T("The pocket nearly touches the wall — add a grid unit"),"err"); else status(T("Ready"),"ok");
+  if(b.W>180||b.H>180) status(T("Bigger than the A1 mini bed (180 mm) — put fewer tools in this bin"),"err");
+  else if(room<1.2) status(T("The pocket nearly touches the wall — add a grid unit"),"err"); else status(T("Ready"),"ok");
   $("dl").disabled=false; drawProfile(); updateCaption();
 }
 function layoutXf(){ const c=$("cProf"), dpr=devicePixelRatio||1, W=c.width, H=c.height, o=st.grid, b=st.built;
@@ -1064,15 +1255,24 @@ function drawLayout(){
   ctx.fillStyle=C.muted; ctx.font=`${12*dpr}px Inter, "Noto Sans JP", sans-serif`;
   ctx.fillText(`${o.nx} × ${o.ny} · ${b.W.toFixed(1)} × ${b.H.toFixed(1)} mm`, bx, by+b.H*sc+20*dpr);
 }
+function pip(p,q){ let c=false; for(let i=0,j=q.length-1;i<q.length;j=i++){ const [xi,yi]=q[i],[xj,yj]=q[j]; if(((yi>p[1])!==(yj>p[1])) && p[0]<(xj-xi)*(p[1]-yi)/(yj-yi)+xi) c=!c; } return c; }
 (function wireLayout(){ const c=$("cProf");
   const pos=e=>{ const r=c.getBoundingClientRect(), d=devicePixelRatio||1; return [(e.clientX-r.left)*d,(e.clientY-r.top)*d]; };
   const hit=(sx,sy)=>{ const X=layoutXf(); let best=-1, bd=(12*X.dpr)**2; st.grid.notches.forEach((p,i)=>{ const [x,y]=X.toS(p), d=(x-sx)**2+(y-sy)**2; if(d<bd){bd=d;best=i;} }); return best; };
+  const owner=mm=>{ const o=st.grid; if(!o.owner || new Set(o.owner).size<2) return null; for(let i=0;i<o.P.length;i++){ if(pip(mm,o.P[i])) return o.owner[i]; } return null; };
   c.addEventListener("pointerdown",e=>{ if(st.type!=="grid"||curView!=="prof"||!st.grid) return; const [x,y]=pos(e), X=layoutXf(), i=hit(x,y);
     if(i>=0){ if(e.altKey||e.button===2){ G.notches.splice(i,1); refreshGrid(); return; } G.drag={i}; c.setPointerCapture(e.pointerId); drawLayout(); return; }
     if(e.button!==0) return; const mm=X.toMM(x,y); if(Math.abs(mm[0])>st.built.W/2||Math.abs(mm[1])>st.built.H/2) return;
+    const key=owner(mm);
+    if(key){ G.pend={key, sx:x, sy:y, a0:st.grid.inv(mm), off0:(OFF[key]||[0,0]).slice(), moved:false}; c.setPointerCapture(e.pointerId); return; }
     G.notches.push(st.grid.inv(mm)); refreshGrid(); });
-  c.addEventListener("pointermove",e=>{ if(!G.drag||st.type!=="grid") return; const [x,y]=pos(e), X=layoutXf(); G.notches[G.drag.i]=st.grid.inv(X.toMM(x,y)); st.grid.notches=G.notches.map(st.grid.map); drawLayout(); });
-  c.addEventListener("pointerup",()=>{ if(G.drag){ G.drag=null; refreshGrid(); } });
+  c.addEventListener("pointermove",e=>{ if(st.type!=="grid") return; const [x,y]=pos(e), X=layoutXf();
+    if(G.pend){ if(!G.pend.moved && Math.hypot(x-G.pend.sx,y-G.pend.sy)<5*X.dpr) return; G.pend.moved=true;
+      const a=st.grid.inv(X.toMM(x,y)); OFF[G.pend.key]=[G.pend.off0[0]+a[0]-G.pend.a0[0], G.pend.off0[1]+a[1]-G.pend.a0[1]];
+      const keep={nx:st.grid.nx,ny:st.grid.ny,u:st.grid.u}; st.grid={...gridOpts(),...keep}; drawLayout(); return; }
+    if(!G.drag) return; G.notches[G.drag.i]=st.grid.inv(X.toMM(x,y)); st.grid.notches=G.notches.map(st.grid.map); drawLayout(); });
+  c.addEventListener("pointerup",e=>{ if(G.pend){ const p=G.pend; G.pend=null; if(!p.moved){ const [x,y]=pos(e), X=layoutXf(); G.notches.push(st.grid.inv(X.toMM(x,y))); } refreshGrid(); return; }
+    if(G.drag){ G.drag=null; refreshGrid(); } });
   c.addEventListener("contextmenu",e=>{ if(st.type==="grid") e.preventDefault(); });
 })();
 
@@ -1090,8 +1290,11 @@ let rebuildTimer;
 function refreshHolder(){ clearTimeout(rebuildTimer); rebuildTimer=setTimeout(()=>{ try{
   if(st.type==="tray"){ refreshTray(); return; }
   if(st.type==="grid"){ refreshGrid(); return; }
-  const hd=computeHolder(); if(!hd) return; st.holder=hd;
-  const built=buildHolder(hd); st.built=built; update3D(built,hd);
+  const items=allItems(); if(!items.length){ $("dl").disabled=true; return; }
+  const hds=items.map(holderFor), single= hds.length===1 && hds[0].type!=="cup";
+  if(!single){ refreshMulti(hds); return; }
+  const hd=hds[0]; st.holder=hd;
+  const built=Object.assign(buildHolder(hd),{hds}); st.built=built; update3D(built,hd);
   $("wTool").value=hd.wmax.toFixed(1); $("wOut").value=hd.W.toFixed(1); $("uOut").value=hd.U.toFixed(1);
   setKV("rW",`${built.PW} mm`); setKV("rHooks",T("{n} × 40 mm pitch",{n:built.nHook})); setKV("rVol",`${(built.body.volume()/1000).toFixed(1)} cm³`);
   if(hd.seat==null){ setKV("rSeat",T("falls through"),"bad"); setKV("rBear","—"); }
@@ -1103,6 +1306,19 @@ function refreshHolder(){ clearTimeout(rebuildTimer); rebuildTimer=setTimeout(()
   $("dl").disabled=false; drawProfile(); status(T("Ready"),"ok");
 }catch(e){ console.error(e); status(e.message,"err"); } },120); }
 
+function refreshMulti(hds){
+  const built=buildHolderMulti(hds); st.built=built; st.holder=hds.find(h=>h.item.src==="cur")||null; update3D(built,st.holder);
+  const cur=st.holder; $("wTool").value=cur?cur.wmax.toFixed(1):"—"; $("wOut").value=cur?cur.W.toFixed(1):"—"; $("uOut").value=cur?cur.U.toFixed(1):"—";
+  setKV("rW",`${built.PW} mm`, built.PW>180?"bad":built.PW>170?"warn":""); setKV("rHooks",T("{n} × 40 mm pitch",{n:built.nHook})); setKV("rVol",`${(built.body.volume()/1000).toFixed(1)} cm³`);
+  const fails=hds.filter(h=>h.type!=="cup" && h.seat==null);
+  if(fails.length) setKV("rSeat",T("{n} fall through",{n:fails.length}),"bad"); else setKV("rSeat",T("all {n} hold",{n:hds.length}),"ok");
+  const bears=hds.filter(h=>h.type!=="cup" && h.seat!=null).map(h=>h.bear); setKV("rBear", bears.length?`+${Math.min(...bears).toFixed(1)} mm`:"—", bears.length&&Math.min(...bears)<3?"warn":"ok");
+  $("chipA").innerHTML=T("Tools {v}",{v:`<b class="mono">${hds.length}</b>`});
+  $("chipB").innerHTML=T("Holder {v}",{v:`<b class="mono">${built.PW} mm</b>`});
+  $("chipC").innerHTML= fails.length ? `<b style="color:var(--bad)">${T("Falls through")}: ${fails.map(h=>h.item.name).join(", ")}</b>` : T("Height {v}",{v:`<b class="mono">${built.height.toFixed(0)} mm</b>`});
+  $("topChips").classList.remove("hide"); updateCaption();
+  $("dl").disabled=false; drawProfile();
+  if(built.PW>180) status(T("Wider than the A1 mini bed (180 mm) — split it into two holders"),"err"); else status(T("Ready"),"ok"); }
 function refreshTray(){
   $("tFloor").disabled = segVal("profSeg")==="round"; $("tFloor").closest(".f").style.opacity = segVal("profSeg")==="round" ? .45 : 1;
   const b=buildTray(); st.built=b; st.holder=null;
@@ -1121,6 +1337,7 @@ function updateCaption(){
   if(st.type==="grid"&&st.grid&&curView!=="photo"){ $("captionText").textContent= curView==="prof" ? T("click to add a finger notch · drag to move · Alt-click removes") : T("Gridfinity bin · prints as shown · drag to orbit"); $("caption").classList.remove("hide"); return; }
   if(st.type==="tray"&&st.built){ $("captionText").textContent=T("tray · prints top-face-down · drag to orbit"); $("caption").classList.remove("hide"); return; }
   if(curView==="photo"){ $("caption").classList.add("hide"); return; }
+  if(curView==="3d" && st.built?.multi){ $("captionText").textContent=T("{n} tools · {w} mm wide · drag to orbit",{n:st.built.hds.length,w:st.built.PW}); $("caption").classList.remove("hide"); return; }
   const hd=st.holder; if(!hd){ $("caption").classList.add("hide"); return; }
   const t={photo:`${S} px/mm · fit ${st.meta.rms.toFixed(2)} mm`, prof:T("widest {a} + {b} = {c} mm opening",{a:hd.wmax.toFixed(1),b:(+$("clr").value).toFixed(1),c:hd.W.toFixed(1)}), "3d":T("{t} {w} × {u} mm · drag to orbit",{t:hd.type==="slot"?T("slot"):"Ø",w:hd.W.toFixed(1),u:hd.U.toFixed(1)})}[curView];
   $("captionText").textContent=t; $("caption").classList.remove("hide"); }
@@ -1134,7 +1351,7 @@ async function onFile(file){
   const base=file.name.replace(/\.[^.]+$/,""); $("fname").value="tool_holder_"+base; $("crumbName").textContent=base;
   $("thumbImg").src=url; $("thumbName").textContent=file.name; $("thumb").classList.remove("hide");
   await new Promise(r=>setTimeout(r,30));
-  V.init=false; V.draft=[]; G.notches=[]; G.auto=true; $("undoBtn").disabled=true; $("autoOutline").disabled=true;
+  V.init=false; V.draft=[]; G.notches=[]; G.auto=true; st.curKept=false; st.extras=[]; Object.keys(OFF).forEach(k=>{ if(k[0]!=='s') delete OFF[k]; }); Object.keys(FLIPG).forEach(k=>{ if(k[0]!=='s') delete FLIPG[k]; }); $("undoBtn").disabled=true; $("autoOutline").disabled=true;
   try{ processImage(); $("empty").classList.add("hide"); $("dpass").value=0; showView(curView); resegment(); }
   catch(e){ console.error(e); status(e.message,"err"); }
 }
@@ -1142,7 +1359,7 @@ async function loadSample(){ try{ status(T("Loading sample…"),"busy"); const r
   const b=await r.blob(); await onFile(new File([b],"sample_hozan_p14_pliers.jpg",{type:"image/jpeg"})); $("thick").value=10.4; }
   catch(e){ status(T("Sample needs the hosted page (not a local file)"),"err"); } }
 $("sampleBtn").onclick=loadSample; document.addEventListener("click",e=>{ if(e.target.closest("#sampleLink")){ e.preventDefault(); loadSample(); } });
-window.__loadFile=onFile; window.__st=st; window.__toS=toS; window.__V=V;
+window.__loadFile=onFile; window.__OFF=OFF; window.__SET=SET; window.__st=st; window.__toS=toS; window.__V=V;
 /* ---------- phone capture: QR session + relay polling ---------- */
 const RELAY_URL = window.RELAY_URL || "https://tool-holder-relay.adachi-s.workers.dev";
 const PH = { sid:null, timer:null, until:0, busy:false };
@@ -1180,9 +1397,10 @@ window.__PH=PH;
 
 let curView="photo";
 function showView(v){ curView=v; document.querySelectorAll("#viewSeg button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
-  if(!st.rect && st.type!=="tray") return;
-  if(!st.rect && st.type==="tray" && v!=="3d"){ v="3d"; curView=v; document.querySelectorAll("#viewSeg button").forEach(b=>b.classList.toggle("on",b.dataset.v===v)); }
-  $("empty").classList.toggle("hide", !!st.rect || st.type==="tray"); $("lPhoto").classList.toggle("hide",v!=="photo"); $("lProf").classList.toggle("hide",v!=="prof"); $("three").classList.toggle("hide",v!=="3d");
+  const alt = st.type==="tray" || SET.items.length>0;
+  if(!st.rect && !alt) return;
+  if(!st.rect && (v==="photo" || (v==="prof" && st.type!=="grid"))){ v="3d"; curView=v; document.querySelectorAll("#viewSeg button").forEach(b=>b.classList.toggle("on",b.dataset.v===v)); }
+  $("empty").classList.toggle("hide", !!st.rect || alt); $("lPhoto").classList.toggle("hide",v!=="photo"); $("lProf").classList.toggle("hide",v!=="prof"); $("three").classList.toggle("hide",v!=="3d");
   $("photoTools").classList.toggle("hide", v!=="photo"||!st.rect); $("toolHintWrap").classList.toggle("hide", v!=="photo"||!st.rect); toolHint();
   if(v==="photo") drawPhoto(); if(v==="prof") drawProfile(); updateCaption(); }
 $("viewSeg").onclick=e=>{ const b=e.target.closest("button"); if(b) showView(b.dataset.v); };
@@ -1195,7 +1413,8 @@ $("typeSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; st.
   $("lSeat").textContent=T("Stops at"); $("lBear").textContent=T("Shoulder overlap");
   if(st.type==="tray"){ $("typeNote").textContent=T("A plain tray for things without a neck: pens, markers, tape rolls. No photo needed."); showView("3d"); }
   else if(st.type==="grid"){ $("typeNote").textContent=T("A Gridfinity drawer bin with a pocket shaped like the tool. Add finger notches in the Layout view."); if(st.rect) showView("prof"); }
-  else if(!st.rect){ $("dl").disabled=true; $("topChips").classList.add("hide"); $("caption").classList.add("hide"); }
+  else if(!st.rect && !SET.items.length){ $("dl").disabled=true; $("topChips").classList.add("hide"); $("caption").classList.add("hide"); }
+  $("setSec").classList.toggle("hide", st.type==="tray"); renderSet(); if(!st.rect && SET.items.length) showView(curView);
   refreshHolder(); };
 const drop=$("drop");
 drop.onclick=()=>$("file").click(); $("openBtn").onclick=()=>$("file").click(); $("file").onchange=e=>e.target.files[0]&&onFile(e.target.files[0]);
@@ -1230,6 +1449,8 @@ $("dl").onclick=()=>{ if(!st.built) return; const a=document.createElement("a");
 $("lens").onchange=async()=>{ if(!st.img) return; status(T("Recalculating…"),"busy"); await new Promise(r=>setTimeout(r,30)); try{ st.rectCanvas=null; processImage(); resegment(); }catch(e){ status(e.message,"err"); } };
 addEventListener("resize",()=>{ V.init=false; showView(curView); });
 
+{ const loc=(navigator.languages||[navigator.language||""]).join(",");   // Letter-paper regions get the Letter sheet by default
+  if(/-(US|CA|MX|PH|CL|CO|VE|GT|CR|PA|DO|SV|NI|HN|PR)\b/i.test((navigator.language||""))) { $("sheetBtn").href="sheet/measure_sheet_v2_Letter.pdf"; } }
 LANG = store.get("skadis.lang") || ((navigator.language||"").toLowerCase().startsWith("ja") ? "ja" : "en");
 applyTheme(store.get("skadis.theme") || "light"); applyLang();
 (async()=>{ try{ const [c,wasm]=await Promise.all([loadCV(),Module()]); cv=c; wasm.setup(); M=wasm; init3D(); status(T("Waiting for a photo"),"ok"); window.__ready=true; }

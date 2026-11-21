@@ -154,9 +154,12 @@ const SID_OK=/^[A-Za-z0-9_-]{22,64}$/.test(SID);
 if(!SID_OK){ $("introErr").textContent=T("This page needs to be opened from the QR code on the PC."); $("introErr").classList.remove("hide"); $("startBtn").disabled=true; }
 
 /* ---------- sheet geometry (same as the PC app) ---------- */
-const SHEET={ ms:18,
-  centers:[[-88,131],[-30,131],[30,131],[88,131],[88,78.6],[88,26.2],[88,-26.2],[88,-78.6],[88,-131],[30,-131],[-30,-131],[-88,-131],[-88,-78.6],[-88,-26.2],[-88,26.2],[-88,78.6]],
-  scales:[1.000,1.003,1.006,1.010,0.997,1.000], corners:[0,3,8,11] };
+const A4C=[[-88,131],[-30,131],[30,131],[88,131],[88,78.6],[88,26.2],[88,-26.2],[88,-78.6],[88,-131],[30,-131],[-30,-131],[-88,-131],[-88,-78.6],[-88,-26.2],[-88,26.2],[-88,78.6]];
+const LTC=[[-88,124],[-30,124],[30,124],[88,124],[88,74.4],[88,24.8],[88,-24.8],[88,-74.4],[88,-124],[30,-124],[-30,-124],[-88,-124],[-88,-74.4],[-88,-24.8],[-88,24.8],[-88,74.4]];
+const SHEET={ ms:18, corners:[0,3,8,11],
+  // per variant (id/16): [scale, marker centres, half size of the paper frame drawn on screen, clean zone]
+  variants:[[1.000,A4C],[1.003,A4C],[1.006,A4C],[1.010,A4C],[0.997,A4C],[1.000,A4C],[1.000,LTC]] };
+const VAR=v=>SHEET.variants[v]||SHEET.variants[0];
 const NEED={ markers:12, tilt:2.5, pxmm:8, still:0.5 };   // tilt in degrees; still = seconds; pxmm at full photo resolution
 
 /* ---------- OpenCV ---------- */
@@ -166,14 +169,14 @@ function loadCV(){ return new Promise((res,rej)=>{ const s=document.createElemen
   s.onload=async()=>{ let c=window.cv; if(c instanceof Promise) c=await c; if(c.Mat) return res(c); c.onRuntimeInitialized=()=>res(c); };
   s.onerror=()=>rej(new Error(T("Could not load the marker detector."))); document.head.appendChild(s); }); }
 const cvP = SID_OK ? loadCV().then(c=>{ cv=c; const p=new cv.aruco_DetectorParameters(); p.cornerRefinementMethod=cv.CORNER_REFINE_SUBPIX;
-  det=new cv.aruco_ArucoDetector(cv.getPredefinedDictionary(cv.DICT_4X4_100),p,new cv.aruco_RefineParameters(10,3,true)); return c; }) : null;
+  det=new cv.aruco_ArucoDetector(cv.getPredefinedDictionary(cv.DICT_4X4_250),p,new cv.aruco_RefineParameters(10,3,true)); return c; }) : null;
 if(cvP) cvP.catch(e=>{ $("introErr").textContent=e.message; $("introErr").classList.remove("hide"); });
 
 /* detect markers in a canvas; returns {vIdx, list:[{id,pos,c:[[x,y]x4]}]} */
 function detect(canvas){
   const src=cv.imread(canvas), g=new cv.Mat(); cv.cvtColor(src,g,cv.COLOR_RGBA2GRAY);
   const corners=new cv.MatVector(), ids=new cv.Mat(), rej=new cv.MatVector(); det.detectMarkers(g,corners,ids,rej);
-  const idv=Array.from(ids.data32S), groups={}; idv.forEach(i=>{ if(i<96){ const v=Math.floor(i/16); groups[v]=(groups[v]||0)+1; } });
+  const idv=Array.from(ids.data32S), groups={}; idv.forEach(i=>{ if(i<16*SHEET.variants.length){ const v=Math.floor(i/16); groups[v]=(groups[v]||0)+1; } });
   const vIdx=+(Object.entries(groups).sort((a,b)=>b[1]-a[1])[0]||[-1])[0];
   const list=[];
   idv.forEach((id,k)=>{ if(Math.floor(id/16)!==vIdx) return; const d=corners.get(k).data32F;
@@ -183,8 +186,8 @@ function detect(canvas){
 
 /* homography sheet-mm -> image px (centred), then pose with an assumed focal length */
 function analyse(r, W, H, f){
-  const sc=SHEET.scales[r.vIdx]||1, h=SHEET.ms/2, op=[], ip=[];
-  r.list.forEach(m=>{ const [cx,cy]=SHEET.centers[m.pos]; [[-h,h],[h,h],[h,-h],[-h,-h]].forEach(([dx,dy],j)=>{ op.push([(cx+dx)*sc,(cy+dy)*sc]); ip.push([m.c[j][0]-W/2, m.c[j][1]-H/2]); }); });
+  const [sc,CEN]=VAR(r.vIdx), h=SHEET.ms/2, op=[], ip=[];
+  r.list.forEach(m=>{ const [cx,cy]=CEN[m.pos]; [[-h,h],[h,h],[h,-h],[-h,-h]].forEach(([dx,dy],j)=>{ op.push([(cx+dx)*sc,(cy+dy)*sc]); ip.push([m.c[j][0]-W/2, m.c[j][1]-H/2]); }); });
   const A=cv.matFromArray(op.length,1,cv.CV_32FC2,op.flat()), B=cv.matFromArray(ip.length,1,cv.CV_32FC2,ip.flat());
   const Hm=cv.findHomography(A,B,0), Hd=Array.from(Hm.data64F); [A,B,Hm].forEach(m=>m.delete());
   if(Hd.length!==9) return null;
@@ -199,7 +202,7 @@ function analyse(r, W, H, f){
   const w=Hd[8], j00=(Hd[0]*w-Hd[2]*Hd[6])/(w*w), j01=(Hd[1]*w-Hd[2]*Hd[7])/(w*w), j10=(Hd[3]*w-Hd[5]*Hd[6])/(w*w), j11=(Hd[4]*w-Hd[5]*Hd[7])/(w*w);
   const pxmm=Math.sqrt(Math.abs(j00*j11-j01*j10));
   const proj=(X,Y)=>{ const ww=Hd[6]*X+Hd[7]*Y+Hd[8]; return [(Hd[0]*X+Hd[1]*Y+Hd[2])/ww+W/2, (Hd[3]*X+Hd[4]*Y+Hd[5])/ww+H/2]; };
-  return {tilt, dist, pxmm, n, proj}; }
+  return {tilt, dist, pxmm, n, proj, yt:CEN[0][1]}; }
 
 /* ---------- camera ---------- */
 let stream=null, track=null, imgCap=null, photoMaxW=0, zoomCaps=null;
@@ -252,7 +255,7 @@ function step(){
   let an=null; if(n>=4) an=analyse(r,W,H,f);
   // stability: corner-marker centres over the last 0.5 s
   const side = n ? r.list.reduce((s,m)=>s+Math.hypot(m.c[1][0]-m.c[0][0],m.c[1][1]-m.c[0][1]),0)/n : 0;
-  if(an){ const pts=[[-88,131],[88,131],[88,-131],[-88,-131]].map(([x,y])=>an.proj(x,y)); hist.push({t:now,pts,side}); }
+  if(an){ const pts=[[-88,an.yt],[88,an.yt],[88,-an.yt],[-88,-an.yt]].map(([x,y])=>an.proj(x,y)); hist.push({t:now,pts,side}); }
   else hist.length=0;
   while(hist.length && now-hist[0].t>NEED.still*1000+150) hist.shift();
   let move=Infinity;
@@ -287,8 +290,8 @@ function draw(r, an, k, prog, good){
   r.list.forEach(mk=>{ octx.beginPath(); mk.c.forEach((p,i)=>{ const [x,y]=m(...p); i?octx.lineTo(x,y):octx.moveTo(x,y); }); octx.closePath(); octx.stroke(); });
   if(an){ // sheet outline + clean zone
     const quad=(a,b)=>{ octx.beginPath(); [[-a,b],[a,b],[a,-b],[-a,-b]].forEach(([X,Y],i)=>{ const [x,y]=m(...an.proj(X,Y)); i?octx.lineTo(x,y):octx.moveTo(x,y); }); octx.closePath(); };
-    octx.lineWidth=3; octx.strokeStyle= good?"#30a46c":"#e8a23a"; quad(99,142); octx.stroke();
-    octx.setLineDash([6,5]); octx.lineWidth=1.5; octx.strokeStyle="rgba(255,255,255,.8)"; quad(75,118); octx.stroke(); octx.setLineDash([]);
+    octx.lineWidth=3; octx.strokeStyle= good?"#30a46c":"#e8a23a"; quad(99,an.yt+11); octx.stroke();
+    octx.setLineDash([6,5]); octx.lineWidth=1.5; octx.strokeStyle="rgba(255,255,255,.8)"; quad(75,an.yt-13); octx.stroke(); octx.setLineDash([]);
   }
   // bubble level (centre of the screen): outer ring = 2 × limit, inner circle = limit
   const cx=ov.clientWidth/2, cy=ov.clientHeight/2, R=Math.min(ov.clientWidth,ov.clientHeight)*0.11;
