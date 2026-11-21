@@ -19,11 +19,18 @@ You can zoom the photo and fix the outline by hand (move/add/delete points, or d
 
 The hooks fit a 5.0 mm SKÅDIS board (hook gap 5.1 mm, tested in PETG on a Bambu Lab A1 mini).
 
-## Phone capture relay (optional)
-`relay/worker.js` is a small Cloudflare Worker + R2 bucket that passes one photo from the phone capture page to the PC page and deletes it on pickup (or after 15 minutes). See the setup steps in `relay/README.md`.
+## Shoot with a phone
+Click **Phone** in the toolbar. The PC page shows a QR code; scan it with the phone to open `capture.html`.
+
+- The capture page finds the sheet markers live and checks four things: all corner markers in view (≥ 12 of 16), tilt ≤ 2.5° (from the sheet's perspective, shown as a bubble level), detail ≥ 8 px/mm in the final photo, and the phone held still for 0.5 s.
+- When all four are green it shoots by itself (full-resolution `ImageCapture.takePhoto` on Android Chrome, a full-size video frame elsewhere), checks that the markers are still readable, and uploads the photo.
+- The PC page polls the relay every 2 s and loads the photo as soon as it arrives. You can shoot several tools in a row; each new photo replaces the current one.
+
+The photo passes through `relay/worker.js`, a small Cloudflare Worker + R2 bucket that keeps one photo per session and deletes it on pickup (or after 15 minutes). It only accepts requests from this site. Setup steps: `relay/README.md`.
 
 ## Files
 - `index.html` — the whole app (single file). OpenCV.js, manifold-3d and three.js load from jsDelivr.
 - `sheet/measure_sheet_v2_A4.pdf` — measuring sheet v2 (`sheet/skadis_measure_sheet_A4.pdf` is the older v1).
+- `capture.html` — phone capture page (opened from the QR code).
 - `relay/` — Cloudflare Worker for phone → PC photo hand-off.
 - `samples/hozan_p14_pliers.jpg` — sample photo for the **Try sample** button.

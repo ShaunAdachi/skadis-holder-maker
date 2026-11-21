@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Tool Holder Maker · Capture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --app:#f6f7f9; --panel:#ffffff; --field:#f3f4f6; --line:#e6e8ec; --line2:#d9dce1;
+  --text:#15171a; --muted:#6b7079; --faint:#9aa0a8;
+  --accent:#1f7ae0; --accent-soft:#e7f1fd;
+  --ok:#30a46c; --ok-soft:#e6f6ec; --warn:#c27c0e; --warn-soft:#fdf3e1; --bad:#d93036; --bad-soft:#fdeceb;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--app);color:var(--text);font-family:Inter,system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;font-size:15px;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+.hide{display:none!important}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.top{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:var(--panel);border-bottom:1px solid var(--line)}
+.logo{width:28px;height:28px;border-radius:8px;background:var(--accent);display:grid;place-items:center;color:#fff}
+.top b{font-weight:600}.top .sub{color:var(--muted);font-size:13px}
+.top .sp{flex:1}
+.lang{border:1px solid var(--line2);background:var(--panel);border-radius:8px;padding:4px 9px;font:inherit;font-size:13px;color:var(--muted)}
+.stage{position:relative;flex:1;min-height:0;background:#111}
+video,#ov{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+#ov{pointer-events:none}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .25s}
+.flash.on{opacity:.85;transition:none}
+.sheet{background:var(--panel);border-top:1px solid var(--line);padding:12px 14px calc(14px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px}
+.msg{font-size:16px;font-weight:600;text-wrap:pretty;word-break:auto-phrase;min-height:22px}
+.msg small{display:block;font-weight:400;color:var(--muted);font-size:13px;margin-top:2px}
+.checks{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.chk{background:var(--field);border-radius:10px;padding:7px 6px;text-align:center;min-width:0}
+.chk .k{font-size:11px;color:var(--muted);white-space:nowrap}
+.chk .v{font-family:var(--mono);font-size:13px;font-weight:500;margin-top:2px;white-space:nowrap}
+.chk.ok{background:var(--ok-soft)}.chk.ok .v{color:var(--ok)}
+.chk.warn{background:var(--warn-soft)}.chk.warn .v{color:var(--warn)}
+.row{display:flex;gap:8px;align-items:center}
+.btn{flex:1;border:1px solid var(--line2);background:var(--panel);color:var(--text);font:inherit;font-weight:500;padding:11px 14px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:disabled{opacity:.45}
+.seg{display:inline-flex;background:var(--field);border-radius:10px;padding:3px;gap:2px}
+.seg button{border:none;background:transparent;font:inherit;font-size:14px;color:var(--muted);padding:7px 12px;border-radius:7px}
+.seg button.on{background:var(--panel);color:var(--text);font-weight:600;box-shadow:0 0 0 1px var(--line)}
+.meta{font-size:12px;color:var(--faint);font-family:var(--mono)}
+/* start screen */
+.intro{flex:1;overflow:auto;padding:20px 18px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.card h2{margin:0 0 8px;font-size:17px}
+.card ol{margin:0;padding-left:20px;color:var(--text);line-height:1.6}
+.card p{margin:0;color:var(--muted);line-height:1.55;text-wrap:pretty;word-break:auto-phrase}
+.err{background:var(--bad-soft);color:var(--bad);border-radius:12px;padding:12px 14px;line-height:1.5}
+.done{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center}
+.done img{max-width:70%;max-height:40vh;border-radius:12px;border:1px solid var(--line)}
+.badge{width:56px;height:56px;border-radius:50%;background:var(--ok-soft);color:var(--ok);display:grid;place-items:center}
+.badge svg{width:30px;height:30px;stroke-width:2.2}
+.bar{width:70%;height:6px;border-radius:3px;background:var(--field);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-hex" viewBox="0 0 24 24"><path d="M12 2.8 20 7.4v9.2l-8 4.6-8-4.6V7.4z"/><path d="M12 8.2l3.3 1.9v3.8L12 15.8l-3.3-1.9v-3.8z"/></symbol>
+</svg>
+<div class="top"><div class="logo"><svg class="i" style="width:16px;height:16px"><use href="#i-hex"/></svg></div>
+  <div><b>Tool Holder Maker</b> <span class="sub" data-t="Capture">撮影</span></div><div class="sp"></div>
+  <button class="lang" id="langBtn">EN</button></div>
+
+<!-- 1. start -->
+<div class="intro" id="vIntro">
+  <div class="err hide" id="introErr"></div>
+  <div class="card"><h2 data-t="Shoot the tool for your PC">PCに送る写真を撮ります</h2>
+    <ol>
+      <li data-t="Lay the tool on the measuring sheet, on a flat table.">平らな机の上で、測定シートに工具を置きます。</li>
+      <li data-t="Hold the phone above the sheet so all 16 markers are on screen.">シートの16個のマーカーが全部映るように、スマホを上にかざします。</li>
+      <li data-t="Follow the hints. When everything turns green and you hold still, it shoots by itself and sends the photo to your PC.">表示に合わせて調整します。全部が緑になって静止すると、自動で撮影してPCに送ります。</li>
+    </ol></div>
+  <div class="card"><p data-t="The photo goes through a relay and is deleted as soon as the PC picks it up (or after 15 minutes).">写真は中継サーバー経由でPCに渡り、PCが受け取るとすぐ削除されます（受け取られなくても15分で削除）。</p></div>
+  <button class="btn primary" id="startBtn" style="flex:none"><svg class="i"><use href="#i-cam"/></svg><span data-t="Start camera">カメラを開始</span></button>
+  <div class="meta" id="introMeta"></div>
+</div>
+
+<!-- 2. live -->
+<div class="stage hide" id="vLive"><video id="video" playsinline muted autoplay></video><canvas id="ov"></canvas><div class="flash" id="flash"></div></div>
+<div class="sheet hide" id="vLiveSheet">
+  <div class="msg" id="msg">…</div>
+  <div class="checks">
+    <div class="chk" id="cM"><div class="k" data-t="Markers">マーカー</div><div class="v">—</div></div>
+    <div class="chk" id="cT"><div class="k" data-t="Tilt">傾き</div><div class="v">—</div></div>
+    <div class="chk" id="cR"><div class="k" data-t="Detail">解像度</div><div class="v">—</div></div>
+    <div class="chk" id="cS"><div class="k" data-t="Still">静止</div><div class="v">—</div></div>
+  </div>
+  <div class="row">
+    <div class="seg hide" id="zoomSeg"></div>
+    <button class="btn" id="shootBtn"><svg class="i"><use href="#i-cam"/></svg><span data-t="Shoot now">今すぐ撮る</span></button>
+  </div>
+  <div class="meta" id="liveMeta"></div>
+</div>
+
+<!-- 3. sending / done -->
+<div class="done hide" id="vDone">
+  <img id="doneImg" alt="">
+  <div class="bar" id="bar"><i id="barI"></i></div>
+  <div class="badge hide" id="badge"><svg class="i"><use href="#i-check"/></svg></div>
+  <div class="msg" id="doneMsg"></div>
+  <div class="row" style="width:100%;max-width:420px"><button class="btn primary" id="againBtn" disabled data-t="Shoot another">もう一枚撮る</button></div>
+</div>
+
+<script>
+window.LIB_BASE = window.LIB_BASE || "https://cdn.jsdelivr.net/npm/";
+window.RELAY_URL = window.RELAY_URL || "https://tool-holder-relay.adachi-s.workers.dev";
+</script>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+/* ---------- i18n (Japanese text is in the markup; English via data-t keys) ---------- */
+const JA={"Capture":"撮影","Shoot the tool for your PC":"PCに送る写真を撮ります",
+ "Lay the tool on the measuring sheet, on a flat table.":"平らな机の上で、測定シートに工具を置きます。",
+ "Hold the phone above the sheet so all 16 markers are on screen.":"シートの16個のマーカーが全部映るように、スマホを上にかざします。",
+ "Follow the hints. When everything turns green and you hold still, it shoots by itself and sends the photo to your PC.":"表示に合わせて調整します。全部が緑になって静止すると、自動で撮影してPCに送ります。",
+ "The photo goes through a relay and is deleted as soon as the PC picks it up (or after 15 minutes).":"写真は中継サーバー経由でPCに渡り、PCが受け取るとすぐ削除されます（受け取られなくても15分で削除）。",
+ "Start camera":"カメラを開始","Markers":"マーカー","Tilt":"傾き","Detail":"解像度","Still":"静止","Shoot now":"今すぐ撮る","Shoot another":"もう一枚撮る",
+ "Loading the marker detector…":"マーカー検出の準備中…","Starting the camera…":"カメラを起動中…",
+ "Point the camera at the measuring sheet":"測定シートにカメラを向けてください",
+ "Get all four corner markers on screen":"四隅のマーカーが全部入るようにしてください",
+ "Move closer, or zoom in":"もう少し近づくか、ズームしてください",
+ "Level the phone: move the bubble into the circle":"スマホを水平に。泡を円の中に入れてください",
+ "Hold still…":"そのまま静止…","Hold still — shooting":"そのまま — 撮影します",
+ "Shooting…":"撮影中…","Checking the photo…":"写真を確認中…","Sending to your PC…":"PCに送信中…",
+ "Sent. Check your PC.":"送りました。PCの画面を確認してください。",
+ "The photo was blurry or the markers were cut off. Try again.":"写真がぶれたか、マーカーが写りきっていません。もう一度撮ります。",
+ "Sending failed: {e}":"送信できませんでした：{e}",
+ "This page needs to be opened from the QR code on the PC.":"このページは、PCに表示されるQRコードから開いてください。",
+ "Camera access was refused. Allow the camera for this site and reload.":"カメラの使用が許可されませんでした。このサイトにカメラを許可して、ページを再読み込みしてください。",
+ "No camera found.":"カメラが見つかりません。","Could not load the marker detector.":"マーカー検出を読み込めませんでした。",
+ "Session expired. Scan the QR code on the PC again.":"有効期限が切れました。PCのQRコードをもう一度読み取ってください。",
+ "about {d} cm high":"高さ 約{d}cm","{w}×{h} photo":"写真 {w}×{h}","Retry":"再試行"};
+let LANG=(()=>{ try{ return localStorage.getItem("skadis.lang"); }catch(e){} })() || ((navigator.language||"").toLowerCase().startsWith("ja")?"ja":"en");
+function T(k,v){ let s= LANG==="ja" ? (JA[k]||k) : k; if(v) for(const [a,b] of Object.entries(v)) s=s.replaceAll("{"+a+"}",b); return s; }
+function applyLang(){ document.documentElement.lang=LANG; $("langBtn").textContent= LANG==="ja"?"EN":"日本語";
+  document.querySelectorAll("[data-t]").forEach(e=>e.textContent=T(e.dataset.t)); }
+$("langBtn").onclick=()=>{ LANG= LANG==="ja"?"en":"ja"; try{ localStorage.setItem("skadis.lang",LANG); }catch(e){} applyLang(); };
+applyLang();
+
+/* ---------- session ---------- */
+const SID=(new URLSearchParams(location.hash.slice(1))).get("s")||"";
+const SID_OK=/^[A-Za-z0-9_-]{22,64}$/.test(SID);
+if(!SID_OK){ $("introErr").textContent=T("This page needs to be opened from the QR code on the PC."); $("introErr").classList.remove("hide"); $("startBtn").disabled=true; }
+
+/* ---------- sheet geometry (same as the PC app) ---------- */
+const SHEET={ ms:18,
+  centers:[[-88,131],[-30,131],[30,131],[88,131],[88,78.6],[88,26.2],[88,-26.2],[88,-78.6],[88,-131],[30,-131],[-30,-131],[-88,-131],[-88,-78.6],[-88,-26.2],[-88,26.2],[-88,78.6]],
+  scales:[1.000,1.003,1.006,1.010,0.997,1.000], corners:[0,3,8,11] };
+const NEED={ markers:12, tilt:2.5, pxmm:8, still:0.5 };   // tilt in degrees; still = seconds; pxmm at full photo resolution
+
+/* ---------- OpenCV ---------- */
+let cv=null, det=null;
+function loadCV(){ return new Promise((res,rej)=>{ const s=document.createElement("script");
+  s.src=window.LIB_BASE+"@techstark/opencv-js@5.0.0-release.1/dist/opencv.js"; s.async=true;
+  s.onload=async()=>{ let c=window.cv; if(c instanceof Promise) c=await c; if(c.Mat) return res(c); c.onRuntimeInitialized=()=>res(c); };
+  s.onerror=()=>rej(new Error(T("Could not load the marker detector."))); document.head.appendChild(s); }); }
+const cvP = SID_OK ? loadCV().then(c=>{ cv=c; const p=new cv.aruco_DetectorParameters(); p.cornerRefinementMethod=cv.CORNER_REFINE_SUBPIX;
+  det=new cv.aruco_ArucoDetector(cv.getPredefinedDictionary(cv.DICT_4X4_100),p,new cv.aruco_RefineParameters(10,3,true)); return c; }) : null;
+if(cvP) cvP.catch(e=>{ $("introErr").textContent=e.message; $("introErr").classList.remove("hide"); });
+
+/* detect markers in a canvas; returns {vIdx, list:[{id,pos,c:[[x,y]x4]}]} */
+function detect(canvas){
+  const src=cv.imread(canvas), g=new cv.Mat(); cv.cvtColor(src,g,cv.COLOR_RGBA2GRAY);
+  const corners=new cv.MatVector(), ids=new cv.Mat(), rej=new cv.MatVector(); det.detectMarkers(g,corners,ids,rej);
+  const idv=Array.from(ids.data32S), groups={}; idv.forEach(i=>{ if(i<96){ const v=Math.floor(i/16); groups[v]=(groups[v]||0)+1; } });
+  const vIdx=+(Object.entries(groups).sort((a,b)=>b[1]-a[1])[0]||[-1])[0];
+  const list=[];
+  idv.forEach((id,k)=>{ if(Math.floor(id/16)!==vIdx) return; const d=corners.get(k).data32F;
+    list.push({id, pos:id%16, c:[[d[0],d[1]],[d[2],d[3]],[d[4],d[5]],[d[6],d[7]]]}); });
+  [src,g,ids].forEach(m=>m.delete()); corners.delete(); rej.delete();
+  return {vIdx, list}; }
+
+/* homography sheet-mm -> image px (centred), then pose with an assumed focal length */
+function analyse(r, W, H, f){
+  const sc=SHEET.scales[r.vIdx]||1, h=SHEET.ms/2, op=[], ip=[];
+  r.list.forEach(m=>{ const [cx,cy]=SHEET.centers[m.pos]; [[-h,h],[h,h],[h,-h],[-h,-h]].forEach(([dx,dy],j)=>{ op.push([(cx+dx)*sc,(cy+dy)*sc]); ip.push([m.c[j][0]-W/2, m.c[j][1]-H/2]); }); });
+  const A=cv.matFromArray(op.length,1,cv.CV_32FC2,op.flat()), B=cv.matFromArray(ip.length,1,cv.CV_32FC2,ip.flat());
+  const Hm=cv.findHomography(A,B,0), Hd=Array.from(Hm.data64F); [A,B,Hm].forEach(m=>m.delete());
+  if(Hd.length!==9) return null;
+  // K^-1 H = lambda [r1 r2 t]
+  const a1=[Hd[0]/f,Hd[3]/f,Hd[6]], a2=[Hd[1]/f,Hd[4]/f,Hd[7]], a3=[Hd[2]/f,Hd[5]/f,Hd[8]];
+  const n1=Math.hypot(...a1), n2=Math.hypot(...a2), lam=(n1+n2)/2;
+  const r1=a1.map(v=>v/n1), r2=a2.map(v=>v/n2);
+  let n=[r1[1]*r2[2]-r1[2]*r2[1], r1[2]*r2[0]-r1[0]*r2[2], r1[0]*r2[1]-r1[1]*r2[0]]; const nn=Math.hypot(...n); n=n.map(v=>v/nn);
+  if(n[2]<0) n=n.map(v=>-v);
+  const tilt=Math.acos(Math.min(1,n[2]))*180/Math.PI, dist=Math.abs(a3[2]/lam);
+  // pixels per mm at the sheet centre (image coords) = sqrt|det J| of H at (0,0)
+  const w=Hd[8], j00=(Hd[0]*w-Hd[2]*Hd[6])/(w*w), j01=(Hd[1]*w-Hd[2]*Hd[7])/(w*w), j10=(Hd[3]*w-Hd[5]*Hd[6])/(w*w), j11=(Hd[4]*w-Hd[5]*Hd[7])/(w*w);
+  const pxmm=Math.sqrt(Math.abs(j00*j11-j01*j10));
+  const proj=(X,Y)=>{ const ww=Hd[6]*X+Hd[7]*Y+Hd[8]; return [(Hd[0]*X+Hd[1]*Y+Hd[2])/ww+W/2, (Hd[3]*X+Hd[4]*Y+Hd[5])/ww+H/2]; };
+  return {tilt, dist, pxmm, n, proj}; }
+
+/* ---------- camera ---------- */
+let stream=null, track=null, imgCap=null, photoMaxW=0, zoomCaps=null;
+const video=$("video"), ov=$("ov"), octx=ov.getContext("2d");
+const ana=document.createElement("canvas"), actx=ana.getContext("2d",{willReadFrequently:true});
+
+async function startCamera(){
+  stream=await navigator.mediaDevices.getUserMedia({audio:false, video:{facingMode:{ideal:"environment"}, width:{ideal:4096}, height:{ideal:3072}}});
+  track=stream.getVideoTracks()[0]; video.srcObject=stream; await video.play().catch(()=>{});
+  await new Promise(r=>{ if(video.videoWidth) r(); else video.onloadedmetadata=()=>r(); });
+  const caps=track.getCapabilities ? track.getCapabilities() : {};
+  try{ if(caps.focusMode && caps.focusMode.includes("continuous")) await track.applyConstraints({advanced:[{focusMode:"continuous"}]}); }catch(e){}
+  if(caps.zoom && caps.zoom.max>=1.5){ zoomCaps=caps.zoom; buildZoom(); }
+  if("ImageCapture" in window){ try{ imgCap=new ImageCapture(track); const pc=await imgCap.getPhotoCapabilities(); photoMaxW=Math.max(pc.imageWidth?.max||0, pc.imageHeight?.max||0); }catch(e){ imgCap=null; } }
+  try{ if(navigator.wakeLock) await navigator.wakeLock.request("screen"); }catch(e){}
+}
+function curZoom(){ try{ return track.getSettings().zoom||1; }catch(e){ return 1; } }
+function buildZoom(){ const seg=$("zoomSeg"); seg.innerHTML=""; const opts=[1,2,3].filter(z=>z>=zoomCaps.min && z<=zoomCaps.max);
+  if(opts.length<2) return; seg.classList.remove("hide");
+  opts.forEach(z=>{ const b=document.createElement("button"); b.textContent=z+"×"; b.dataset.z=z; seg.appendChild(b); });
+  const mark=()=>seg.querySelectorAll("button").forEach(b=>b.classList.toggle("on", Math.abs(+b.dataset.z-curZoom())<0.05)); mark();
+  seg.onclick=async e=>{ const b=e.target.closest("button"); if(!b) return; try{ await track.applyConstraints({advanced:[{zoom:+b.dataset.z}]}); }catch(er){} hist.length=0; mark(); }; }
+
+/* ---------- live loop ---------- */
+let running=false, busy=false, okSince=0, lastAn=null, lastSeen=0;
+const hist=[];          // [{t, pts:[[x,y]x4 corner-marker centres], side}]
+let tiltS=null;         // smoothed tilt
+function setChk(id, val, ok){ const e=$(id); e.querySelector(".v").textContent=val; e.className="chk "+(ok===null?"":ok?"ok":"warn"); }
+function say(main, sub){ $("msg").innerHTML=""; $("msg").append(main); if(sub){ const s=document.createElement("small"); s.textContent=sub; $("msg").append(s); } }
+
+function fitRect(){ // where the video is drawn inside the stage (object-fit: contain)
+  const cw=ov.clientWidth, ch=ov.clientHeight, vw=video.videoWidth, vh=video.videoHeight, s=Math.min(cw/vw, ch/vh);
+  return {s, x:(cw-vw*s)/2, y:(ch-vh*s)/2}; }
+
+function tick(){
+  if(!running) return;
+  if(busy || !video.videoWidth){ requestAnimationFrame(tick); return; }
+  busy=true;
+  try{ step(); }catch(e){ console.error(e); }
+  busy=false;
+  setTimeout(()=>requestAnimationFrame(tick), 60);
+}
+function step(){
+  const vw=video.videoWidth, vh=video.videoHeight, AW=Math.min(1280, Math.max(vw,vh)), k=AW/Math.max(vw,vh);
+  ana.width=Math.round(vw*k); ana.height=Math.round(vh*k); actx.drawImage(video,0,0,ana.width,ana.height);
+  const now=performance.now(), r=detect(ana), W=ana.width, H=ana.height;
+  const zoom=curZoom(), f=0.75*Math.max(W,H)*zoom;   // typical main camera: ~67° horizontal field of view at 1×
+  const outScale=(photoMaxW && imgCap) ? photoMaxW/Math.max(W,H) : Math.max(vw,vh)/Math.max(W,H);
+  const n=r.list.length, cornersSeen=SHEET.corners.filter(p=>r.list.some(m=>m.pos===p)).length;
+  let an=null; if(n>=4) an=analyse(r,W,H,f);
+  // stability: corner-marker centres over the last 0.5 s
+  const side = n ? r.list.reduce((s,m)=>s+Math.hypot(m.c[1][0]-m.c[0][0],m.c[1][1]-m.c[0][1]),0)/n : 0;
+  if(an){ const pts=[[-88,131],[88,131],[88,-131],[-88,-131]].map(([x,y])=>an.proj(x,y)); hist.push({t:now,pts,side}); }
+  else hist.length=0;
+  while(hist.length && now-hist[0].t>NEED.still*1000+150) hist.shift();
+  let move=Infinity;
+  if(hist.length>=3 && now-hist[0].t>=NEED.still*1000*0.8){ move=0; const a=hist[0].pts; hist.forEach(h=>h.pts.forEach((p,i)=>move=Math.max(move,Math.hypot(p[0]-a[i][0],p[1]-a[i][1])))); move/=side||1; }
+  if(an) tiltS = tiltS==null ? an.tilt : tiltS*0.6+an.tilt*0.4; else tiltS=null;
+  const pxmm = an ? an.pxmm*outScale : 0;
+  const okM = n>=NEED.markers && cornersSeen===4, okT = an && tiltS<=NEED.tilt, okR = an && pxmm>=NEED.pxmm, okS = move<=0.06;
+  setChk("cM", `${n}/16`, n?okM:null);
+  setChk("cT", an?`${tiltS.toFixed(1)}°`:"—", an?okT:null);
+  setChk("cR", an?`${pxmm.toFixed(1)}`:"—", an?okR:null);
+  setChk("cS", an&&isFinite(move)?(okS?"OK":"…"):"—", an&&isFinite(move)?okS:null);
+  $("liveMeta").textContent = an ? `${T("about {d} cm high",{d:Math.round(an.dist/10)})} · px/mm ${pxmm.toFixed(1)} · ${zoom}×` : "";
+  const allOK=okM&&okT&&okR&&okS;
+  if(!n) say(T("Point the camera at the measuring sheet"));
+  else if(!okM) say(T("Get all four corner markers on screen"));
+  else if(!okR) say(T("Move closer, or zoom in"));
+  else if(!okT) say(T("Level the phone: move the bubble into the circle"));
+  else if(!okS) say(T("Hold still…"));
+  else say(T("Hold still — shooting"));
+  if(allOK){ if(!okSince) okSince=now; } else okSince=0;
+  const prog = okSince ? Math.min(1,(now-okSince)/700) : 0;
+  draw(r, an, k, prog, okM&&okR&&okT);
+  lastAn=an;
+  if(prog>=1){ okSince=0; shoot(); }
+}
+function draw(r, an, k, prog, good){
+  const dpr=devicePixelRatio||1; if(ov.width!==ov.clientWidth*dpr){ ov.width=ov.clientWidth*dpr; ov.height=ov.clientHeight*dpr; }
+  octx.setTransform(dpr,0,0,dpr,0,0); octx.clearRect(0,0,ov.clientWidth,ov.clientHeight);
+  const fr=fitRect(), m=(x,y)=>[fr.x+x/k*fr.s, fr.y+y/k*fr.s];
+  // markers
+  octx.lineWidth=2; octx.strokeStyle="#30a46c";
+  r.list.forEach(mk=>{ octx.beginPath(); mk.c.forEach((p,i)=>{ const [x,y]=m(...p); i?octx.lineTo(x,y):octx.moveTo(x,y); }); octx.closePath(); octx.stroke(); });
+  if(an){ // sheet outline + clean zone
+    const quad=(a,b)=>{ octx.beginPath(); [[-a,b],[a,b],[a,-b],[-a,-b]].forEach(([X,Y],i)=>{ const [x,y]=m(...an.proj(X,Y)); i?octx.lineTo(x,y):octx.moveTo(x,y); }); octx.closePath(); };
+    octx.lineWidth=3; octx.strokeStyle= good?"#30a46c":"#e8a23a"; quad(99,142); octx.stroke();
+    octx.setLineDash([6,5]); octx.lineWidth=1.5; octx.strokeStyle="rgba(255,255,255,.8)"; quad(75,118); octx.stroke(); octx.setLineDash([]);
+  }
+  // bubble level (centre of the screen): outer ring = 2 × limit, inner circle = limit
+  const cx=ov.clientWidth/2, cy=ov.clientHeight/2, R=Math.min(ov.clientWidth,ov.clientHeight)*0.11;
+  octx.fillStyle="rgba(0,0,0,.28)"; octx.beginPath(); octx.arc(cx,cy,R*1.12,0,7); octx.fill();
+  octx.lineWidth=2; octx.strokeStyle="rgba(255,255,255,.9)"; octx.beginPath(); octx.arc(cx,cy,R,0,7); octx.stroke();
+  octx.strokeStyle= an&&tiltS<=NEED.tilt ? "#30a46c" : "rgba(255,255,255,.9)"; octx.beginPath(); octx.arc(cx,cy,R/2,0,7); octx.stroke();
+  if(an){ const t=Math.min(2*NEED.tilt,tiltS)/(2*NEED.tilt)*R, d=Math.hypot(an.n[0],an.n[1])||1, bx=cx-an.n[0]/d*t, by=cy-an.n[1]/d*t;
+    octx.fillStyle= tiltS<=NEED.tilt ? "#30a46c" : "#e8a23a"; octx.beginPath(); octx.arc(bx,by,R*0.22,0,7); octx.fill(); }
+  if(prog>0){ octx.lineWidth=5; octx.strokeStyle="#1f7ae0"; octx.beginPath(); octx.arc(cx,cy,R*1.12,-Math.PI/2,-Math.PI/2+prog*2*Math.PI); octx.stroke(); }
+}
+
+/* ---------- capture + verify + send ---------- */
+async function grab(){
+  if(imgCap){ try{ const opts={}; if(photoMaxW) { try{ const pc=await imgCap.getPhotoCapabilities(); opts.imageWidth=pc.imageWidth.max; opts.imageHeight=pc.imageHeight.max; }catch(e){} }
+      const b=await imgCap.takePhoto(opts); if(b && b.size>50000) return b; }catch(e){ console.warn("takePhoto failed, using a video frame", e); } }
+  const c=document.createElement("canvas"); c.width=video.videoWidth; c.height=video.videoHeight; c.getContext("2d").drawImage(video,0,0);
+  return await new Promise(r=>c.toBlob(r,"image/jpeg",0.95)); }
+async function verify(blob){ // markers must still be readable in the real photo
+  const bmp=await createImageBitmap(blob), k=Math.min(1,1600/Math.max(bmp.width,bmp.height)), c=document.createElement("canvas");
+  c.width=Math.round(bmp.width*k); c.height=Math.round(bmp.height*k); c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
+  const r=detect(c), corners=SHEET.corners.filter(p=>r.list.some(m=>m.pos===p)).length; const out={ok:r.list.length>=NEED.markers && corners===4, w:bmp.width, h:bmp.height}; bmp.close&&bmp.close(); return out; }
+let shooting=false;
+async function shoot(){
+  if(shooting) return; shooting=true; running=false;
+  say(T("Shooting…")); $("flash").classList.add("on"); setTimeout(()=>$("flash").classList.remove("on"),60);
+  try{
+    const blob=await grab(); say(T("Checking the photo…"));
+    const v=await verify(blob);
+    if(!v.ok){ say(T("The photo was blurry or the markers were cut off. Try again.")); shooting=false; okSince=0; hist.length=0; setTimeout(()=>{ running=true; tick(); },1200); return; }
+    await send(blob, v);
+  }catch(e){ console.error(e); say(String(e.message||e)); shooting=false; running=true; tick(); }
+}
+function send(blob, v){
+  showView("done"); $("doneImg").src=URL.createObjectURL(blob); $("badge").classList.add("hide"); $("bar").classList.remove("hide"); $("barI").style.width="0";
+  $("doneMsg").textContent=T("Sending to your PC…"); $("againBtn").disabled=true;
+  return new Promise(res=>{
+    const x=new XMLHttpRequest(); x.open("PUT", window.RELAY_URL+"/s/"+SID); x.setRequestHeader("Content-Type", blob.type||"image/jpeg");
+    x.upload.onprogress=e=>{ if(e.lengthComputable) $("barI").style.width=(e.loaded/e.total*100)+"%"; };
+    x.onload=()=>{ if(x.status>=200 && x.status<300){ $("bar").classList.add("hide"); $("badge").classList.remove("hide");
+        $("doneMsg").textContent=T("Sent. Check your PC."); const m=document.createElement("small"); m.textContent=T("{w}×{h} photo",{w:v.w,h:v.h}); $("doneMsg").append(m); }
+      else $("doneMsg").textContent=T("Sending failed: {e}",{e:x.status+" "+(x.responseText||"").slice(0,80)});
+      $("againBtn").disabled=false; res(); };
+    x.onerror=()=>{ $("doneMsg").textContent=T("Sending failed: {e}",{e:"network"}); $("againBtn").disabled=false; res(); };
+    x.send(blob); }); }
+
+/* ---------- views ---------- */
+function showView(v){ $("vIntro").classList.toggle("hide",v!=="intro"); $("vLive").classList.toggle("hide",v!=="live"); $("vLiveSheet").classList.toggle("hide",v!=="live"); $("vDone").classList.toggle("hide",v!=="done"); }
+$("startBtn").onclick=async()=>{
+  $("startBtn").disabled=true; $("introErr").classList.add("hide");
+  try{
+    $("introMeta").textContent=T("Starting the camera…");
+    await startCamera();
+    showView("live"); say(T("Loading the marker detector…"));
+    await cvP;
+    running=true; tick();
+  }catch(e){ console.error(e); showView("intro"); $("startBtn").disabled=false; $("introMeta").textContent="";
+    const msg= e.name==="NotAllowedError" ? T("Camera access was refused. Allow the camera for this site and reload.") : e.name==="NotFoundError" ? T("No camera found.") : (e.message||String(e));
+    $("introErr").textContent=msg; $("introErr").classList.remove("hide"); }
+};
+$("shootBtn").onclick=()=>{ if(running) shoot(); };
+$("againBtn").onclick=()=>{ shooting=false; okSince=0; hist.length=0; showView("live"); running=true; tick(); };
+window.__cap={ detect:(c)=>detect(c), analyse, ready:()=>cvP };
+</script>
+</body>
+</html>
