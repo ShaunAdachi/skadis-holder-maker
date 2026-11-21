@@ -19,19 +19,18 @@ You can zoom the photo and fix the outline by hand (move/add/delete points, or d
 
 The hooks fit a 5.0 mm SKÅDIS board (hook gap 5.1 mm, tested in PETG on a Bambu Lab A1 mini).
 
-## Several tools in one holder
-The **Tools in this holder** list (right panel) collects what goes into one SKÅDIS hanger or Gridfinity bin:
+## Photos and tools
+Every photo you open (file, phone or sample) is listed as a thumbnail in the Photo panel, and its tools appear in the **Tools** list on the right. Ticked tools go into one holder or bin; the counter shows how many are in.
 
-- **Keep, add another photo** keeps the current tool in the list; open the next photo and repeat.
-- **Several tools in this photo** (left panel, Outline) turns every separate tool on the sheet into its own item.
-- **Pen / round item** adds a pen or marker by diameter and length, no photo needed.
+- Switching photos never loses work: each photo remembers its outline edits, threshold, axis and the settings of its tools. Click a thumbnail (or the pencil on a tool) to go back.
+- A new photo replaces the tool in the holder if there was only one (the old one stays in the list, unticked; tick it to keep both). With two or more tools ticked, new photos are added. **Add a photo**, opening several files at once, and the phone option *Put every photo's tools into the same holder* always add.
+- **Several tools in this photo** (left panel, Outline) splits one photo into several tools. **Pen / round item** adds a pen by size.
+- The green number on a thumbnail is how many of its tools are in the holder; × on a thumbnail removes that photo and its tools.
 
-You can also drop or open several photos at once (each becomes one item), and in the phone dialog tick *Collect every photo into one holder*. Every photo opened in a session (from a file, the phone or the sample) is listed as a thumbnail in the Photo panel; click one to open it again. A green tick marks photos whose tools are kept. While you are collecting tools (the list already has kept tools), switching to another photo keeps the current tool first. Use ↑ to change the order. Kept tools and your clearance settings are remembered in the browser (localStorage); *Clear kept tools* empties the list.
-
-On SKÅDIS the openings sit side by side on one shelf with the chosen spacing; the hooks follow the total width. Each tool has its own menu: Auto, Slot, Round hole or Cup (closed bottom, for pens; the cup depth is set next to it). On Auto a tool follows the Slot / Round hole choice at the top, and with several tools one that would fall through gets a cup. The choice stays with the tool when you switch which tool of a photo you are editing, re-detect the outline, or keep it. The Pass-through and Opening size headings show which tool they apply to. In a Gridfinity bin the pockets are placed side by side; drag a pocket in the Layout view to move it, and use the turn button to swap a tool end for end. Both warn when the part does not fit the chosen printer.
+On SKÅDIS the openings sit side by side on one shelf with the chosen spacing; the hooks follow the total width. Each tool has its own menu: Auto, Slot, Round hole or Cup (closed bottom, for pens; the cup depth is set next to it). On Auto a tool follows the Slot / Round hole choice at the top, and with several tools one that would fall through gets a cup. The Pass-through and Opening size headings show which tool they apply to. In a Gridfinity bin the pockets are placed side by side (see *Arranging tools* below). Both warn when the part does not fit the chosen printer. Tools, their settings and the layout are remembered in the browser; photos are kept only while the page is open.
 
 ### Editing any tool in a multi-tool photo
-Click the node button on a row in the tools list, or double-click a tool in the photo, to make it the active tool. Its outline can then be edited with the usual tools, and axis fine-tune, tip/handle swap, thickness and pass-through apply to it. Edits stay when you switch to another tool; changing the edge threshold re-detects everything.
+Click the pencil on a row in the Tools list, or double-click a tool in the photo, to make it the active tool. Its outline can then be edited with the usual tools, and axis fine-tune, tip/handle swap, thickness and pass-through apply to it. Edits stay when you switch to another tool; changing the edge threshold re-detects everything.
 
 ### Name labels
 Turn on **Name labels** to engrave each tool's name (0.6 mm deep). Click a name in the list to change it. On SKÅDIS the name goes on the front face of the shelf, scaled to fit its opening; the text height is limited by the shelf thickness (about 2.6 mm at the default 6 mm shelf with a 2 mm fillet — raise *Shelf thickness* for larger text). In a Gridfinity bin the name is engraved in the pocket floor where it fits best, or in the top face where it falls outside the pocket. Text is traced from the browser's own fonts, so Japanese works.
@@ -48,8 +47,12 @@ A tool standing on edge is up to its full width above the sheet, and its upper p
 
 Typed depths win over the side photo. The Layout view shades deeper parts darker.
 
-### Snapping in the outline editor
-While dragging a point (or placing points in Draw mode), the edges next to it snap to straight lines: along or square to the red centre line, the sheet's horizontal and vertical, parallel to any other edge of the outline (the reference edge is highlighted), or level with another point. When two guides are close it snaps to their crossing, so corners come out square. Straight, square and parallel guides catch an edge that is up to 3.5° off (pulling a point at most 3 mm when dragging, 6 mm when drawing), so long edges drawn by eye straighten too; lining up with other points uses a fixed 8 px reach. While drawing, the new point is also checked against the first point, so the closing edge straightens as well. Pink dashed lines show the guides. Hold Ctrl/⌘ to move freely.
+### Outline editor
+Auto outlines are simplified to about 0.15 mm from the traced edge (a pair of pliers has ~200 points instead of >1000); measurements still come from the traced mask until you edit.
+
+**Curves.** Select points and press S (or the curve button) to make them smooth. A selected curve point shows its two direction handles, like Illustrator: drag a handle end to shape the curve; the other side stays opposite. Hold Alt while dragging to move one side only (the point becomes a corner with independent handles), Shift for 45° steps. S again turns a point back into a plain corner.
+
+**Snapping** (magnet button or G; Ctrl/⌘ inverts while held). While dragging a point or drawing, its edges snap to straight lines along or square to the red centre line or the sheet, parallel to one of the 12 longest edges, or level with another corner; two guides at once snap to their crossing. The reach is 5 px, or up to 2° of angle (at most 1.5 mm when dragging, 4 mm when drawing). Pink dashed lines show the guides.
 
 ### Arranging tools in a Gridfinity bin
 In the Layout view, click a tool (or its row in the list) to select it; its red centre line and a round handle appear, and a Placement panel opens under its row.
