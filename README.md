@@ -50,9 +50,24 @@ Typed depths win over the side photo. The Layout view shades deeper parts darker
 ### Outline editor
 Auto outlines are simplified to about 0.15 mm from the traced edge (a pair of pliers has ~200 points instead of >1000); measurements still come from the traced mask until you edit.
 
-**Curves.** Select points and press S (or the curve button) to make them smooth. A selected curve point shows its two direction handles, like Illustrator: drag a handle end to shape the curve; the other side stays opposite. Hold Alt while dragging to move one side only (the point becomes a corner with independent handles), Shift for 45° steps. S again turns a point back into a plain corner.
+**Pen (P or D)** draws a new outline the way Illustrator's pen tool does:
+- Click places a corner; click-and-drag places a smooth point and pulls out both handles. A move under 3 px still counts as a click, so corners never get tiny handles.
+- While dragging: Alt bends the curve (the incoming handle stays, only the outgoing one follows; it stays bent for that drag), Shift keeps the handle at 45° steps, Space moves the point itself.
+- Click the last point to cut its outgoing handle (curve → straight); drag it to pull out a new one without changing the curve that came in.
+- Shift-click places the next point at 45° steps from the last one. Snapping applies to clicks (G turns it off).
+- Click the first point to close (the cursor shows an o); drag it to close with a smooth start, Alt-drag to change only the closing side.
+- Hover the path: + adds a point on a segment without changing the curve, − removes a point. Alt-click a point switches curve ↔ corner, Alt-drag a handle bends one side. Ctrl/⌘ moves points and handles; Ctrl/⌘-click on empty canvas finishes.
+- Enter, Esc or P finishes. Backspace / Delete removes the last point, Ctrl+Z undoes the last pen step. A dashed rubber band shows what the next click would draw. Switching to another tool or photo keeps a closable path as the new outline (Ctrl+Z brings the old one back).
 
-**Snapping** (magnet button or G; Ctrl/⌘ inverts while held). While dragging a point or drawing, its edges snap to straight lines along or square to the red centre line or the sheet, parallel to one of the 12 longest edges, or level with another corner; two guides at once snap to their crossing. The reach is 5 px, or up to 2° of angle (at most 1.5 mm when dragging, 4 mm when drawing). Pink dashed lines show the guides.
+**Edit (A or E)** is direct selection:
+- Click or box-select points (Shift adds or removes). Drag a point to move it with its handles; Shift keeps the move at 45°.
+- Drag a line itself to bend it: both end handles adjust so the grabbed spot follows the pointer (straight lines get new handles).
+- Double-click a line to add a point exactly on the curve (De Casteljau split, the shape does not change).
+- Handles: on a smooth point the other handle stays opposite and keeps its own length; Alt makes it a corner and moves one side only; Shift for 45° steps.
+- Anchor point tool (hold Alt, or Shift+C to keep it on): click a smooth point to make it a sharp corner, drag a corner to pull out a fresh pair of equal handles.
+- S toggles selected points between automatic curve and corner. Anchors are squares (filled when selected); only the selected points' handles and the facing handles of their neighbours are shown. Hit areas are 8 px for points and handles and 6 px for lines at any zoom.
+
+**Snapping** (magnet button or G; in the edit tool, Ctrl/⌘ while dragging inverts it; in the pen, Shift-click gives 45° steps instead). While dragging a point or drawing, its edges snap to straight lines along or square to the red centre line or the sheet, parallel to one of the 12 longest edges, or level with another corner; two guides at once snap to their crossing. The reach is 5 px, or up to 2° of angle (at most 1.5 mm when dragging, 4 mm when drawing). Pink dashed lines show the guides.
 
 ### Arranging tools in a Gridfinity bin
 In the Layout view, click a tool (or its row in the list) to select it; its red centre line and a round handle appear, and a Placement panel opens under its row.
