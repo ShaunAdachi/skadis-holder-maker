@@ -42,6 +42,10 @@ Click the depth button on a tool's row to set its pocket floor along the length:
 - **Zones**: split the length (button, or Shift-click the pocket in the Layout view) and type a depth for each part, e.g. jaws 6 mm, handles 10 mm.
 - **Side photo**: lay the tool on its side on the sheet (tip up), open or shoot that photo, confirm it, and the floor follows the measured thickness: `depth = pocket depth − (max thickness − thickness) / 2`, in 0.4 mm steps, so a tool that is symmetric top to bottom lies level. The side photo also fills in the tool thickness used for SKÅDIS slots.
 
+A tool standing on edge is up to its full width above the sheet, and its upper part is closer to the camera, so it looks wider than it is. The side photo is corrected for this: the camera position comes from the sheet markers, with the focal length from the photo's EXIF (35 mm-equivalent × digital zoom) or, without EXIF, from a camera height you type. Each slice's height is taken from the top-view width at that point. In a rendered test (8/10 mm thick, 20/60 mm tall, camera 600 mm up and 27 mm off-centre) the raw readings of 9.1/13.5 mm became 8.1/10.2 mm.
+
+**Round cross-section**: for screwdrivers, pens and the like, tick this in the depth panel and the width seen from above is used as the thickness, so no side photo is needed. Pens and items set to a round hole or cup have it on by default.
+
 Typed depths win over the side photo. The Layout view shades deeper parts darker.
 
 ## Printer
