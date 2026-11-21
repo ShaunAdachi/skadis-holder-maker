@@ -77,6 +77,14 @@ In the Layout view, click a tool (or its row in the list) to select it; its red 
 
 Layout offsets and angles of kept tools are remembered in the browser. In the photo, the ends of the red centre line can be dragged to set the tool's axis. With several tools from one photo, the list shows each tool's number in the same colour as in the photo and marks the one whose outline is being edited.
 
+## Install as an app (PWA)
+The site is an installable web app. In Chrome or Edge, click **Install app** in the toolbar (or the install icon in the address bar); on Android use *Add to Home screen*, on iPhone *Share → Add to Home Screen*.
+- After the first visit it works offline: the page, the phone page, the sample photo and the libraries (OpenCV.js, manifold-3d, three.js) are cached by `sw.js`. Pages are fetched fresh when online, so updates show up at once; libraries are cached by their versioned URL. Phone hand-off needs a connection (it goes through the relay).
+- The installed app on desktop Chrome / Edge can open JPEG, PNG and WebP photos from the file manager (*Open with → Tool Holder Maker*).
+- `manifest.webmanifest` and `icons/` hold the app name and icons.
+
+While a photo is being read, a card in the middle of the view says what is happening (finding the sheet markers, finding the outline); when it is done a short note shows the result (for example *Ready · tool 146 × 76 mm*). Errors stay on screen a little longer.
+
 ## Printer
 Pick your printer under **Export** (Bambu Lab A1 mini / A1 / P1S·P1P·P2S·X1C / H2S / H2D, Prusa MINI+ / MK4S / CORE One, Creality Ender-3 V3·K1C / K2 Plus, Elegoo Centauri Carbon, Anycubic Kobra 3, or a custom size). Holders, trays and bins are checked against its build plate (2 mm margin, either orientation) and height, and the Gridfinity hint shows the largest bin that fits. The choice is remembered in the browser.
 
@@ -93,5 +101,6 @@ The photo passes through `relay/worker.js`, a small Cloudflare Worker + R2 bucke
 - `index.html` — the whole app (single file). OpenCV.js, manifold-3d and three.js load from jsDelivr.
 - `sheet/measure_sheet_v2_A4.pdf`, `sheet/measure_sheet_v2_Letter.pdf` — measuring sheet v2 (`sheet/skadis_measure_sheet_A4.pdf` is the older v1). The Letter sheet uses marker ids 96–111 from DICT_4X4_250, whose first 100 markers are the same as DICT_4X4_100.
 - `capture.html` — phone capture page (opened from the QR code).
+- `manifest.webmanifest`, `sw.js`, `icons/` — installable app and offline cache.
 - `relay/` — Cloudflare Worker for phone → PC photo hand-off.
 - `samples/hozan_p14_pliers.jpg` — sample photo for the **Try sample** button.
