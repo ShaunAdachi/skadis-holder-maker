@@ -1,0 +1,11 @@
+# Optional: only needed if you deploy with the Wrangler CLI instead of the dashboard.
+name = "tool-holder-relay"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://shaunadachi.github.io"
+
+[[r2_buckets]]
+binding = "RELAY"
+bucket_name = "tool-holder-relay"
