@@ -836,13 +836,16 @@ function edgeDirs(poly, skip){ const out=[]; for(let i=0;i<poly.length;i++){ con
 // q: raw position (mm). nbrs: points joined to q by an edge. others: points to line up with. edges: [{d,e}] directions to copy.
 function snapQ(q, nbrs, others, edges){
   const thr=8*(devicePixelRatio||1)/(S*V.sc0*V.z), base=snapDirs(), L=[];
-  const push=(a,d,w,kind,ref)=>{ const t=(q[0]-a[0])*d[0]+(q[1]-a[1])*d[1], pr=[a[0]+d[0]*t, a[1]+d[1]*t], dist=Math.hypot(q[0]-pr[0],q[1]-pr[1]); if(dist<=thr) L.push({a,d,pr,score:dist+w,kind,ref}); };
+  // straight / square / parallel: accept up to 3.5° off (at most 6 mm), since long edges drawn by eye drift more than a few pixels
+  const push=(a,d,w,kind,ref)=>{ const t=(q[0]-a[0])*d[0]+(q[1]-a[1])*d[1], pr=[a[0]+d[0]*t, a[1]+d[1]*t], dist=Math.hypot(q[0]-pr[0],q[1]-pr[1]);
+    const tol= kind==="lvl" ? thr : Math.max(thr, Math.min(6, Math.abs(t)*Math.tan(3.5*Math.PI/180)));
+    if(dist<=tol) L.push({a,d,pr,score:dist/tol*thr+w,kind,ref,tol}); };
   nbrs.forEach(a=>{ if(Math.hypot(q[0]-a[0],q[1]-a[1])<1) return; base.forEach(d=>push(a,d,0,"sq")); edges.forEach(ed=>{ if(!base.some(b=>Math.abs(b[0]*ed.d[1]-b[1]*ed.d[0])<0.004)) push(a,ed.d,0.1*thr,"par",ed.e); }); });
   others.forEach(a=>base.slice(0,2).forEach(d=>{ const n=[-d[1],d[0]]; push(a,n,0.3*thr,"lvl"); }));   // line up across / along the centre line
   if(!L.length) return null; L.sort((x,y)=>x.score-y.score); const c1=L[0];
   for(const c2 of L.slice(1)){ if(c2.a===c1.a) continue; const cr=c1.d[0]*c2.d[1]-c1.d[1]*c2.d[0]; if(Math.abs(cr)<0.2) continue;   // two guides at once: use their crossing
     const t=((c2.a[0]-c1.a[0])*c2.d[1]-(c2.a[1]-c1.a[1])*c2.d[0])/cr, I=[c1.a[0]+c1.d[0]*t, c1.a[1]+c1.d[1]*t];
-    if(Math.hypot(I[0]-q[0],I[1]-q[1])<=thr*1.4) return {q:I, guides:[c1,c2]}; }
+    if(Math.hypot(I[0]-q[0],I[1]-q[1])<=Math.max(c1.tol,c2.tol)*1.2) return {q:I, guides:[c1,c2]}; }
   return {q:c1.pr, guides:[c1]}; }
 function drawSnapGuides(ctx,dpr){ const gs=V.snapG; if(!gs) return; ctx.save(); ctx.strokeStyle="#d6409f"; ctx.lineWidth=1.2*dpr;
   gs.forEach(g=>{ ctx.setLineDash([6*dpr,4*dpr]); const p0=toS([g.a[0]-g.d[0]*400, g.a[1]-g.d[1]*400]), p1=toS([g.a[0]+g.d[0]*400, g.a[1]+g.d[1]*400]); ctx.beginPath(); ctx.moveTo(...p0); ctx.lineTo(...p1); ctx.stroke();
@@ -905,7 +908,7 @@ function closeDraft(){ if(V.draft.length<3){ V.draft=[]; toolHint(); drawPhoto()
         if(!V.sel.has(k)){ V.sel=new Set([k]); updateSelUI(); }
         pushUndo(); V.drag={kind:"pt",pi:h.pt[0],i:h.pt[1],moved:false,start:toMM(x,y),orig:JSON.parse(JSON.stringify(st.polys))}; return; }
       V.drag={kind:"box",x0:x,y0:y,x1:x,y1:y,add:e.shiftKey}; return; }
-    if(V.tool==="draw" && e.button===0){ let p=toMM(x,y); if(!(e.ctrlKey||e.metaKey) && V.draft.length){ const r=snapQ(p,[V.draft.at(-1)],V.draft.slice(0,-1),edgeDirs(V.draft,()=>false).filter((_,i)=>i<V.draft.length-1)); if(r) p=r.q; } V.snapG=null;
+    if(V.tool==="draw" && e.button===0){ let p=toMM(x,y); if(!(e.ctrlKey||e.metaKey) && V.draft.length){ const r=snapQ(p,V.draft.length>=2?[V.draft.at(-1),V.draft[0]]:[V.draft.at(-1)],V.draft.slice(1,-1),edgeDirs(V.draft,()=>false).filter((_,i)=>i<V.draft.length-1)); if(r) p=r.q; } V.snapG=null;
       if(V.draft.length>=3){ const [fx,fy]=toS(V.draft[0]); if(Math.hypot(fx-x,fy-y)<9*(devicePixelRatio||1)){ closeDraft(); return; } }
       V.draft.push(p); toolHint(); drawPhoto(); } });
   c.addEventListener("pointermove",e=>{ if(!st.rect) return; const [x,y]=pos(e);
@@ -921,7 +924,7 @@ function closeDraft(){ if(V.draft.length<3){ V.draft=[]; toolHint(); drawPhoto()
     if(V.drag?.kind==="box"){ V.drag.x1=x; V.drag.y1=y; drawPhoto(); return; }
     if(V.tool==="edit"){ const h=hitTest(x,y); V.hoverPt=h.pt||null; V.hoverEdge=h.edge||null; c.className="edit"+(h.pt?" hoverpt":h.edge?" hoveredge":""); drawPhoto(); }
     if(V.tool==="draw"){ V.cursor=[x,y]; V.snapG=null;
-      if(!(e.ctrlKey||e.metaKey) && V.draft.length){ const r=snapQ(toMM(x,y),[V.draft.at(-1)],V.draft.slice(0,-1),edgeDirs(V.draft,()=>false).filter((_,i)=>i<V.draft.length-1)); if(r){ V.cursor=toS(r.q); V.snapG=r.guides; } }
+      if(!(e.ctrlKey||e.metaKey) && V.draft.length){ const r=snapQ(toMM(x,y),V.draft.length>=2?[V.draft.at(-1),V.draft[0]]:[V.draft.at(-1)],V.draft.slice(1,-1),edgeDirs(V.draft,()=>false).filter((_,i)=>i<V.draft.length-1)); if(r){ V.cursor=toS(r.q); V.snapG=r.guides; } }
       drawPhoto(); } });
   c.addEventListener("pointerup",e=>{ const d=V.drag; V.drag=null; V.snapG=null; c.classList.remove("panning");
     if(d?.kind==="axis" && d.r!=null){ st.rot=d.r; setTimeout(reprofile,10); return; }

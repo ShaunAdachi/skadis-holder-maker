@@ -49,7 +49,7 @@ A tool standing on edge is up to its full width above the sheet, and its upper p
 Typed depths win over the side photo. The Layout view shades deeper parts darker.
 
 ### Snapping in the outline editor
-While dragging a point (or placing points in Draw mode), the edges next to it snap to straight lines: along or square to the red centre line, the sheet's horizontal and vertical, parallel to any other edge of the outline (the reference edge is highlighted), or level with another point. When two guides are close it snaps to their crossing, so corners come out square. Pink dashed lines show the guides. Hold Ctrl/⌘ to move freely.
+While dragging a point (or placing points in Draw mode), the edges next to it snap to straight lines: along or square to the red centre line, the sheet's horizontal and vertical, parallel to any other edge of the outline (the reference edge is highlighted), or level with another point. When two guides are close it snaps to their crossing, so corners come out square. Straight, square and parallel guides catch an edge that is up to 3.5° off (at most 6 mm), so long edges drawn by eye straighten too; lining up with other points uses a fixed 8 px reach. While drawing, the new point is also checked against the first point, so the closing edge straightens as well. Pink dashed lines show the guides. Hold Ctrl/⌘ to move freely.
 
 ### Arranging tools in a Gridfinity bin
 In the Layout view, click a tool (or its row in the list) to select it; its red centre line and a round handle appear, and a Placement panel opens under its row.
