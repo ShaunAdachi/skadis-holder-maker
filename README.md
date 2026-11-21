@@ -36,6 +36,14 @@ Click the node button on a row in the tools list, or double-click a tool in the 
 ### Name labels
 Turn on **Name labels** to engrave each tool's name (0.6 mm deep). Click a name in the list to change it. On SKÅDIS the name goes on the front face of the shelf, scaled to fit its opening; the text height is limited by the shelf thickness (about 2.6 mm at the default 6 mm shelf with a 2 mm fillet — raise *Shelf thickness* for larger text). In a Gridfinity bin the name is engraved in the pocket floor where it fits best, or in the top face where it falls outside the pocket. Text is traced from the browser's own fonts, so Japanese works.
 
+### Floor that follows the tool (Gridfinity)
+Click the depth button on a tool's row to set its pocket floor along the length:
+
+- **Zones**: split the length (button, or Shift-click the pocket in the Layout view) and type a depth for each part, e.g. jaws 6 mm, handles 10 mm.
+- **Side photo**: lay the tool on its side on the sheet (tip up), open or shoot that photo, confirm it, and the floor follows the measured thickness: `depth = pocket depth − (max thickness − thickness) / 2`, in 0.4 mm steps, so a tool that is symmetric top to bottom lies level. The side photo also fills in the tool thickness used for SKÅDIS slots.
+
+Typed depths win over the side photo. The Layout view shades deeper parts darker.
+
 ## Printer
 Pick your printer under **Export** (Bambu Lab A1 mini / A1 / P1S·P1P·P2S·X1C / H2S / H2D, Prusa MINI+ / MK4S / CORE One, Creality Ender-3 V3·K1C / K2 Plus, Elegoo Centauri Carbon, Anycubic Kobra 3, or a custom size). Holders, trays and bins are checked against its build plate (2 mm margin, either orientation) and height, and the Gridfinity hint shows the largest bin that fits. The choice is remembered in the browser.
 
