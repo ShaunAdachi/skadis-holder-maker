@@ -26,7 +26,10 @@ The **Tools in this holder** list (right panel) collects what goes into one SKÅ
 - **Several tools in this photo** (left panel, Outline) turns every separate tool on the sheet into its own item.
 - **Pen / round item** adds a pen or marker by diameter and length, no photo needed.
 
-On SKÅDIS the openings sit side by side on one shelf with the chosen spacing; the hooks follow the total width. Each tool can be a slot, a round hole or a cup (closed bottom, for pens). Tools without a neck that would fall through get a cup automatically. In a Gridfinity bin the pockets are placed side by side; drag a pocket in the Layout view to move it, and use the turn button to swap a tool end for end. Both warn when the part is wider than the A1 mini bed (180 mm).
+On SKÅDIS the openings sit side by side on one shelf with the chosen spacing; the hooks follow the total width. Each tool can be a slot, a round hole or a cup (closed bottom, for pens). Tools without a neck that would fall through get a cup automatically. In a Gridfinity bin the pockets are placed side by side; drag a pocket in the Layout view to move it, and use the turn button to swap a tool end for end. Both warn when the part does not fit the chosen printer.
+
+## Printer
+Pick your printer under **Export** (Bambu Lab A1 mini / A1 / P1S·P1P·P2S·X1C / H2S / H2D, Prusa MINI+ / MK4S / CORE One, Creality Ender-3 V3·K1C / K2 Plus, Elegoo Centauri Carbon, Anycubic Kobra 3, or a custom size). Holders, trays and bins are checked against its build plate (2 mm margin, either orientation) and height, and the Gridfinity hint shows the largest bin that fits. The choice is remembered in the browser.
 
 ## Shoot with a phone
 Click **Phone** in the toolbar. The PC page shows a QR code; scan it with the phone to open `capture.html`.
